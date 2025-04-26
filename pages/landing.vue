@@ -1,0 +1,108 @@
+<template>
+  <div>
+    <div class="landing-title">Venture Tools</div>
+
+    <div class="wrap-links">
+      <VanRow :gutter="[20, 20]" justify="space-between">
+        <VanCol span="12">
+          <div>
+            <NuxtLink to="/prayers">
+              <div class="landing-links">
+                <div class="icons">
+                  <PrayingHands style="width: 30px" />
+                </div>
+                <div>Prayers</div>
+              </div>
+            </NuxtLink>
+          </div>
+        </VanCol>
+        <VanCol span="12">
+          <NuxtLink to="/prayers">
+            <div class="landing-links">
+              <div class="icons">
+                <PersonRound style="width: 30px" />
+              </div>
+              <div>Contacts</div>
+            </div>
+          </NuxtLink>
+        </VanCol>
+        <VanCol span="12">
+          <NuxtLink to="/prayers">
+            <div class="landing-links">
+              <div class="icons">
+                <ChurchRound style="width: 30px" />
+              </div>
+              <div>Churches</div>
+            </div>
+          </NuxtLink>
+        </VanCol>
+        <VanCol span="12">
+          <NuxtLink to="/prayers">
+            <div class="landing-links">
+              <div class="icons">
+                <GroupRound style="width: 30px" />
+              </div>
+              <div>Communities</div>
+            </div>
+          </NuxtLink>
+        </VanCol>
+      </VanRow>
+    </div>
+
+    <div class="wrap-profile">
+      <NuxtLink to="/settings" style="color: white">
+        <SettingsRound />
+      </NuxtLink>
+    </div>
+  </div>
+</template>
+
+<script lang="ts" setup>
+import {
+  ChurchRound,
+  GroupRound,
+  PersonRound,
+  SettingsRound,
+} from "@vicons/material"
+import { PrayingHands } from "@vicons/fa"
+</script>
+
+<style lang="scss" scoped>
+$primaryColor: #17badf;
+
+.landing {
+  &-title {
+    color: $primaryColor;
+    text-align: center;
+    font-weight: bold;
+    height: 200px;
+    line-height: 200px;
+  }
+}
+.landing-links {
+  background: $primaryColor;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+  color: black;
+  height: 60px;
+}
+
+.wrap-links {
+  display: inline-block;
+  margin: 0 20px;
+
+  .icons {
+    height: 40px;
+  }
+}
+
+.wrap-profile {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 30px;
+  height: 30px;
+  color: white;
+}
+</style>
