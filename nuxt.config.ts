@@ -17,17 +17,17 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiURL: "http://localhost:8000/api/",
-      apiURLUnSlashed: "http://localhost:8000/api",
+      // apiURL: "http://localhost:8000/api/",
+      // apiURLUnSlashed: "http://localhost:8000/api",
 
-      rootURL: "http://localhost:8000/",
-      rootURLUnSlashed: "http://localhost:8000",
+      // rootURL: "http://localhost:8000/",
+      // rootURLUnSlashed: "http://localhost:8000",
 
-      // apiURL: "http://api.venture-tools.klonotech.com/api/",
-      // apiURLUnSlashed: "http://api.venture-tools.klonotech.com/api",
+      apiURL: "http://api.venture-tools.klonotech.com/api/",
+      apiURLUnSlashed: "http://api.venture-tools.klonotech.com/api",
 
-      // rootURL: "http://api.venture-tools.klonotech.com/",
-      // rootURLUnSlashed: "http://api.venture-tools.klonotech.com",
+      rootURL: "http://api.venture-tools.klonotech.com/",
+      rootURLUnSlashed: "http://api.venture-tools.klonotech.com",
     },
   },
-});
+})
