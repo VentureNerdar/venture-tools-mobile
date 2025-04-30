@@ -18,6 +18,7 @@ import { usePeopleGroupStore } from "~/stores/usePeopleGroupStore"
 import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
 import { useCommunityStore } from "~/stores/useCommunityStore"
 import { useUserStore } from "~/stores/useUserStore"
+import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
 
 type ModuleNameType =
   | "User Roles"
@@ -27,6 +28,7 @@ type ModuleNameType =
   | "People Groups"
   | "Communication Platforms"
   | "Community Checklists"
+  | "Faith Milestones"
 
 type Task = [ModuleNameType, RoutePaths, string, StoreOptions, BrowseCondition]
 
@@ -144,6 +146,18 @@ const tasks: Task[] = [
       ...d.defaultStoreOptions,
       key: "communityChecklists",
       storeState: useCommunityStore().communityChecklists,
+    } as StoreOptions,
+    query,
+  ],
+
+  [
+    "Faith Milestones",
+    RoutePaths.FAITH_MILESTONES,
+    "faithMilestones",
+    {
+      ...d.defaultStoreOptions,
+      key: "faithMilestones",
+      storeState: useFaithMilestoneStore().faithMilestones,
     } as StoreOptions,
     query,
   ],

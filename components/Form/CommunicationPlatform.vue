@@ -62,16 +62,30 @@
     </VanCell>
 
     <VanCell>
-      <VanButton
-        v-if="!d.visibility.addNew"
-        type="success"
-        block
-        size="small"
-        plain
-        @click="d.visibility.addNew = true"
-      >
-        Add {{ p.platform.name }}
-      </VanButton>
+      <div v-if="!d.visibility.addNew">
+        <VanCell>
+          <VanButton
+            type="success"
+            block
+            size="small"
+            @click="d.visibility.addNew = true"
+          >
+            Add {{ p.platform.name }}
+          </VanButton>
+        </VanCell>
+
+        <VanCell>
+          <VanButton
+            type="primary"
+            block
+            plain
+            size="small"
+            @click="d.show = false"
+          >
+            Close
+          </VanButton>
+        </VanCell>
+      </div>
 
       <div v-else>
         <VanCell>
@@ -109,7 +123,7 @@ const p = withDefaults(
   defineProps<{
     platform: CommunicationPlatformFormModel
     show?: boolean
-    form: number[]
+    form: any[]
   }>(),
   {
     show: false,
@@ -126,13 +140,12 @@ const d = reactive({
     addNew: false,
     editPopup: false,
   },
-  form: [] as number[],
+  form: [] as any[],
 })
 
 const m = {
   handle: {
     beforeClose: () => {
-      console.log("beforeClose")
       emit("close")
     },
 
@@ -159,7 +172,10 @@ const m = {
         },
 
         edit: () => {
-          d.form[d.editingValue.originalValue as string] = d.editingValue.value
+          console.log(d.editingValue)
+          d.form[d.editingValue.index] = d.editingValue.value
+          // console.log(d.form[d.editingValue.originalValue])
+          // d.form[d.editingValue.originalValue as string] = d.editingValue.value
 
           d.visibility.editPopup = false
         },

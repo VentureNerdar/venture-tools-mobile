@@ -40,7 +40,7 @@ const d = reactive({
     btnLogin: false,
   },
   form: {
-    email: "jill@demo.com",
+    email: "seb@demo.com",
     password: "demodemo",
   } as Credentials,
 })

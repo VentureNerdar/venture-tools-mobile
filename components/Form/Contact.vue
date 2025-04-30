@@ -174,7 +174,120 @@
     </VanCellGroup>
     <!-- e.o CONTACT PLATFORMS -->
 
-    <!-- {{ s.communicationPlatform.communicationPlatforms }} -->
+    <!-- FAITH MILESTONES -->
+    <VanCellGroup title="Faith Milestones">
+      <VanField
+        v-model="faithMilestoneFieldValue"
+        readonly
+        autosize
+        label="Faith Milestones"
+        label-align="top"
+        placeholder="Choose Faith Milestones"
+        @click="d.visibility.faithMielstonePicker = true"
+      />
+      <VanPopup
+        v-model:show="d.visibility.faithMielstonePicker"
+        destroy-on-close
+        closeable
+        round
+        position="bottom"
+        style="height: 400px"
+        @cancel="d.visibility.faithMielstonePicker = false"
+        @confirm="m.handle.click.confirmFaithMilestonePicker"
+      >
+        <VanCheckboxGroup
+          v-model="faithMilestoneID"
+          style="margin-top: 40px"
+          @change="m.handle.click.faithMilestoneCheckbox"
+        >
+          <VanCell
+            v-for="(item, index) in s.faithMilestone.faithMilestones"
+            :key="index"
+          >
+            <VanCheckbox :name="item.id">
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  padding: 10px;
+                  border: 1px solid rgba(200, 200, 200, 0.1);
+                  border-radius: 4px;
+                  margin-left: 10px;
+                  margin-right: 10px;
+                  width: calc(100vw - 100px);
+                "
+              >
+                <VanImage
+                  width="26"
+                  height="26"
+                  style="margin-right: 10px"
+                  :src="useRuntimeConfig().public.rootURL + item.icon"
+                />
+                {{ item.name }}
+              </div>
+            </VanCheckbox>
+          </VanCell>
+        </VanCheckboxGroup>
+      </VanPopup>
+    </VanCellGroup>
+    <!-- e.o FAITH MILESTONES -->
+
+    <!-- BAPTISM -->
+    <VanCellGroup title="Baptism">
+      <!-- BAPTIZED BY -->
+      <VanField
+        v-model="baptizedByFieldValue"
+        readonly
+        label="Baptized By"
+        placeholder="Choose Baptized By"
+        @click="d.visibility.baptizedByPicker = true"
+      />
+
+      <VanPopup
+        v-model:show="d.visibility.baptizedByPicker"
+        destroy-on-close
+        round
+        position="bottom"
+      >
+        <VanPicker
+          :model-value="baptizedByID"
+          title="Baptized By"
+          :columns="contactList"
+          @cancel="d.visibility.baptizedByPicker = false"
+          @confirm="m.handle.click.confirmBaptizedByPicker"
+        />
+      </VanPopup>
+      <!-- e.o BAPTIZED BY -->
+
+      <!-- BAPTISM DATE -->
+      <VanField
+        v-model="baptizedByFieldValue"
+        readonly
+        label="Baptism Date"
+        placeholder="Choose Baptism Date"
+        @click="d.visibility.baptismDatePicker = true"
+      />
+
+      <VanPopup
+        v-model:show="d.visibility.baptismDatePicker"
+        destroy-on-close
+        round
+        position="bottom"
+      >
+        <VanDatePicker
+          v-mode="d.form.baptism_date"
+          title="BaptismDate"
+          :max-date="new Date(2030, 0, 1)"
+          :columns-type="['day', 'month', 'year']"
+          :formatter="m.helper.formatter.baptismDateFormat"
+        />
+        <!-- v-model="d.form.baptism_date"  -->
+        <!-- :min-date="new Date(1800, 0, 1)" -->
+      </VanPopup>
+      <!-- </VanPopup> -->
+      <!-- e.o BAPTISM DATE -->
+    </VanCellGroup>
+    <!-- e.o BAPTISM -->
   </div>
 </template>
 
@@ -183,27 +296,45 @@ import type {
   ContactFormModel,
   CommunicationPlatformFormModel,
 } from "~/types/models"
+
 import { useSettingStore } from "~/stores/useSettingStore"
 import { usePeopleGroupStore } from "~/stores/usePeopleGroupStore"
 import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
+import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
+import { useContactStore } from "~/stores/useContactStore"
 
 import type { Numeric } from "vant/es/utils"
 import type { GenderTypes, AgeGroups } from "~/types"
+
+import { RoutePaths } from "~/types/index.d"
+import { useConsumeApi } from "~/composables/useConsumeApi"
+
+const consume = {
+  contacts: useConsumeApi(RoutePaths.CONTACTS),
+}
+
 const s = {
   settings: useSettingStore(),
   peopleGroup: usePeopleGroupStore(),
   communicationPlatform: useCommunicationPlatformStore(),
+  faithMilestone: useFaithMilestoneStore(),
+  contact: useContactStore(),
 }
 
 const contactStatusFieldValue = ref("")
 const faithStatusFieldValue = ref("")
 const ageGroupFieldValue = ref("")
 const peopleGroupFieldValue = ref("")
+const faithMilestoneFieldValue = ref("")
+const baptizedByFieldValue = ref("")
+const baptismDateFieldValue = ref("")
 
 const contactStatusID = ref<Numeric[]>([])
 const faithStatusID = ref<Numeric[]>([])
 const ageGroupID = ref<AgeGroups[]>([])
 const peopleGroupID = ref([])
+const faithMilestoneID = ref([])
+const baptizedByID = ref<Numeric[]>([])
 
 const d = reactive({
   visibility: {
@@ -212,6 +343,9 @@ const d = reactive({
     ageGroupPicker: false,
     peopleGroupPicker: false,
     communicationPlatformActionSheet: false,
+    faithMielstonePicker: false,
+    baptizedByPicker: false,
+    baptismDatePicker: false,
   },
   form: {
     name: "",
@@ -221,11 +355,15 @@ const d = reactive({
     age: null,
     people_group: [],
     contact_communication_platforms: [] as string[],
+    baptized_by: null,
+    baptism_date: null,
   } as ContactFormModel,
 
   currentCommunicationPlatform: {
     name: "",
   } as CommunicationPlatformFormModel,
+
+  contacts: [],
 })
 
 type SelectedOptionsType = {
@@ -271,9 +409,18 @@ const m = {
       }: {
         selectedOptions: SelectedOptionsType[]
       }) => {
-        // d.form.people_group = selectedOptions[0].value as
         peopleGroupFieldValue.value = selectedOptions[0].text
         d.visibility.peopleGroupPicker = false
+      },
+
+      confirmFaithMilestonePicker: ({
+        selectedOptions,
+      }: {
+        selectedOptions: SelectedOptionsType[]
+      }) => {
+        console.log(selectedOptions[0])
+        faithMilestoneFieldValue.value = selectedOptions[0].text
+        d.visibility.faithMielstonePicker = false
       },
 
       checkbox: () => {
@@ -301,6 +448,30 @@ const m = {
         console.log("Matched Options:", matched)
       },
 
+      faithMilestoneCheckbox: () => {
+        console.log(faithMilestoneID.value)
+
+        const options = s.faithMilestone.options as {
+          text: string
+          value: number
+        }[]
+
+        const matched = options
+          .filter(function (fmo) {
+            if ((faithMilestoneID.value as number[]).includes(fmo.value)) {
+              return true
+            } else {
+              return false
+            }
+          })
+          .map((fmo: any) => {
+            return fmo.text
+          })
+
+        faithMilestoneFieldValue.value = matched.join(", ")
+        console.log("Matched Options:", matched)
+      },
+
       communicationPlatform: (cp: any) => {
         d.visibility.communicationPlatformActionSheet = true
         d.currentCommunicationPlatform = cp
@@ -311,14 +482,91 @@ const m = {
         d.form.contact_communication_platforms ||= [] as string[]
         d.form.contact_communication_platforms.push(asdf)
       },
+
+      confirmBaptizedByPicker: ({
+        selectedOptions,
+      }: {
+        selectedOptions: SelectedOptionsType[]
+      }) => {
+        d.form.baptized_by = selectedOptions[0].value as number
+        baptizedByFieldValue.value = selectedOptions[0].text
+        d.visibility.baptizedByPicker = false
+      },
     },
 
     emits: {
       updatedCommunicationPlatformPicker: (e: any) => {
-        console.log("Updated Communication Platform:", e)
         d.form.contact_communication_platforms = e
       },
     },
   },
+
+  consume: {
+    contacts: async () => {
+      d.contacts = await consume.contacts.browse(
+        {
+          all: true,
+        },
+        false,
+      )
+    },
+  },
+
+  helper: {
+    formatter: {
+      baptismDateFormat: (type: any, options: any) => {
+        if (type === "month") {
+          console.log(options.text)
+
+          switch (options.text) {
+            case "01":
+              options.text = "January"
+              break
+            case "02":
+              options.text = "February"
+              break
+            case "03":
+              options.text = "March"
+              break
+            case "04":
+              options.text = "April"
+              break
+            case "05":
+              options.text = "May"
+              break
+            case "06":
+              options.text = "June"
+              break
+            case "07":
+              options.text = "July"
+              break
+            case "08":
+              options.text = "August"
+              break
+            case "09":
+              options.text = "September"
+              break
+            case "10":
+              options.text = "October"
+              break
+            case "11":
+              options.text = "November"
+              break
+            case "12":
+              options.text = "December"
+              break
+          }
+        }
+
+        return options
+      },
+    },
+  },
 }
+
+const contactList = computed(() => {
+  return d.contacts.map((pg: any) => ({ text: pg.name, value: pg.id }))
+})
+
+m.consume.contacts()
 </script>
