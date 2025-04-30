@@ -17,8 +17,10 @@ import { useSettingStore } from "~/stores/useSettingStore"
 import { usePeopleGroupStore } from "~/stores/usePeopleGroupStore"
 import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
 import { useCommunityStore } from "~/stores/useCommunityStore"
+import { useUserStore } from "~/stores/useUserStore"
 
 type ModuleNameType =
+  | "User Roles"
   | "Languages"
   | "Language Words"
   | "Statuses"
@@ -53,6 +55,23 @@ const d = reactive({
 
 const query = { all: true } as BrowseCondition
 const tasks: Task[] = [
+  [
+    "User Roles",
+    RoutePaths.USERS_ROLES,
+    "userRoles",
+    {
+      ...d.defaultStoreOptions,
+      key: "userRoles",
+      storeState: useUserStore().userRoles,
+    } as StoreOptions,
+    {
+      ...query,
+      whereNotIn: {
+        key: "id",
+        value: [1, 2],
+      },
+    },
+  ],
   [
     "Languages",
     RoutePaths.LANGUAGES,

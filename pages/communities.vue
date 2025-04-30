@@ -8,10 +8,11 @@
       />
 
       <VanCell
-        v-for="(contact, index) in communities"
+        v-for="(community, index) in d.communities"
         :key="index"
-        :title="contact"
+        :title="community.name || ''"
         is-link
+        @click="handleCommunityClick(community.id)"
       />
       <!-- @click="() => navigateTo(`/contacts/${contact}`)" -->
     </VanCellGroup>
@@ -19,6 +20,9 @@
 </template>
 
 <script lang="ts" setup>
+import type { BrowseConditionAll, CommunityFormModel } from '~/types/index.d'
+import { RoutePaths } from '~/types/index.d'
+
 definePageMeta({
   layout: "application",
   name: "Communities",
@@ -26,5 +30,27 @@ definePageMeta({
 
 const searchWord = ref("")
 
-const communities = ["Nebulynth", "Zarion Core", "Astravolt", "Aquila Rift"]
+const consume = {
+  communities: useConsumeApi(RoutePaths.COMMUNITIES)
+}
+
+const d = reactive({
+  communities: [] as CommunityFormModel[]
+})
+
+d.communities = await consume.communities.browse(
+  {all: true} as BrowseConditionAll
+)
+
+const handleCommunityClick = (communityID: number | undefined) => {
+  navigateTo({
+    path: '/createForm',
+    query: {
+      moduleName: 'Communities',
+      id: communityID,
+    }
+  })
+}
+
+
 </script>

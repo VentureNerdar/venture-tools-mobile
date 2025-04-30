@@ -2,7 +2,7 @@ import type { AgeGroups, GenderTypes } from "."
 import type { Numeric } from "vant/es/utils"
 
 export interface UserFormModel {
-  name: string | null
+  name: string 
   username: string | null
   email: string | null
   user_role_id: string | null
@@ -46,26 +46,26 @@ export interface ContactFormModel {
 
 export interface ChurchFormModel {
   id?: number
-  is_active: boolean
+  is_active: boolean | null
   assigned_to?: number | null
 
   church_planters?: any | null
 
-  name: string | null
-  description?: string | null
+  name: string 
+  description?: string
   founded_at?: any | null
-  phone_number?: string | null
-  website?: string | null
+  phone_number?: string 
+  website?: string 
   denomination_id?: number | null
-  is_visited?: boolean
-  church_members_count?: number | null
-  confession_of_faith_count?: number | null
-  baptism_count?: number | null
+  is_visited?: boolean | null
+  church_members_count?: number | undefined
+  confession_of_faith_count?: number | undefined
+  baptism_count?: number | undefined 
   community_id: number | null
   community?: CommunityFormModel[] | null
 
   parent_church_id?: number | null
-  current_prayers?: string | null
+  current_prayers?: string 
 
   deleted_at?: Date
   created_at?: Date
@@ -154,19 +154,18 @@ export interface CommunityChecklistFormModel {
 
 export interface CommunityPeacePersonFormModel {
   id?: number
-  name: string | null
-  email: string | null
-  phone: string | null
-  originalName?: string | null
-
+  name: string
+  email: string 
+  phone: string 
+  originalName?: string 
   created_at?: Date
   updated_at?: Date
 }
 
 export interface CommunityCommittee {
   id?: number
-  name: string | null
-  originalName?: string | null
+  name: string 
+  originalName?: string 
 
   created_at?: Date
   updated_at?: Date

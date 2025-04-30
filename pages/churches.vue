@@ -8,10 +8,11 @@
       />
 
       <VanCell
-        v-for="(contact, index) in churches"
+        v-for="(church, index) in d.churches"
         :key="index"
-        :title="contact"
+        :title="church.name || ''"
         is-link
+        @click="handleChurchClick(church.id)"
       />
       <!-- @click="() => navigateTo(`/contacts/${contact}`)" -->
     </VanCellGroup>
@@ -19,6 +20,7 @@
 </template>
 
 <script lang="ts" setup>
+import { RoutePaths, type BrowseConditionAll, type ChurchFormModel } from '~/types/index.d'
 definePageMeta({
   layout: "application",
   name: "Churches",
@@ -26,36 +28,32 @@ definePageMeta({
 
 const searchWord = ref("")
 
-const churches = [
-  "St. Peter's Church",
-  "Grace Community Church",
-  "First Baptist Church",
-  "Holy Trinity Church",
-  "New Life Church",
-  "Faith Chapel",
-  "Living Waters Church",
-  "Cornerstone Church",
-  "Hope Church",
-  "Christ the King Church",
-  "Redeemer Church",
-  "Victory Church",
-  "Crossroads Church",
-  "Harvest Church",
-  "The Rock Church",
-  "River of Life Church",
-  "Calvary Church",
-  "Unity Church",
-  "Abundant Life Church",
-  "Bethlehem Church",
-  "Good Shepherd Church",
-  "Emmanuel Church",
-  "Sacred Heart Church",
-  "Trinity Fellowship",
-  "Mount Zion Church",
-  "Covenant Church",
-  "New Hope Church",
-  "Light of the World Church",
-  "Kingdom Hall",
-  "Shiloh Church",
-]
+
+// const churches = [] as ChurchFormModel[]
+
+const d = reactive({
+  churches: [] as ChurchFormModel[]
+})
+
+const consume = {
+  churches: useConsumeApi(RoutePaths.CHURCHES)
+}
+
+d.churches = await consume.churches.browse(
+  { all: true} as BrowseConditionAll
+)
+
+const handleChurchClick = (churchID: number | undefined) => {
+  console.log("Church ID", churchID)
+  navigateTo({
+    path: '/createForm',
+    query: {
+      moduleName: 'Churches',
+      id: churchID,
+    }
+  })
+}
+
+
+
 </script>

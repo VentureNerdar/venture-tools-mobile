@@ -1,3 +1,284 @@
 <template>
-  <div>Community Form</div>
+  <div>
+    <VanForm @submit="onSubmit">
+      <VanCellGroup>
+        <!-- Name -->
+        <VanField
+          v-model="d.form.name"
+          label="Name"
+          placeholder="Please Input"
+          :rules="[{ required: true, message: 'Name is required' }]"
+          required
+        />
+        <!-- e.o Name -->
+      </VanCellGroup>
+ 
+      <VanCellGroup>
+        <!-- LONGITUDE -->
+        <VanField
+          v-model="d.form.location_longitude"
+          label="Longitude"
+          placeholder="Please Input"
+          :rules="[{ required: true, message: 'Longitude is required' }]"
+          required
+        />
+        <!-- e.o LONGITUDE -->
+
+        <!-- LATITUDE  -->
+        <VanField
+          v-model="d.form.location_latitude"
+          label="Latitude"
+          placeholder="Please Input"
+          :rules="[{ required: true, message: 'Latitude is required' }]"
+          required       
+        />
+        <!-- e.o LATITUDE -->
+      </VanCellGroup>
+
+      <!-- COMMUNITY CHECKLISTS -->
+      <VanCellGroup title="Community Checklist">
+        <VanField name="checkboxGroup" label="CheckboxGroup">
+          <template #input>
+            <VanCheckboxGroup v-model="d.form.checklists" direction="vertical"  >
+              <VanCheckbox v-for="checklist in communicationChecklist"
+                :key="checklist.id"
+                :name="checklist.id"
+                shape="square" 
+                style="margin-bottom: 5px;"
+              > 
+                {{ checklist.name }}
+              </VanCheckbox>
+            </VanCheckboxGroup>
+          </template>
+        </VanField>
+      </VanCellGroup>
+      <!-- e.o COMMUNITY CHECKLISTS -->
+
+      <!-- PERSON OF PEACE -->
+      <VanCellGroup title="Person of Peace">
+       <FormPartialsCommunityPeacePerson 
+       :peacePersons="d.form.peace_persons" 
+       @added="m.handle.emits.communityPeacePersonAdded"
+       @updated="m.handle.emits.communityPeacePersonUpdated"
+       @deleted="m.handle.emits.communityPeacePersonDeleted"
+       />
+      </VanCellGroup>
+      <!-- e.o PERSON OF PEACE  -->
+
+      <!-- COMMITTEES -->
+      <VanCellGroup title="Committees">
+       <FormPartialsCommunityCommittees
+       :committees="d.form.committees" 
+       @added="m.handle.emits.communityCommitteeAdded"
+       @updated="m.handle.emits.communityCommitteeUpdated"
+       @deleted="m.handle.emits.communityCommitteeDeleted"
+      />
+      </VanCellGroup>
+      <!-- e.o COMMITTEES -->
+
+      <!-- COMMUNITY NEEDS -->
+       <VanCellGroup>
+        <template #title>
+          <div style="display: flex; align-items: center;">
+            <VanCheckbox
+              v-model="d.form.conducted_survey_of_community_needs"
+              style="margin-right: 8px;"
+              shape="square"
+            />
+            <span>Conducted Survey of Community Needs</span>
+          </div>
+        </template>
+         <VanField
+          v-model="d.form.community_needs_1"
+          label="Community Needs 1"
+          placeholder="Please Input"
+          :disabled="!d.form.conducted_survey_of_community_needs"
+        />      
+        <VanField
+          v-model="d.form.community_needs_2"
+          label="Community Needs 2"
+          placeholder="Please Input"
+          :disabled="!d.form.conducted_survey_of_community_needs"
+        />  
+        <VanField
+          v-model="d.form.community_needs_3"
+          label="Community Needs 3"
+          placeholder="Please Input"
+          :disabled="!d.form.conducted_survey_of_community_needs"
+        />
+        <VanField
+          v-model="d.form.community_needs_4"
+          label="Community Needs 4"
+          placeholder="Please Input"
+          :disabled="!d.form.conducted_survey_of_community_needs"
+        />
+        <VanField
+          v-model="d.form.community_needs_5"
+          label="Community Needs 5"
+          placeholder="Please Input"
+          :disabled="!d.form.conducted_survey_of_community_needs"
+        />
+       </VanCellGroup>
+
+      <!-- e.o COMMUNITY NEEDS -->
+
+      <!-- CHURCHES -->
+       <VanCellGroup :title="'Church : ' + d.form.churches.length">
+        <div style="height: 200px; overflow: auto;">
+          <VanList>
+            <VanCell v-for="church in d.form.churches" :key="church.id" :title="church.name" />
+          </VanList>
+        </div>
+       </VanCellGroup>
+      <!-- e.o CHURCHES -->
+
+       <!-- CHURCH PLANTERS -->
+       <VanCellGroup :title="'Church Planter : ' + d.form.churchPlanters.length">
+         <VanList>
+           <VanCell v-for="church in d.form.churchPlanters" :key="church.id" :title="church.name" />
+         </VanList>
+       </VanCellGroup>
+       <!-- e.o CHURCH PLANTERS -->
+
+      <div style="margin: 16px; display: flex; gap: 16px;">
+        <VanButton round block type="default" style="flex: 1;" @click="$router.back">
+          Cancel
+        </VanButton>
+        <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
+          Submit
+        </VanButton>
+      </div>
+      
+    </VanForm>
+  </div>
 </template>
+
+
+<script lang="ts" setup>
+import { routerKey } from 'vue-router'
+import { type ChurchFormModel, RoutePaths, type BrowseCondition, type CommunityChecklistFormModel, type CommunityPeacePersonFormModel, type CommunityCommittee } from '~/types/index.d'
+
+
+const route = useRoute()
+const router = useRouter()
+const communityID = route.query.id ? Number(route.query.id) : undefined
+const communicationChecklist = ref<CommunityChecklistFormModel[]>([])
+
+const d = reactive({
+  form: {
+    name: "",
+    location_longitude: "",
+    location_latitude: "",
+    conducted_survey_of_community_needs: false,
+    checklists: [],
+    community_needs_1: "",
+    community_needs_2: "",
+    community_needs_3: "",
+    community_needs_4: "",
+    community_needs_5: "",
+    churches: [] as ChurchFormModel[],
+    churchPlanters: [] as any,
+    peace_persons: [] as CommunityPeacePersonFormModel[],
+    committees: [] as CommunityCommittee[]
+  }
+})
+
+const consume = {
+  communities: useConsumeApi(RoutePaths.COMMUNITIES),
+  communityChecklists: useConsumeApi(RoutePaths.COMMUNITY_CHECKLISTS),
+  churches: useConsumeApi(RoutePaths.CHURCHES)
+}
+
+const m = {
+  handle: {
+    emits: {
+      communityPeacePersonAdded: (pp: CommunityPeacePersonFormModel) => {
+        if(!d.form.peace_persons) d.form.peace_persons = []
+        d.form.peace_persons.push(pp)
+      },
+      communityPeacePersonUpdated: (pp: CommunityPeacePersonFormModel) => {
+        const index = d.form.peace_persons.findIndex(
+          (p) => p.name === pp.originalName,
+        )
+
+        if (index !== -1) {
+          d.form.peace_persons[index] = {
+            ...d.form.peace_persons[index],
+            ...pp,
+          }
+        }
+      },
+      communityPeacePersonDeleted:(pp: CommunityPeacePersonFormModel) => {
+        const index = d.form.peace_persons.findIndex(
+          (p) => p.name === pp.name,
+        )
+
+        if (index !== -1) {
+          d.form.peace_persons.splice(index, 1)
+        }
+      },
+      
+      communityCommitteeAdded: (cc: CommunityCommittee) => {
+        if(!d.form.committees) d.form.committees= []
+        d.form.committees.push(cc)
+      },
+      communityCommitteeUpdated: (pp: CommunityCommittee) => {
+        const index = d.form.committees.findIndex(
+          (p) => p.name === pp.originalName,
+        )
+
+        if (index !== -1) {
+          d.form.committees[index] = {
+            ...d.form.committees[index],
+            ...pp,
+          }
+        }
+      },
+      communityCommitteeDeleted:(pp: CommunityCommittee) => {
+        const index = d.form.committees.findIndex(
+          (p) => p.name === pp.name,
+        )
+
+        if (index !== -1) {
+          d.form.committees.splice(index, 1)
+        }
+      },     
+    }
+  }
+}
+
+onMounted(async()=> {
+  if(communityID)  {
+    const bc ={
+      where: JSON.stringify([{
+        key: 'id',
+        value: communityID,
+      }]),
+      with: `["peacePersons", "committees", "checklists", "churches", "churches.churchPlanters"]`
+    } as BrowseCondition
+    const res = await consume.communities.browse(bc)
+    if(res.data.length > 0) {
+      d.form = res.data[0]
+      d.form.checklists = res.data[0].checklists.map((c: any) => c.id);
+    }
+  }
+  communicationChecklist.value = await consume.communityChecklists.browse({
+    all: true
+  }) as CommunityChecklistFormModel[]
+
+})
+
+const onSubmit = async ()=> {
+  let response
+  if (communityID) {
+    const editChurchConsume = useConsumeApi(RoutePaths.COMMUNITIES, communityID)
+    response = await editChurchConsume.save(d.form)
+    
+  } else {
+    response = await consume.communities.save(d.form)
+  }
+  if(response) {
+    router.back()
+  }
+}
+</script>
