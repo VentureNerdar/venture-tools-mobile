@@ -22,16 +22,17 @@ export interface UserFormModel {
 
 export interface ContactFormModel {
   id?: number
-  contact_status_id?: Numeric | null
+  contact_status_id?: number | null
   // contact_status_id: Numeric[]
   faith_status_id?: Numeric | null
+  assigned_to?: number | null
 
   name: string
   nickname?: string
   gender: GenderTypes | null
   age: AgeGroups | null
   baptism_date?: any | null
-  baptized_by?: number | null
+  baptized_by?: Numeric | null
   current_prayers?: string | null
   faith_milestones?: number[] | null
   people_group?: Numeric[] | null

@@ -1,1 +1,0 @@
-import{b6 as p,aH as n,i as e,a5 as u}from"./u6fC7tWD.js";function c(o,{args:i=[],done:s,canceled:t,error:f}){if(o){const a=o.apply(null,i);p(a)?a.then(l=>{l?s():t&&t()}).catch(f||n):a?s():t&&t()}else s()}const r=Symbol();function m(o){const i=e(r,null);i&&u(i,s=>{s&&o()})}export{r as P,c,m as o};

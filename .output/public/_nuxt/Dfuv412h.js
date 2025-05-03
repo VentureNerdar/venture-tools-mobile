@@ -1,1 +1,0 @@
-import{u as r}from"./CoKn23AU.js";import{g as a,aP as e,k as m,c as s,t as u,m as c,o as i}from"./u6fC7tWD.js";const d=a({__name:"communicationPlatforms",setup(l){const o=e(),n=m(()=>"platform"in o.query?r().communicationPlatforms.find(t=>t.id===parseInt(o.query.platform)):null);return(t,f)=>(i(),s("div",null," communication platforms "+u(c(n)),1))}});export{d as default};

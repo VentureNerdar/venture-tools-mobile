@@ -17,7 +17,7 @@
           </div>
         </VanCol>
         <VanCol span="12">
-          <NuxtLink to="/prayers">
+          <NuxtLink to="/contacts">
             <div class="landing-links">
               <div class="icons">
                 <PersonRound style="width: 30px" />
@@ -27,7 +27,7 @@
           </NuxtLink>
         </VanCol>
         <VanCol span="12">
-          <NuxtLink to="/prayers">
+          <NuxtLink to="/churches">
             <div class="landing-links">
               <div class="icons">
                 <ChurchRound style="width: 30px" />
@@ -37,7 +37,7 @@
           </NuxtLink>
         </VanCol>
         <VanCol span="12">
-          <NuxtLink to="/prayers">
+          <NuxtLink to="/communities">
             <div class="landing-links">
               <div class="icons">
                 <GroupRound style="width: 30px" />

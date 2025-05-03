@@ -1,12 +1,8 @@
 <template>
   <div>
     <VanNavBar
-      fixed
-      :left-arrow="showBackButton"
-      :title="pageName"
-      @click-left="() => $router.back()"
-      @click-right="m.handle.click.btnAddNew()"
-    >
+fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.back()"
+      @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined">
       <template #right>
         <span v-if="hasCreateButton">
           <PlusRound style="width: 24px; height: 24px" />
@@ -77,11 +73,18 @@ const route = useRoute()
 const pageName = computed(() => {
   const name = (route.name ? route.name : "") as string
 
+  const isEdit = route.query.id !== undefined
+
   let pageName = name[0].toUpperCase() + name.slice(1)
 
   if (pageName === "Create") {
-    pageName =
-      pageName + (route.query.moduleName ? " " + route.query.moduleName : "")
+    if (isEdit) {
+      pageName = "Edit" + (route.query.moduleName ? " " + route.query.moduleName : "")
+    } else {
+      pageName =
+        pageName + (route.query.moduleName ? " " + route.query.moduleName : "")
+    }
+
   }
   return pageName
 })

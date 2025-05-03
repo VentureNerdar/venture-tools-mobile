@@ -1,24 +1,18 @@
 <template>
   <div>
     <VanCellGroup>
-      <VanSearch
-        v-model="searchWord"
-        placeholder="Search contacts by name"
-        shape="round"
-      />
+      <VanSearch v-model="searchWord" placeholder="Search contacts by name" shape="round" />
 
-      <VanCell
-        v-for="(contact, index) in contacts"
-        :key="index"
-        :title="contact"
-        is-link
-      />
+      <VanCell v-for="(contact, index) in d.contacts" :key="index" :title="contact.name" is-link
+        @click="handleContactClick(contact.id)" />
       <!-- @click="() => navigateTo(`/contacts/${contact}`)" -->
     </VanCellGroup>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { RoutePaths, type BrowseConditionAll, type ContactFormModel } from '~/types/index.d'
+
 definePageMeta({
   layout: "application",
   name: "Contacts",
@@ -26,26 +20,25 @@ definePageMeta({
 
 const searchWord = ref("")
 
-const contacts = [
-  "John Doe",
-  "Jane Smith",
-  "Alice Johnson",
-  "Bob Brown",
-  "Charlie Davis",
-  "Diana Evans",
-  "Ethan Foster",
-  "Fiona Green",
-  "George Harris",
-  "Hannah Irving",
-  "Ian Jackson",
-  "Julia King",
-  "Kevin Lewis",
-  "Laura Miller",
-  "Michael Nelson",
-  "Nina Owens",
-  "Oliver Parker",
-  "Paula Quinn",
-  "Quincy Roberts",
-  "Rachel Scott",
-]
+const d = reactive({
+  contacts: [] as ContactFormModel[]
+})
+const consume = {
+  contacts: useConsumeApi(RoutePaths.CONTACTS)
+}
+d.contacts = await consume.contacts.browse(
+  { all: true } as BrowseConditionAll
+)
+
+const handleContactClick = (contactID: number | undefined) => {
+  navigateTo({
+    path: '/createForm',
+    query: {
+      moduleName: 'Contacts',
+      id: contactID,
+    }
+  })
+}
+
+
 </script>

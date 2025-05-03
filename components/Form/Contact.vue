@@ -3,49 +3,23 @@
     <VanCellGroup title="Statuses">
       <!-- CONTACT STATUS -->
       <VanField
-        v-model="contactStatusFieldValue"
-        readonly
-        label="Contact"
-        placeholder="Choose Contact Status"
-        @click="d.visibility.contactPicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.contactPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
+v-model="contactStatusFieldValue" readonly label="Contact" placeholder="Choose Contact Status"
+        @click="d.visibility.contactPicker = true" />
+      <VanPopup v-model:show="d.visibility.contactPicker" destroy-on-close round position="bottom">
         <VanPicker
-          :model-value="contactStatusID"
-          title="Title"
-          :columns="s.settings.options.contact"
-          @cancel="d.visibility.contactPicker = false"
-          @confirm="m.handle.click.confirmContactStatusPicker"
-        />
+:model-value="contactStatusID" title="Title" :columns="s.settings.options.contact"
+          @cancel="d.visibility.contactPicker = false" @confirm="m.handle.click.confirmContactStatusPicker" />
       </VanPopup>
       <!-- e.o CONTACT STSATUS -->
 
       <!-- FAITH STATUS -->
       <VanField
-        v-model="faithStatusFieldValue"
-        readonly
-        label="Faith"
-        placeholder="Choose Faith Status"
-        @click="d.visibility.faithStatusPicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.faithStatusPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
+v-model="faithStatusFieldValue" readonly label="Faith" placeholder="Choose Faith Status"
+        @click="d.visibility.faithStatusPicker = true" />
+      <VanPopup v-model:show="d.visibility.faithStatusPicker" destroy-on-close round position="bottom">
         <VanPicker
-          :model-value="faithStatusID"
-          title="Title"
-          :columns="s.settings.options.faith"
-          @cancel="d.visibility.faithStatusPicker = false"
-          @confirm="m.handle.click.confirmFaithStatusPicker"
-        />
+:model-value="faithStatusID" title="Title" :columns="s.settings.options.faith"
+          @cancel="d.visibility.faithStatusPicker = false" @confirm="m.handle.click.confirmFaithStatusPicker" />
       </VanPopup>
       <!-- e.o FAITH STATUS -->
     </VanCellGroup>
@@ -53,34 +27,19 @@
     <VanCellGroup title="General Information">
       <!-- NAME -->
       <VanField
-        v-model="d.form.name"
-        label="Name"
-        placeholder="Enter Name"
-        required
-      />
+v-model="d.form.name" label="Name" placeholder="Enter Name" required
+        :rules="[{ required: true, message: 'Name is required' }]" />
       <!-- e.o NAME -->
 
       <!-- e.o NICKNAME -->
-      <VanField
-        v-model="d.form.nickname"
-        label="Nickname"
-        placeholder="Enter Nickname"
-      />
+      <VanField v-model="d.form.nickname" label="Nickname" placeholder="Enter Nickname" />
       <!-- e.o NICKNAME -->
 
       <!-- GENDER -->
       <VanCellGroup title="Gender">
-        <VanRadioGroup v-model="d.form.gender">
-          <VanCellGroup
-            v-for="g in s.settings.options.genders"
-            :key="g.value"
-            inset
-          >
-            <VanCell
-              :title="g.text"
-              clickable
-              @click="d.form.gender = g.value as GenderTypes"
-            >
+        <VanRadioGroup v-model="d.form.gender" required :rules="[{ required: true, message: 'Gender is required' }]">
+          <VanCellGroup v-for="g in s.settings.options.genders" :key="g.value" inset>
+            <VanCell :title="g.text" clickable @click="d.form.gender = g.value as GenderTypes">
               <template #right-icon>
                 <van-radio :name="g.value" />
               </template>
@@ -94,52 +53,24 @@
 
       <!-- AGE GROUPS -->
       <VanField
-        v-model="ageGroupFieldValue"
-        readonly
-        label="Age Group"
-        placeholder="Choose Age"
-        @click="d.visibility.ageGroupPicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.ageGroupPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
+v-model="ageGroupFieldValue" readonly label="Age Group" placeholder="Choose Age" required
+        :rules="[{ required: true, message: 'Age is required' }]" @click="d.visibility.ageGroupPicker = true" />
+      <VanPopup v-model:show="d.visibility.ageGroupPicker" destroy-on-close round position="bottom">
         <VanPicker
-          :model-value="ageGroupID"
-          title="Title"
-          :columns="s.settings.options.ageGroups"
-          @cancel="d.visibility.ageGroupPicker = false"
-          @confirm="m.handle.click.confirmAgeGroupPicker"
-        />
+:model-value="ageGroupID" title="Title" :columns="s.settings.options.ageGroups"
+          @cancel="d.visibility.ageGroupPicker = false" @confirm="m.handle.click.confirmAgeGroupPicker" />
       </VanPopup>
       <!-- e.o AGE GROUPS -->
 
       <!-- PEOPLE GROUP -->
       <VanField
-        v-model="peopleGroupFieldValue"
-        readonly
-        autosize
-        label="People Group"
-        label-align="top"
-        placeholder="Choose People Group"
-        @click="d.visibility.peopleGroupPicker = true"
-      />
+v-model="peopleGroupFieldValue" readonly autosize label="People Group" label-align="top"
+        placeholder="Choose People Group" @click="d.visibility.peopleGroupPicker = true" />
       <VanPopup
-        v-model:show="d.visibility.peopleGroupPicker"
-        destroy-on-close
-        closeable
-        round
-        position="bottom"
-        style="height: 400px"
-        @cancel="d.visibility.peopleGroupPicker = false"
-        @confirm="m.handle.click.confirmPeopleGroupPicker"
-      >
-        <VanCheckboxGroup
-          v-model="peopleGroupID"
-          @change="m.handle.click.checkbox"
-        >
+v-model:show="d.visibility.peopleGroupPicker" destroy-on-close closeable round position="bottom"
+        style="height: 400px" @cancel="d.visibility.peopleGroupPicker = false"
+        @confirm="m.handle.click.confirmPeopleGroupPicker">
+        <VanCheckboxGroup v-model="peopleGroupID" @change="m.handle.click.checkbox">
           <VanCell v-for="(item, index) in s.peopleGroup.options" :key="index">
             <VanCheckbox :name="item.value">
               {{ item.text }}
@@ -153,60 +84,36 @@
     <!-- CONTACT PLAGFORMS -->
     <VanCellGroup title="Contact Platforms">
       <VanCell
-        v-for="cp in s.communicationPlatform.communicationPlatforms"
-        :key="cp.id"
-        :title="cp.name"
-        is-link
-        @click="m.handle.click.communicationPlatform(cp)"
-      />
+v-for="cp in s.communicationPlatform.communicationPlatforms" :key="cp.id" :title="cp.name" is-link
+        @click="m.handle.click.communicationPlatform(cp)" />
       <FormCommunicationPlatform
-        :platform="d.currentCommunicationPlatform"
-        :show="d.visibility.communicationPlatformActionSheet"
-        :form="
-          d.form.contact_communication_platforms
-            ? (d.form.contact_communication_platforms as number[])
-            : []
-        "
-        @close="d.visibility.communicationPlatformActionSheet = false"
+:platform="d.currentCommunicationPlatform"
+        :show="d.visibility.communicationPlatformActionSheet" :form="communicationForm
+          ? (communicationForm as string[])
+          : []
+          " @close="d.visibility.communicationPlatformActionSheet = false"
         @added="m.handle.click.confirmCommunicationPlatformPicker"
         @updated="m.handle.emits.updatedCommunicationPlatformPicker"
-      />
+        @deleted="m.handle.emits.deletedCommunicationPlatformPicker" />
     </VanCellGroup>
     <!-- e.o CONTACT PLATFORMS -->
 
     <!-- FAITH MILESTONES -->
     <VanCellGroup title="Faith Milestones">
       <VanField
-        v-model="faithMilestoneFieldValue"
-        readonly
-        autosize
-        label="Faith Milestones"
-        label-align="top"
-        placeholder="Choose Faith Milestones"
-        @click="d.visibility.faithMielstonePicker = true"
-      />
+v-model="faithMilestoneFieldValue" readonly autosize label="Faith Milestones" label-align="top"
+        placeholder="Choose Faith Milestones" @click="d.visibility.faithMielstonePicker = true" />
       <VanPopup
-        v-model:show="d.visibility.faithMielstonePicker"
-        destroy-on-close
-        closeable
-        round
-        position="bottom"
-        style="height: 400px"
-        @cancel="d.visibility.faithMielstonePicker = false"
-        @confirm="m.handle.click.confirmFaithMilestonePicker"
-      >
+v-model:show="d.visibility.faithMielstonePicker" destroy-on-close closeable round position="bottom"
+        style="height: 400px" @cancel="d.visibility.faithMielstonePicker = false"
+        @confirm="m.handle.click.confirmFaithMilestonePicker">
         <VanCheckboxGroup
-          v-model="faithMilestoneID"
-          style="margin-top: 40px"
-          @change="m.handle.click.faithMilestoneCheckbox"
-        >
-          <VanCell
-            v-for="(item, index) in s.faithMilestone.faithMilestones"
-            :key="index"
-          >
+v-model="faithMilestoneID" style="margin-top: 40px"
+          @change="m.handle.click.faithMilestoneCheckbox">
+          <VanCell v-for="(item, index) in s.faithMilestone.faithMilestones" :key="index">
             <VanCheckbox :name="item.id">
               <div
-                style="
+style="
                   display: flex;
                   align-items: center;
                   padding: 10px;
@@ -215,14 +122,10 @@
                   margin-left: 10px;
                   margin-right: 10px;
                   width: calc(100vw - 100px);
-                "
-              >
+                ">
                 <VanImage
-                  width="26"
-                  height="26"
-                  style="margin-right: 10px"
-                  :src="useRuntimeConfig().public.rootURL + item.icon"
-                />
+width="26" height="26" style="margin-right: 10px"
+                  :src="useRuntimeConfig().public.rootURL + item.icon" />
                 {{ item.name }}
               </div>
             </VanCheckbox>
@@ -236,51 +139,28 @@
     <VanCellGroup title="Baptism">
       <!-- BAPTIZED BY -->
       <VanField
-        v-model="baptizedByFieldValue"
-        readonly
-        label="Baptized By"
-        placeholder="Choose Baptized By"
-        @click="d.visibility.baptizedByPicker = true"
-      />
+v-model="baptizedByFieldValue" readonly label="Baptized By" placeholder="Choose Baptized By"
+        @click="d.visibility.baptizedByPicker = true" />
 
-      <VanPopup
-        v-model:show="d.visibility.baptizedByPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
+      <VanPopup v-model:show="d.visibility.baptizedByPicker" destroy-on-close round position="bottom">
         <VanPicker
-          :model-value="baptizedByID"
-          title="Baptized By"
-          :columns="contactList"
-          @cancel="d.visibility.baptizedByPicker = false"
-          @confirm="m.handle.click.confirmBaptizedByPicker"
-        />
+:model-value="baptizedByID" title="Baptized By" :columns="contactList"
+          @cancel="d.visibility.baptizedByPicker = false" @confirm="m.handle.click.confirmBaptizedByPicker" />
       </VanPopup>
       <!-- e.o BAPTIZED BY -->
 
+      <!-- :model-value="baptizedByID"  -->
       <!-- BAPTISM DATE -->
       <VanField
-        v-model="baptizedByFieldValue"
-        readonly
-        label="Baptism Date"
-        placeholder="Choose Baptism Date"
-        @click="d.visibility.baptismDatePicker = true"
-      />
+v-model="baptismDateFieldValue" readonly label="Baptism Date" placeholder="Choose Baptism Date"
+        @click="d.visibility.baptismDatePicker = true" />
 
-      <VanPopup
-        v-model:show="d.visibility.baptismDatePicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
+      <VanPopup v-model:show="d.visibility.baptismDatePicker" destroy-on-close round position="bottom">
         <VanDatePicker
-          v-mode="d.form.baptism_date"
-          title="BaptismDate"
-          :max-date="new Date(2030, 0, 1)"
-          :columns-type="['day', 'month', 'year']"
-          :formatter="m.helper.formatter.baptismDateFormat"
-        />
+title="BaptismDate" :model-value="baptizedDatePicker" :max-date="new Date(2030, 0, 1)"
+          :columns-type="['day', 'month', 'year']" :formatter="m.helper.formatter.baptismDateFormat"
+          @confirm="m.handle.click.confirmBaptizedDatePicker" @cancel="d.visibility.baptismDatePicker = false" />
+
         <!-- v-model="d.form.baptism_date"  -->
         <!-- :min-date="new Date(1800, 0, 1)" -->
       </VanPopup>
@@ -288,6 +168,15 @@
       <!-- e.o BAPTISM DATE -->
     </VanCellGroup>
     <!-- e.o BAPTISM -->
+    <div style="margin: 16px; display: flex; gap: 16px;">
+      <VanButton round block type="default" style="flex: 1;" @click="$router.back">
+        Cancel
+      </VanButton>
+      <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
+        Submit
+      </VanButton>
+    </div>
+
   </div>
 </template>
 
@@ -306,8 +195,9 @@ import { useContactStore } from "~/stores/useContactStore"
 import type { Numeric } from "vant/es/utils"
 import type { GenderTypes, AgeGroups } from "~/types"
 
-import { RoutePaths } from "~/types/index.d"
+import { RoutePaths, type BrowseCondition } from "~/types/index.d"
 import { useConsumeApi } from "~/composables/useConsumeApi"
+import { useAuthStore } from "~/stores/useAuthStore"
 
 const consume = {
   contacts: useConsumeApi(RoutePaths.CONTACTS),
@@ -321,6 +211,11 @@ const s = {
   contact: useContactStore(),
 }
 
+const route = useRoute()
+const router = useRouter()
+const contactID = route.query.id ? Number(route.query.id) : undefined
+const helpers = useHelpers()
+const authUser = useAuthStore().authUser
 const contactStatusFieldValue = ref("")
 const faithStatusFieldValue = ref("")
 const ageGroupFieldValue = ref("")
@@ -332,9 +227,13 @@ const baptismDateFieldValue = ref("")
 const contactStatusID = ref<Numeric[]>([])
 const faithStatusID = ref<Numeric[]>([])
 const ageGroupID = ref<AgeGroups[]>([])
-const peopleGroupID = ref([])
-const faithMilestoneID = ref([])
+const peopleGroupID = ref<Numeric[]>([])
+const faithMilestoneID = ref<Numeric[]>([])
 const baptizedByID = ref<Numeric[]>([])
+const baptizedDatePicker = ref<any[]>([])
+
+const faithMilestones = ref<number[]>([])
+const communicationForm = ref<string[]>([])
 
 const d = reactive({
   visibility: {
@@ -353,10 +252,12 @@ const d = reactive({
     faith_status_id: null,
     gender: null,
     age: null,
-    people_group: [],
-    contact_communication_platforms: [] as string[],
+    people_group: [] as number[],
+    faith_milestones: [] as number[],
+    contact_communication_platforms: [] as any[],
     baptized_by: null,
     baptism_date: null,
+    assigned_to: null,
   } as ContactFormModel,
 
   currentCommunicationPlatform: {
@@ -410,6 +311,7 @@ const m = {
         selectedOptions: SelectedOptionsType[]
       }) => {
         peopleGroupFieldValue.value = selectedOptions[0].text
+
         d.visibility.peopleGroupPicker = false
       },
 
@@ -418,13 +320,13 @@ const m = {
       }: {
         selectedOptions: SelectedOptionsType[]
       }) => {
-        console.log(selectedOptions[0])
         faithMilestoneFieldValue.value = selectedOptions[0].text
+        d.form.faith_milestones = faithMilestoneID.value as number[]
         d.visibility.faithMielstonePicker = false
       },
 
       checkbox: () => {
-        console.log(peopleGroupID.value)
+
 
         const options = s.peopleGroup.options as {
           text: string
@@ -444,12 +346,13 @@ const m = {
           })
 
         peopleGroupFieldValue.value = matched.join(", ")
-
-        console.log("Matched Options:", matched)
+        if (!d.form.people_group) {
+          d.form.people_group = []
+        }
+        d.form.people_group = peopleGroupID.value as number[]
       },
 
       faithMilestoneCheckbox: () => {
-        console.log(faithMilestoneID.value)
 
         const options = s.faithMilestone.options as {
           text: string
@@ -467,20 +370,28 @@ const m = {
           .map((fmo: any) => {
             return fmo.text
           })
+        // d.form.faith_milestones = faithMilestoneID.value as number[]
+        faithMilestones.value = faithMilestoneID.value as number[]
+        d.form.faith_milestones = faithMilestones.value
+
 
         faithMilestoneFieldValue.value = matched.join(", ")
-        console.log("Matched Options:", matched)
       },
 
       communicationPlatform: (cp: any) => {
         d.visibility.communicationPlatformActionSheet = true
         d.currentCommunicationPlatform = cp
-        console.log("Clicked Communication Platform:", cp)
       },
 
       confirmCommunicationPlatformPicker: (asdf: any) => {
-        d.form.contact_communication_platforms ||= [] as string[]
-        d.form.contact_communication_platforms.push(asdf)
+        communicationForm.value.push(asdf)
+        if (!d.form.contact_communication_platforms) {
+          d.form.contact_communication_platforms = []
+        }
+        d.form.contact_communication_platforms.push({
+          communication_platform_id: d.currentCommunicationPlatform.id,
+          value: asdf,
+        })
       },
 
       confirmBaptizedByPicker: ({
@@ -492,12 +403,48 @@ const m = {
         baptizedByFieldValue.value = selectedOptions[0].text
         d.visibility.baptizedByPicker = false
       },
+      confirmBaptizedDatePicker: ({
+        selectedOptions,
+      }: {
+        selectedOptions: SelectedOptionsType[]
+      }) => {
+        const day = selectedOptions[0]
+        const month = selectedOptions[1]
+        const year = selectedOptions[2]
+        //      d.form.baptism_date = selectedOptions[0].value as string
+        d.form.baptism_date = `${year.value}-${month.value}-${day.value}`
+
+        baptismDateFieldValue.value = `${day.text} ${month.text} ${year.text}`
+        baptizedDatePicker.value = [day.value, month.value, year.value]
+        d.visibility.baptismDatePicker = false
+
+      },
     },
 
     emits: {
-      updatedCommunicationPlatformPicker: (e: any) => {
-        d.form.contact_communication_platforms = e
+      updatedCommunicationPlatformPicker: (e: any, editingValue: any) => {
+        communicationForm.value = e
+        if (!d.form.contact_communication_platforms) {
+          d.form.contact_communication_platforms = []
+        }
+        const index = d.form.contact_communication_platforms.findIndex(
+          (p) => p.value === editingValue.originalValue,
+        )
+        if (index !== -1) {
+          d.form.contact_communication_platforms[index].value = editingValue.value
+        }
       },
+      deletedCommunicationPlatformPicker: (editingValue: any) => {
+        if (!d.form.contact_communication_platforms) {
+          d.form.contact_communication_platforms = []
+        }
+        const index = d.form.contact_communication_platforms.findIndex(
+          (p) => p.value === editingValue.originalValue
+        )
+        if (index !== -1) {
+          d.form.contact_communication_platforms.splice(index, 1)
+        }
+      }
     },
   },
 
@@ -516,7 +463,6 @@ const m = {
     formatter: {
       baptismDateFormat: (type: any, options: any) => {
         if (type === "month") {
-          console.log(options.text)
 
           switch (options.text) {
             case "01":
@@ -564,9 +510,110 @@ const m = {
   },
 }
 
+onMounted(async () => {
+  if (contactID) {
+    const bc = {
+      where: JSON.stringify([{
+        key: 'id',
+        value: contactID,
+      }]),
+      with: `["faithMilestones", "status", "faithStatus", "assignedTo", "coachedBy", "peopleGroup", "baptizedBy", "contactCommunicationPlatforms"]`
+    } as BrowseCondition
+
+    const res = await consume.contacts.browse(bc)
+    console.log("Res Data", res.data)
+    if (res.data && res.data.length > 0) {
+      d.form = res.data[0]
+      if (d.form.contact_status_id) {
+        helpers.setFromOptions({
+          options: s.settings.options.contact,
+          selectedValue: d.form.contact_status_id,
+          textField: contactStatusFieldValue,
+          idField: contactStatusID,
+        })
+      }
+      if (d.form.faith_status_id) {
+        helpers.setFromOptions({
+          options: s.settings.options.faith,
+          selectedValue: d.form.faith_status_id,
+          textField: faithStatusFieldValue,
+          idField: faithStatusID,
+        })
+      }
+      if (d.form.age) {
+        ageGroupFieldValue.value = d.form.age
+      }
+      if (d.form.faith_milestones && d.form.faith_milestones.length > 0) {
+        const newVal = d.form.faith_milestones.map((item: any) => item.name).join(', ')
+        d.form.faith_milestones = d.form.faith_milestones.map((item: any) => item.id)
+        faithMilestoneFieldValue.value = newVal
+        faithMilestoneID.value = d.form.faith_milestones
+      }
+      if (d.form.people_group && d.form.people_group.length > 0) {
+        const newVal = d.form.people_group.map((item: any) => item.name).join(', ')
+        d.form.people_group = d.form.people_group.map((item: any) => item.id)
+        peopleGroupFieldValue.value = newVal
+        peopleGroupID.value = d.form.people_group
+      }
+      if (res.data && res.data[0].baptized_by) {
+        const baptizedBy = res.data[0].baptized_by
+        d.form.baptized_by = baptizedBy.id
+        if (d.form.baptized_by) {
+          helpers.setFromOptions({
+            options: contactList.value,
+            selectedValue: d.form.baptized_by,
+            textField: baptizedByFieldValue,
+            idField: baptizedByID,
+          })
+        }
+      }
+      if (d.form && d.form.baptism_date) {
+        const date = new Date(d.form.baptism_date * 1000)
+        const displayDate = new Intl.DateTimeFormat('en-GB', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }).format(date)
+
+        const dbDate = date.toISOString().split('T')[0]
+        baptismDateFieldValue.value = displayDate
+        d.form.baptism_date = dbDate
+        baptizedDatePicker.value = [
+          date.getDate(),
+          date.getMonth() + 1,
+          date.getFullYear(),
+        ]
+      }
+      if (d.form.contact_communication_platforms && d.form.contact_communication_platforms?.length > 0) {
+        console.log("d.form.contact_communication_platforms", d.form.contact_communication_platforms)
+        communicationForm.value = d.form.contact_communication_platforms.map((item: any) => item.value)
+        d.form.contact_communication_platforms = d.form.contact_communication_platforms.map(item => ({
+          communication_platform_id: item.communication_platform_id,
+          value: item.value
+        }))
+      }
+    }
+  }
+})
+
 const contactList = computed(() => {
   return d.contacts.map((pg: any) => ({ text: pg.name, value: pg.id }))
 })
 
 m.consume.contacts()
+const onSubmit = async () => {
+  d.form.assigned_to = authUser.id
+  let response
+  if (contactID) {
+    const editChurchConsume = useConsumeApi(RoutePaths.CONTACTS, contactID)
+    response = await editChurchConsume.save(d.form)
+  } else {
+    response = await consume.contacts.save(d.form)
+  }
+  if (response) {
+    router.back()
+  }
+}
+
+
 </script>

@@ -1,9 +1,5 @@
 <template>
-  <VanActionSheet
-    v-model:show="d.show"
-    :title="p.platform.name ?? ''"
-    @close="m.handle.beforeClose"
-  >
+  <VanActionSheet v-model:show="d.show" :title="p.platform.name ?? ''" @close="m.handle.beforeClose">
     <VanCellGroup>
       <VanSwipeCell v-for="(pf, i) in platformForm" :key="pf">
         <template #left>
@@ -13,39 +9,19 @@
         <VanCell :title="pf" />
 
         <template #right>
-          <VanButton
-            square
-            type="primary"
-            text="Edit"
-            @click="m.handle.click.btn.editPlatform(pf, i)"
-          />
-          <VanButton square type="danger" text="Delete" />
+          <VanButton square type="primary" text="Edit" @click="m.handle.click.btn.editPlatform(pf, i)" />
+          <VanButton square type="danger" text="Delete" @click="m.handle.click.btn.deletePlatform(pf, i)" />
         </template>
       </VanSwipeCell>
 
-      <VanPopup
-        v-model:show="d.visibility.editPopup"
-        position="bottom"
-        style="height: 30%"
-        closeable
-        round
-      >
+      <VanPopup v-model:show="d.visibility.editPopup" position="bottom" style="height: 30%" closeable round>
         <VanCellGroup title="Edit">
           <VanCell>
-            <VanField
-              v-model="d.editingValue.value"
-              placeholder="Enter new value"
-              label="Value"
-            />
+            <VanField v-model="d.editingValue.value" placeholder="Enter new value" label="Value" />
           </VanCell>
 
           <VanCell>
-            <VanButton
-              block
-              type="warning"
-              size="small"
-              @click="m.handle.click.btn.edit"
-            >
+            <VanButton block type="warning" size="small" @click="m.handle.click.btn.edit">
               Edit
             </VanButton>
           </VanCell>
@@ -54,34 +30,19 @@
     </VanCellGroup>
 
     <VanCell>
-      <VanField
-        v-if="d.visibility.addNew"
-        v-model="d.newValue"
-        placeholder="Enter new value"
-      />
+      <VanField v-if="d.visibility.addNew" v-model="d.newValue" placeholder="Enter new value" />
     </VanCell>
 
     <VanCell>
       <div v-if="!d.visibility.addNew">
         <VanCell>
-          <VanButton
-            type="success"
-            block
-            size="small"
-            @click="d.visibility.addNew = true"
-          >
+          <VanButton type="success" block size="small" @click="d.visibility.addNew = true">
             Add {{ p.platform.name }}
           </VanButton>
         </VanCell>
 
         <VanCell>
-          <VanButton
-            type="primary"
-            block
-            plain
-            size="small"
-            @click="d.show = false"
-          >
+          <VanButton type="primary" block plain size="small" @click="d.show = false">
             Close
           </VanButton>
         </VanCell>
@@ -89,24 +50,13 @@
 
       <div v-else>
         <VanCell>
-          <VanButton
-            type="success"
-            block
-            size="small"
-            @click="m.handle.click.btn.addNew"
-          >
+          <VanButton type="success" block size="small" @click="m.handle.click.btn.addNew">
             Add
           </VanButton>
         </VanCell>
 
         <VanCell>
-          <VanButton
-            type="primary"
-            block
-            size="small"
-            plain
-            @click="m.handle.click.btn.cancelAddNew"
-          >
+          <VanButton type="primary" block size="small" plain @click="m.handle.click.btn.cancelAddNew">
             Cancel
           </VanButton>
         </VanCell>
@@ -118,7 +68,7 @@
 <script lang="ts" setup>
 import type { CommunicationPlatformFormModel } from "~/types"
 
-const emit = defineEmits(["close", "added", "updated"])
+const emit = defineEmits(["close", "added", "updated", "deleted"])
 const p = withDefaults(
   defineProps<{
     platform: CommunicationPlatformFormModel
@@ -129,6 +79,7 @@ const p = withDefaults(
     show: false,
   },
 )
+
 
 const platformForm = ref({})
 
@@ -164,18 +115,28 @@ const m = {
 
         editPlatform: (platform: string, index: number) => {
           d.visibility.editPopup = true
+
           d.editingValue = {
             value: platform,
             originalValue: platform,
             index: index,
           }
         },
+        deletePlatform: (platform: string, index: number) => {
+          d.form.splice(index, 1)
+          d.editingValue = {
+            value: platform,
+            originalValue: platform,
+            index: index,
+          }
+          emit("deleted", d.editingValue)
+          console.log("editingValue ", d.editingValue)
+
+        },
 
         edit: () => {
-          console.log(d.editingValue)
           d.form[d.editingValue.index] = d.editingValue.value
-          // console.log(d.form[d.editingValue.originalValue])
-          // d.form[d.editingValue.originalValue as string] = d.editingValue.value
+          emit("updated", d.form, d.editingValue)
 
           d.visibility.editPopup = false
         },
@@ -183,7 +144,7 @@ const m = {
     },
 
     updateModelValue: () => {
-      emit("updated", d.form)
+      emit("updated", d.form, p.form)
     },
   },
 }
@@ -200,6 +161,7 @@ watch(
   (newValue) => {
     d.form = newValue ? newValue : d.form
     platformForm.value = newValue
+    console.log("D form", d.form)
   },
   { immediate: true },
 )

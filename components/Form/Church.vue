@@ -12,133 +12,69 @@
 
         <!-- COMMUNITY -->
         <VanField
-          v-model="communityFieldValue"
-          readonly
-          label="Community"
-          placeholder="Select a community"
-          @click="d.visibility.communityPicker = true"
-          required
-          :rules="[{ required: true, message: 'Community is required' }]"
-        />
-        <VanPopup 
-          v-model:show="d.visibility.communityPicker" 
-          destroy-on-close 
-          round
-          position="bottom"
-        >
+v-model="communityFieldValue" readonly label="Community" placeholder="Select a community"
+          :rules="[{ required: true, message: 'Community is required' }]" required
+          @click="d.visibility.communityPicker = true" />
+        <VanPopup v-model:show="d.visibility.communityPicker" destroy-on-close round position="bottom">
           <VanPicker
-            :model-value="communityID"
-            :columns="d.options.communities"
-            @cancel="d.visibility.communityPicker = false"
-            @confirm="m.handle.click.confirmCommunityPicker"
-          />
+:model-value="communityID" :columns="d.options.communities"
+            @cancel="d.visibility.communityPicker = false" @confirm="m.handle.click.confirmCommunityPicker" />
         </VanPopup>
         <!-- e.o COMMUNITY -->
 
         <!-- CHURCH PLANTERS -->
-        <VanField label="Church Planters" :model-value="auth.authUser.name" readonly /> 
-       <!-- e.o CHURCH PLANTERS -->
+        <VanField label="Church Planters" :model-value="auth.authUser.name" readonly />
+        <!-- e.o CHURCH PLANTERS -->
 
         <!-- CHURCH NAME -->
         <VanField
-          v-model="d.form.name"
-          label="Church Name"
-          placeholder="Enter church name"
-          required
-          :rules="[{ required: true, message: 'Church name is required' }]"
-        />
+v-model="d.form.name" label="Church Name" placeholder="Enter church name" required
+          :rules="[{ required: true, message: 'Church name is required' }]" />
         <!-- e.o CHURCH NAME -->
 
         <!-- CHURCH DESCRIPTION -->
-         <VanField
-          v-model="d.form.description"
-          label="Church Description"
-          placeholder="Enter church description"
-        />                
+        <VanField v-model="d.form.description" label="Church Description" placeholder="Enter church description" />
         <!-- e.o CHURCH DESCRIPTION -->
 
         <!-- PARENT CHURCH -->
         <VanField
-          v-model="parentChurchFieldValue"
-          readonly
-          label="Parent Church"
-          placeholder="Select a parent church"
-          @click="d.visibility.parentChurchPicker = true"
-        />
-        <VanPopup 
-          v-model:show="d.visibility.parentChurchPicker" 
-          destroy-on-close 
-          round
-          position="bottom"
-        >
+v-model="parentChurchFieldValue" readonly label="Parent Church" placeholder="Select a parent church"
+          @click="d.visibility.parentChurchPicker = true" />
+        <VanPopup v-model:show="d.visibility.parentChurchPicker" destroy-on-close round position="bottom">
           <VanPicker
-            :model-value="parentChurchID"
-            :columns="d.options.parentChurches"
-            @cancel="d.visibility.parentChurchPicker = false"
-            @confirm="m.handle.click.confirmParentChurchPicker"
-          />
+:model-value="parentChurchID" :columns="d.options.parentChurches"
+            @cancel="d.visibility.parentChurchPicker = false" @confirm="m.handle.click.confirmParentChurchPicker" />
         </VanPopup>
         <!-- e.o PARENT CHURCH -->
 
         <!-- CHURCH WEBSITE -->
-        <VanField
-          v-model="d.form.website"
-          label="Church Website"
-          placeholder="Enter church website"
-        />
+        <VanField v-model="d.form.website" label="Church Website" placeholder="Enter church website" />
         <!-- e.o CHURCH WEBSITE -->
 
         <!-- FOUNDED AT -->
-          <VanField
-          v-model="d.form.founded_at"
-          readonly
-          label="Founded At"
-          placeholder="Select a date"
-          @click="d.visibility.foundedAtPicker = true"
-        />
-        <VanPopup 
-          v-model:show="d.visibility.foundedAtPicker" 
-          destroy-on-close 
-          round
-          position="bottom"
-        >
+        <VanField
+v-model="d.form.founded_at" readonly label="Founded At" placeholder="Select a date"
+          @click="d.visibility.foundedAtPicker = true" />
+        <VanPopup v-model:show="d.visibility.foundedAtPicker" destroy-on-close round position="bottom">
           <VanDatePicker
-            :model-value="foundedAt"
-            @cancel="d.visibility.foundedAtPicker = false"
-            @confirm="m.handle.click.confirmFoundedAtPicker"
-          />
+:model-value="foundedAt" @cancel="d.visibility.foundedAtPicker = false"
+            @confirm="m.handle.click.confirmFoundedAtPicker" />
         </VanPopup>
         <!-- e.o FOUNDED AT  -->
 
         <!-- DENOMINATION -->
         <VanField
-          v-model="denominationFieldValue"
-          readonly
-          label="Denomination"
-          placeholder="Select a church denomination"
-          @click="d.visibility.denominationPicker = true"
-        />
-        <VanPopup 
-          v-model:show="d.visibility.denominationPicker" 
-          destroy-on-close 
-          round
-          position="bottom"
-        >
+v-model="denominationFieldValue" readonly label="Denomination"
+          placeholder="Select a church denomination" @click="d.visibility.denominationPicker = true" />
+        <VanPopup v-model:show="d.visibility.denominationPicker" destroy-on-close round position="bottom">
           <VanPicker
-            :model-value="denominationID"
-            :columns="d.options.denominations"
-            @cancel="d.visibility.denominationPicker= false"
-            @confirm="m.handle.click.confirmDenominationPicker"
-          />
+:model-value="denominationID" :columns="d.options.denominations"
+            @cancel="d.visibility.denominationPicker = false" @confirm="m.handle.click.confirmDenominationPicker" />
         </VanPopup>
         <!-- e.o DENOMINATION` -->
 
         <!-- CHURCH PHONE NUMBER -->
-        <VanField
-          v-model="d.form.phone_number"
-          label="Church phone number"
-          placeholder="Enter Church Phone Number"
-        />
+        <VanField v-model="d.form.phone_number" label="Church phone number" placeholder="Enter Church Phone Number" />
         <!-- e.o CHURCH PHONE NUMBER -->
 
         <!-- IS VISITED -->
@@ -152,11 +88,7 @@
         <!-- CHURCH MEMBER COUNT -->
         <VanField label="Church members count">
           <template #input>
-            <VanStepper 
-              v-model="d.form.church_members_count" 
-              :min="0" 
-              :default-value="0" 
-            />
+            <VanStepper v-model="d.form.church_members_count" :min="0" :default-value="0" />
           </template>
         </VanField>
         <!-- e.o CHURCH MEMBER COUNT -->
@@ -164,11 +96,7 @@
         <!-- CONFESSION OF FAITH COUNT -->
         <VanField label="Confession of Faith Count">
           <template #input>
-            <VanStepper 
-              v-model="d.form.confession_of_faith_count" 
-              :min="0" 
-              :default-value="0" 
-            />
+            <VanStepper v-model="d.form.confession_of_faith_count" :min="0" :default-value="0" />
           </template>
         </VanField>
         <!-- e.o CONFESSION OF FAITH COUNT -->
@@ -176,21 +104,13 @@
         <!-- BAPTIZED COUNT -->
         <VanField label="Baptized count">
           <template #input>
-            <VanStepper 
-              v-model="d.form.baptism_count" 
-              :min="0" 
-              :default-value="0" 
-            />
+            <VanStepper v-model="d.form.baptism_count" :min="0" :default-value="0" />
           </template>
         </VanField>
         <!-- e.o BAPTIZED COUNT -->
 
         <!-- CURRENT PRAYERS -->
-        <VanField
-          v-model="d.form.current_prayers"
-          label="Current prayers"
-          placeholder="Please Input"
-        />
+        <VanField v-model="d.form.current_prayers" label="Current prayers" placeholder="Please Input" />
         <!-- e.o CURRENT PRAYERS -->
 
       </VanCellGroup>
@@ -203,7 +123,7 @@
           Submit
         </VanButton>
       </div>
-      
+
     </VanForm>
   </div>
 
@@ -241,7 +161,7 @@ const d = reactive({
   },
   form: {
     is_active: true,
-    church_planters: null, 
+    church_planters: null,
     name: "",
     description: "",
     founded_at: null,
@@ -253,7 +173,7 @@ const d = reactive({
     confession_of_faith_count: undefined,
     baptism_count: undefined,
     community_id: null,
-    parent_church_id: null, 
+    parent_church_id: null,
     current_prayers: ""
   } as ChurchFormModel,
   options: {
@@ -293,16 +213,15 @@ const m = {
       })
       d.options.denominations = helpers.formatOptions(denominations)
     },
-    defaultChurchPlanters: async() => {
+    defaultChurchPlanters: async () => {
       const bc = {
         all: true,
         limit: 20,
         where: JSON.stringify([{ key: "user_role_id", value: 4 }]),
       } as BrowseConditionAll
       churchPlanterList.value = await consume.churchPlanter.browse(bc, false)
-      console.log(churchPlanterList.value)
     }
-  }, 
+  },
   handle: {
     click: {
       confirmCommunityPicker: ({
@@ -328,13 +247,13 @@ const m = {
       confirmFoundedAtPicker: ({
         selectedValues
       }: {
-        selectedValues : any
+        selectedValues: any
       }) => {
         d.form.founded_at = selectedValues.join('-')
         foundedAt.value = selectedValues
         d.visibility.foundedAtPicker = false
         console.log("Selected Value ", selectedValues)
-      }, 
+      },
       confirmDenominationPicker: ({
         selectedOptions
       }: {
@@ -349,19 +268,19 @@ const m = {
   }
 }
 
-onMounted( async() => {
+onMounted(async () => {
   if (churchId) {
-     const bc = {
+    const bc = {
       where: JSON.stringify([{
         key: 'id',
         value: churchId,
       }]),
       with: `["churchPlanters"]`
 
-     } as BrowseCondition
-    const res = await consume.churches.browse(bc) 
+    } as BrowseCondition
+    const res = await consume.churches.browse(bc)
 
-    if(res.data && res.data.length > 0) {
+    if (res.data && res.data.length > 0) {
       d.form = res.data[0]
       d.form.church_planters = []
 
@@ -371,7 +290,7 @@ onMounted( async() => {
         textField: communityFieldValue,
         idField: communityID
       })
-      if(d.form.parent_church_id) {
+      if (d.form.parent_church_id) {
         helpers.setFromOptions({
           options: d.options.parentChurches,
           selectedValue: d.form.parent_church_id,
@@ -379,7 +298,7 @@ onMounted( async() => {
           idField: parentChurchID
         })
       }
-      if(d.form.denomination_id) {
+      if (d.form.denomination_id) {
         helpers.setFromOptions({
           options: d.options.denominations,
           selectedValue: d.form.denomination_id,
@@ -401,18 +320,18 @@ const onSubmit = async () => {
   if (!Array.isArray(d.form.church_planters) || d.form.church_planters.length === 0) {
     d.form.church_planters = [auth.authUser.id]
   }
-  d.form.assigned_to = auth.authUser.id 
-  let response 
+  d.form.assigned_to = auth.authUser.id
+  let response
   if (churchId) {
     const editChurchConsume = useConsumeApi(RoutePaths.CHURCHES, churchId)
     response = await editChurchConsume.save(d.form)
   } else {
-    response= await consume.churches.save(d.form)
+    response = await consume.churches.save(d.form)
   }
-  if(response) {
+  if (response) {
     router.back()
   }
- 
+
 }
 
 m.consume.defaultCommunitiesForCommunityOption()
@@ -421,4 +340,3 @@ m.consume.defaultDenominationsForDenominationOption()
 m.consume.defaultChurchPlanters()
 
 </script>
-
