@@ -3,5 +3,9 @@
   "extends": "./.nuxt/tsconfig.json",
   "compilerOptions": {
     // "noSemi": true
+    "moduleResolution": "node",
+    "paths": {
+      "@vicons/material": ["./node_modules/@vicons/material"]
+    }
   }
 }

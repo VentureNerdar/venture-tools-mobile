@@ -129,7 +129,7 @@ export interface UserRoleFormModel {
 
 export interface PeopleGroupFormModel {
   name: string | null
-  translations: Object | null
+  translations: object | null
   id?: number
   created_at?: Date
   updated_at?: Date

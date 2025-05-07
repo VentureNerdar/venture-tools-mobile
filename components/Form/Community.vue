@@ -8,16 +8,32 @@
         <!-- e.o Name -->
       </VanCellGroup>
 
-      <VanCellGroup>
+      <VanCellGroup title="Location">
         <!-- LONGITUDE -->
         <VanField v-model="d.form.location_longitude" label="Longitude" placeholder="Please Input"
-          :rules="[{ required: true, message: 'Longitude is required' }]" required />
+          :rules="[{ required: true, message: 'Longitude is required' }]" required readonly />
         <!-- e.o LONGITUDE -->
 
         <!-- LATITUDE  -->
         <VanField v-model="d.form.location_latitude" label="Latitude" placeholder="Please Input"
-          :rules="[{ required: true, message: 'Latitude is required' }]" required />
+          :rules="[{ required: true, message: 'Latitude is required' }]" required readonly />
         <!-- e.o LATITUDE -->
+         <van-dialog 
+          v-model:show="showMaps" 
+          title="Select Location"
+          :show-cancel-button="true"
+          width="90%"
+          @confirm="handleLocationConfirm"
+        >
+          <FormPartialsSelectLocation 
+            :latitude="Number(d.form.location_latitude)"
+            :longitude="Number(d.form.location_longitude)"
+            @update="m.handle.emits.handleLocationSelected" 
+          />
+        </van-dialog>
+        <div style="display: flex; justify-content: center; padding: 10px;">
+          <VanButton type="primary" @click="handleOpenMaps">Select Location</VanButton>
+        </div>
       </VanCellGroup>
 
       <!-- COMMUNITY CHECKLISTS -->
@@ -106,13 +122,19 @@
 
 
 <script lang="ts" setup>
-import { type ChurchFormModel, RoutePaths, type BrowseCondition, type CommunityChecklistFormModel, type CommunityPeacePersonFormModel, type CommunityCommittee } from '~/types/index.d'
+import { 
+  RoutePaths, 
+  type BrowseCondition, 
+
+} from '../../types/index.d'
+import type { ChurchFormModel, CommunityChecklistFormModel, CommunityCommittee, CommunityPeacePersonFormModel } from '../../types/models'
 
 
 const route = useRoute()
 const router = useRouter()
 const communityID = route.query.id ? Number(route.query.id) : undefined
 const communicationChecklist = ref<CommunityChecklistFormModel[]>([])
+const showMaps = ref(false)
 
 const d = reactive({
   form: {
@@ -148,7 +170,7 @@ const m = {
       },
       communityPeacePersonUpdated: (pp: CommunityPeacePersonFormModel) => {
         const index = d.form.peace_persons.findIndex(
-          (p) => p.name === pp.originalName,
+          (p: CommunityPeacePersonFormModel) => p.name === pp.originalName,
         )
 
         if (index !== -1) {
@@ -160,7 +182,7 @@ const m = {
       },
       communityPeacePersonDeleted: (pp: CommunityPeacePersonFormModel) => {
         const index = d.form.peace_persons.findIndex(
-          (p) => p.name === pp.name,
+          (p: CommunityPeacePersonFormModel) => p.name === pp.name,
         )
 
         if (index !== -1) {
@@ -174,7 +196,7 @@ const m = {
       },
       communityCommitteeUpdated: (pp: CommunityCommittee) => {
         const index = d.form.committees.findIndex(
-          (p) => p.name === pp.originalName,
+          (p: CommunityCommittee) => p.name === pp.originalName,
         )
 
         if (index !== -1) {
@@ -186,12 +208,18 @@ const m = {
       },
       communityCommitteeDeleted: (pp: CommunityCommittee) => {
         const index = d.form.committees.findIndex(
-          (p) => p.name === pp.name,
+          (p: CommunityCommittee) => p.name === pp.name,
         )
 
         if (index !== -1) {
           d.form.committees.splice(index, 1)
         }
+      },
+      handleLocationSelected: (location: { lat: string; lng: string }) => {
+        d.form.location_latitude = location.lat
+        d.form.location_longitude = location.lng
+        console.log("location from parent", d.form.location_latitude, d.form.location_longitude)
+        console.log("location from child", location)  
       },
     }
   }
@@ -217,6 +245,15 @@ onMounted(async () => {
   }) as CommunityChecklistFormModel[]
 
 })
+
+const handleOpenMaps = () => {
+  showMaps.value = true
+}
+
+
+const handleLocationConfirm = () => {
+  showMaps.value = false
+}
 
 const onSubmit = async () => {
   let response

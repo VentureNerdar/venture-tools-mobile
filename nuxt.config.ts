@@ -17,6 +17,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
       apiURL: "http://localhost:8000/api/",
       apiURLUnSlashed: "http://localhost:8000/api",
 
@@ -28,6 +29,18 @@ export default defineNuxtConfig({
 
       // rootURL: "http://api.venture-tools.klonotech.com/",
       // rootURLUnSlashed: "http://api.venture-tools.klonotech.com",
+    },
+  },
+  app: {
+    head: {
+      script: [
+        {
+          // src: `https://maps.googleapis.com/maps/api/js?key=${process.env.GOOGLE_MAPS_API_KEY}&libraries=places`,
+          src: `https://maps.googleapis.com/maps/api/js?libraries=places&key=${process.env.GOOGLE_MAPS_API_KEY}`,
+          async: true,
+          defer: true,
+        },
+      ],
     },
   },
 })
