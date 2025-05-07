@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanNavBar
-fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.back()"
+fixed :left-arrow="showBackButton" :title="pageName.translated" @click-left="() => $router.back()"
       @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined">
       <template #right>
         <span v-if="hasCreateButton">
@@ -20,7 +20,7 @@ fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.
           <PrayingHands style="width: 18px; height: 18px" />
         </template>
 
-        Prayers
+        {{ h.translate("prayers") }}
       </VanTabbarItem>
 
       <VanTabbarItem replace to="/contacts">
@@ -28,7 +28,7 @@ fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.
           <PersonRound style="width: 18px; height: 18px" />
         </template>
 
-        Contacts
+        {{ h.translate("contacts") }}
       </VanTabbarItem>
 
       <VanTabbarItem replace to="/churches">
@@ -36,7 +36,7 @@ fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.
           <ChurchRound style="width: 18px; height: 18px" />
         </template>
 
-        Churches
+        {{ h.translate("churches") }}
       </VanTabbarItem>
 
       <VanTabbarItem replace to="/communities">
@@ -44,7 +44,7 @@ fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.
           <GroupRound style="width: 18px; height: 18px" />
         </template>
 
-        Communities
+        {{ h.translate("communities") }}
       </VanTabbarItem>
 
       <VanTabbarItem replace to="/settings">
@@ -52,7 +52,7 @@ fixed :left-arrow="showBackButton" :title="pageName" @click-left="() => $router.
           <SettingsRound style="width: 18px; height: 18px" />
         </template>
 
-        Settings
+        {{ h.translate("settings") }}
       </VanTabbarItem>
     </VanTabbar>
   </div>
@@ -69,24 +69,32 @@ import {
 import { PrayingHands } from "@vicons/fa"
 
 const route = useRoute()
+const h = useHelpers()
 
 const pageName = computed(() => {
   const name = (route.name ? route.name : "") as string
-
   const isEdit = route.query.id !== undefined
+  const moduleName = route.query.moduleName as string | undefined
 
-  let pageName = name[0].toUpperCase() + name.slice(1)
+  let rawPageName = name[0].toUpperCase() + name.slice(1)
+  
 
-  if (pageName === "Create") {
+  if (rawPageName === "Create") {
     if (isEdit) {
-      pageName = "Edit" + (route.query.moduleName ? " " + route.query.moduleName : "")
+      rawPageName = "Edit" + (moduleName ? " " + moduleName : "")
     } else {
-      pageName =
-        pageName + (route.query.moduleName ? " " + route.query.moduleName : "")
+      rawPageName += moduleName ? " " + moduleName : ""
     }
-
   }
-  return pageName
+
+    let translated = h.translate(h.toSnakeCase(rawPageName))
+    if(rawPageName == 'Settings-profile'){
+      translated = h.translate('profile')
+    }
+  return {
+    raw: rawPageName,
+    translated,
+  }
 })
 
 const m = {
@@ -96,7 +104,7 @@ const m = {
         navigateTo({
           path: "/createForm",
           query: {
-            moduleName: pageName.value,
+            moduleName: pageName.value.raw,
           },
         })
       },

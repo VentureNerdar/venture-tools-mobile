@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanCellGroup>
-      <VanSearch show-action v-model="searchWord" placeholder="Search churches by name" @search="handleSearch" shape="round" >
+      <VanSearch show-action v-model="searchWord" :placeholder="h.translate('search_churches_by_name')" @search="handleSearch" shape="round" >
         <template #action>
             <div style="display: flex; align-items: center; height: 100%;">
               <template v-if="toggleTrash">
@@ -18,14 +18,23 @@
         </template>
       </VanSearch>
 
+      <div v-if="toggleTrash && !d.churches.length" style="margin-top: 10px;">
+        <VanField
+           type="textarea"
+           :placeholder="h.translate('no_trashed_church_found')"
+           rows="1"
+           autosize
+        />
+      </div>
+
       <VanSwipeCell v-for="(church, index) in d.churches" :key="index">
         <template v-if="toggleTrash" #right>
-          <VanButton square type="primary" text="Restore" @click="handleRestore(church.id)" />
-          <VanButton square type="danger" text="Destroy" @click="handleDestroy(church.id)" />
+          <VanButton square type="primary" :text="h.translate('restore')" @click="handleRestore(church.id)" />
+          <VanButton square type="danger" :text="h.translate('destroy')" @click="handleDestroy(church.id)" />
         </template>
         <template v-else #right>
-          <VanButton square type="primary" text="Edit" @click="handleEdit(church.id)" />
-          <VanButton square type="danger" text="Delete" @click="handleDelete(church.id)" />
+          <VanButton square type="primary" :text="h.translate('edit')" @click="handleEdit(church.id)" />
+          <VanButton square type="danger" :text="h.translate('delete')" @click="handleDelete(church.id)" />
         </template>
         <VanCell :title="church.name" />
       </VanSwipeCell>
@@ -42,6 +51,8 @@ definePageMeta({
   layout: "application",
   name: "Churches",
 })
+
+const h = useHelpers()
 
 const searchWord = ref("")
 const toggleTrash = ref(false)

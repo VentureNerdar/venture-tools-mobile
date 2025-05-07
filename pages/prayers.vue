@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanTabs :active="activeTab" style="margin-top: 46px">
-      <VanTab title="Contacts" name="contacts">
+      <VanTab :title="helpers.translate('contacts')" name="contacts">
         <VanList>
           <VanCell
             v-for="(prayer, index) in d.prayers.assignedToContactPrayers"
@@ -12,7 +12,7 @@
         </VanList>
       </VanTab>
 
-      <VanTab title="Churches" name="churches">
+      <VanTab :title="helpers.translate('churches')" name="churches">
         <VanList>
           <VanCell
             v-for="(prayer, index) in d.prayers.assignedToChurchPrayers"
@@ -26,12 +26,13 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { RoutePaths, type BrowseConditionAll } from '~/types/index.d';
+import { RoutePaths, type BrowseConditionAll } from '~/types/index.d'
 definePageMeta({
   layout: "application",
-});
+})
 
-const activeTab = ref(0);
+const activeTab = ref(0)
+const helpers = useHelpers()
 
 
 type Prayers = {

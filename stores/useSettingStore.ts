@@ -6,6 +6,7 @@ export const useSettingStore = defineStore("setting", () => {
   const pinNumber = JSON.parse(localStorage.getItem("PINNumber") || "false")
   const maskOption = JSON.parse(localStorage.getItem("maskOption") || "false")
 
+
   const userPreferredLanguage = ref<LanguageFormModel>(
     JSON.parse(localStorage.getItem("user_preferred_language") || "null"),
   )

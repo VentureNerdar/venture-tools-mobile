@@ -1,45 +1,45 @@
 <template>
   <div>
-    <VanCellGroup title="Statuses">
+    <VanCellGroup :title="h.translate('statuses')">
       <!-- CONTACT STATUS -->
       <VanField
-v-model="contactStatusFieldValue" readonly label="Contact" placeholder="Choose Contact Status"
+v-model="contactStatusFieldValue" readonly :label="h.translate('contact')" :placeholder="h.translate('choose_contact_status')"
         @click="d.visibility.contactPicker = true" />
       <VanPopup v-model:show="d.visibility.contactPicker" destroy-on-close round position="bottom">
         <VanPicker
-:model-value="contactStatusID" title="Title" :columns="s.settings.options.contact"
+:model-value="contactStatusID" :title="h.translate('title')" :columns="s.settings.options.contact"
           @cancel="d.visibility.contactPicker = false" @confirm="m.handle.click.confirmContactStatusPicker" />
       </VanPopup>
       <!-- e.o CONTACT STSATUS -->
 
       <!-- FAITH STATUS -->
       <VanField
-v-model="faithStatusFieldValue" readonly label="Faith" placeholder="Choose Faith Status"
+v-model="faithStatusFieldValue" readonly :label="h.translate('faith_status')" :placeholder="h.translate('choose_faith_status')"
         @click="d.visibility.faithStatusPicker = true" />
       <VanPopup v-model:show="d.visibility.faithStatusPicker" destroy-on-close round position="bottom">
         <VanPicker
-:model-value="faithStatusID" title="Title" :columns="s.settings.options.faith"
+:model-value="faithStatusID" :title="h.translate('title')" :columns="s.settings.options.faith"
           @cancel="d.visibility.faithStatusPicker = false" @confirm="m.handle.click.confirmFaithStatusPicker" />
       </VanPopup>
       <!-- e.o FAITH STATUS -->
     </VanCellGroup>
 
-    <VanCellGroup title="General Information">
+    <VanCellGroup :title="h.translate('general_information')">
       <!-- NAME -->
       <VanField
-v-model="d.form.name" label="Name" placeholder="Enter Name" required
+v-model="d.form.name" :label="h.translate('name')" :placeholder="h.translate('enter_name')" required
         :rules="[{ required: true, message: 'Name is required' }]" />
       <!-- e.o NAME -->
 
       <!-- e.o NICKNAME -->
-      <VanField v-model="d.form.nickname" label="Nickname" placeholder="Enter Nickname" />
+      <VanField v-model="d.form.nickname" :label="h.translate('nickname')" :placeholder="h.translate('enter_nickname')" />
       <!-- e.o NICKNAME -->
 
       <!-- GENDER -->
-      <VanCellGroup title="Gender">
+      <VanCellGroup :title="h.translate('gender')">
         <VanRadioGroup v-model="d.form.gender" required :rules="[{ required: true, message: 'Gender is required' }]">
           <VanCellGroup v-for="g in s.settings.options.genders" :key="g.value" inset>
-            <VanCell :title="g.text" clickable @click="d.form.gender = g.value as GenderTypes">
+            <VanCell :title="h.translate(h.toSnakeCase(g.text))" clickable @click="d.form.gender = g.value as GenderTypes">
               <template #right-icon>
                 <van-radio :name="g.value" />
               </template>
@@ -53,19 +53,19 @@ v-model="d.form.name" label="Name" placeholder="Enter Name" required
 
       <!-- AGE GROUPS -->
       <VanField
-v-model="ageGroupFieldValue" readonly label="Age Group" placeholder="Choose Age" required
-        :rules="[{ required: true, message: 'Age is required' }]" @click="d.visibility.ageGroupPicker = true" />
+v-model="ageGroupFieldValue" readonly :label="h.translate('age_group')" :placeholder="h.translate('choose_age_group')" required
+        :rules="[{ required: true, message: h.translate('age_is_required') }]" @click="d.visibility.ageGroupPicker = true" />
       <VanPopup v-model:show="d.visibility.ageGroupPicker" destroy-on-close round position="bottom">
         <VanPicker
-:model-value="ageGroupID" title="Title" :columns="s.settings.options.ageGroups"
+:model-value="ageGroupID" :title="h.translate('title')" :columns="s.settings.options.ageGroups"
           @cancel="d.visibility.ageGroupPicker = false" @confirm="m.handle.click.confirmAgeGroupPicker" />
       </VanPopup>
       <!-- e.o AGE GROUPS -->
 
       <!-- PEOPLE GROUP -->
       <VanField
-v-model="peopleGroupFieldValue" readonly autosize label="People Group" label-align="top"
-        placeholder="Choose People Group" @click="d.visibility.peopleGroupPicker = true" />
+v-model="peopleGroupFieldValue" readonly autosize :label="h.translate('people_group')" label-align="top"
+        :placeholder="h.translate('choose_people_group')" @click="d.visibility.peopleGroupPicker = true" />
       <VanPopup
 v-model:show="d.visibility.peopleGroupPicker" destroy-on-close closeable round position="bottom"
         style="height: 400px" @cancel="d.visibility.peopleGroupPicker = false"
@@ -82,7 +82,7 @@ v-model:show="d.visibility.peopleGroupPicker" destroy-on-close closeable round p
     </VanCellGroup>
 
     <!-- CONTACT PLAGFORMS -->
-    <VanCellGroup title="Contact Platforms">
+    <VanCellGroup :title="h.translate('contact_platforms')">
       <VanCell
 v-for="cp in s.communicationPlatform.communicationPlatforms" :key="cp.id" :title="cp.name" is-link
         @click="m.handle.click.communicationPlatform(cp)" />
@@ -99,10 +99,10 @@ v-for="cp in s.communicationPlatform.communicationPlatforms" :key="cp.id" :title
     <!-- e.o CONTACT PLATFORMS -->
 
     <!-- FAITH MILESTONES -->
-    <VanCellGroup title="Faith Milestones">
+    <VanCellGroup :title="h.translate('faith_milestones')">
       <VanField
-v-model="faithMilestoneFieldValue" readonly autosize label="Faith Milestones" label-align="top"
-        placeholder="Choose Faith Milestones" @click="d.visibility.faithMielstonePicker = true" />
+v-model="faithMilestoneFieldValue" readonly autosize :label="h.translate('faith_milestones')" label-align="top"
+        :placeholder="h.translate('choose_faith_milestones')" @click="d.visibility.faithMielstonePicker = true" />
       <VanPopup
 v-model:show="d.visibility.faithMielstonePicker" destroy-on-close closeable round position="bottom"
         style="height: 400px" @cancel="d.visibility.faithMielstonePicker = false"
@@ -136,15 +136,15 @@ width="26" height="26" style="margin-right: 10px"
     <!-- e.o FAITH MILESTONES -->
 
     <!-- BAPTISM -->
-    <VanCellGroup title="Baptism">
+    <VanCellGroup :title="h.translate('baptism')">
       <!-- BAPTIZED BY -->
       <VanField
-v-model="baptizedByFieldValue" readonly label="Baptized By" placeholder="Choose Baptized By"
+v-model="baptizedByFieldValue" readonly :label="h.translate('baptized_by')" :placeholder="h.translate('choose_baptized_by')"
         @click="d.visibility.baptizedByPicker = true" />
 
       <VanPopup v-model:show="d.visibility.baptizedByPicker" destroy-on-close round position="bottom">
         <VanPicker
-:model-value="baptizedByID" title="Baptized By" :columns="contactList"
+:model-value="baptizedByID" :title="h.translate('baptized_by')" :columns="contactList"
           @cancel="d.visibility.baptizedByPicker = false" @confirm="m.handle.click.confirmBaptizedByPicker" />
       </VanPopup>
       <!-- e.o BAPTIZED BY -->
@@ -152,7 +152,7 @@ v-model="baptizedByFieldValue" readonly label="Baptized By" placeholder="Choose 
       <!-- :model-value="baptizedByID"  -->
       <!-- BAPTISM DATE -->
       <VanField
-v-model="baptismDateFieldValue" readonly label="Baptism Date" placeholder="Choose Baptism Date"
+v-model="baptismDateFieldValue" readonly :label="h.translate('baptism_date')" :placeholder="h.translate('choose_baptism_date')"
         @click="d.visibility.baptismDatePicker = true" />
 
       <VanPopup v-model:show="d.visibility.baptismDatePicker" destroy-on-close round position="bottom">
@@ -213,6 +213,7 @@ const s = {
 
 const route = useRoute()
 const router = useRouter()
+const h = useHelpers()
 const contactID = route.query.id ? Number(route.query.id) : undefined
 const helpers = useHelpers()
 const authUser = useAuthStore().authUser

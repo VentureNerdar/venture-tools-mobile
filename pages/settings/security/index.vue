@@ -1,7 +1,7 @@
 <template>
   <VanCellGroup>
-    <VanCell title="PIN Number" is-link to="/settings/security/pin" />
-    <VanCell title="Application Mask">
+    <VanCell :title="h.translate('pin_number')" is-link to="/settings/security/pin" />
+    <VanCell :title="h.translate('application_mask')">
       <template #right-icon>
         <VanSwitch v-model="d.mask" size="20px" />
       </template>
@@ -13,9 +13,10 @@
 definePageMeta({
   layout: "application",
   name: "Security",
-});
+})
 
 const d = reactive({
   mask: false,
-});
+})
+const h = useHelpers()
 </script>

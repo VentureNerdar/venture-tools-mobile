@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="landing-title">Venture Tools</div>
+    <div class="landing-title">{{h.translate("venture_tools")}}</div>
 
     <div class="wrap-links">
       <VanRow :gutter="[20, 20]" justify="space-between">
@@ -11,7 +11,7 @@
                 <div class="icons">
                   <PrayingHands style="width: 30px" />
                 </div>
-                <div>Prayers</div>
+                <div>{{ h.translate("prayers") }}</div>
               </div>
             </NuxtLink>
           </div>
@@ -22,7 +22,7 @@
               <div class="icons">
                 <PersonRound style="width: 30px" />
               </div>
-              <div>Contacts</div>
+              <div>{{ h.translate("contacts") }}</div>
             </div>
           </NuxtLink>
         </VanCol>
@@ -32,7 +32,7 @@
               <div class="icons">
                 <ChurchRound style="width: 30px" />
               </div>
-              <div>Churches</div>
+              <div>{{ h.translate("churches") }}</div>
             </div>
           </NuxtLink>
         </VanCol>
@@ -42,7 +42,7 @@
               <div class="icons">
                 <GroupRound style="width: 30px" />
               </div>
-              <div>Communities</div>
+              <div>{{ h.translate("communities") }}</div>
             </div>
           </NuxtLink>
         </VanCol>
@@ -65,6 +65,23 @@ import {
   SettingsRound,
 } from "@vicons/material"
 import { PrayingHands } from "@vicons/fa"
+
+import { useAuthStore } from "~/stores/useAuthStore"
+import { useLanguageStore } from "~/stores/useLanguageStore"
+import { useSettingStore } from "~/stores/useSettingStore"
+
+const authUser = useAuthStore().authUser
+const languages = useLanguageStore().languages
+
+onMounted(() => {
+  const userPreferredLanguage = languages.find((language:any) => language.id === authUser.preferred_language_id)
+  console.log("+++++++++", userPreferredLanguage)
+  if(userPreferredLanguage) {
+    useSettingStore().setUserPreferredLanguage(userPreferredLanguage)
+  }
+})
+
+const h = useHelpers()
 </script>
 
 <style lang="scss" scoped>

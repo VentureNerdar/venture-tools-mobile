@@ -1,6 +1,6 @@
 <template>
   <div>
-     <VanField center clearable label="Committees">
+     <VanField center clearable :label="h.translate('committees')">
       <template #input>
         <VanButton icon="plus" type="primary" @click="m.handle.click.modal"/>
       </template>
@@ -8,7 +8,7 @@
     
     <VanDialog 
       v-model:show="d.visibility.modal" 
-      title="Add Community Committee" 
+      :title="h.translate('add_community_committee')" 
       show-cancel-button
       @confirm="m.handle.click.save"
       @cancel="m.handle.click.close"
@@ -20,8 +20,8 @@
               <div>
                 <VanField
                   v-model="d.form.name"
-                  label="Name"
-                  placeholder="Name"
+                  :label="h.translate('name')"
+                  :placeholder="h.translate('name')"
                 />
               </div>
             </template>
@@ -54,7 +54,7 @@
             </div>
             <div  v-else>
               <VanList>
-                <VanCell title="No community committee" />
+                <VanCell :title="h.translate('no_community_committees')" />
               </VanList>
             </div>
           </template>
@@ -73,7 +73,7 @@ const p = defineProps<{
 }>()
 
 const emits = defineEmits(['added', 'updated', 'deleted'])
-
+const h = useHelpers()
 const d = reactive({
   visibility: {
     modal: false

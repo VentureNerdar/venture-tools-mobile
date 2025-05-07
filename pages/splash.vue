@@ -19,6 +19,7 @@ import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatform
 import { useCommunityStore } from "~/stores/useCommunityStore"
 import { useUserStore } from "~/stores/useUserStore"
 import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
+import type { LanguageFormModel } from "../types/models"
 
 type ModuleNameType =
   | "User Roles"
@@ -171,6 +172,17 @@ const downloadSequence = async () => {
       key,
       store,
     } as StoreOptions)
+
+    if (moduleName === 'Languages') {
+      const languages = JSON.parse(localStorage.getItem('languages') || "[]")
+      const settingStore = useSettingStore()
+      let defaultLang
+      if (languages) {
+        defaultLang = languages.find((l: LanguageFormModel) => l.locale === 'en')
+        settingStore.setUserPreferredLanguage(defaultLang)
+
+      }
+    }
 
     await delay(500) // Wait 3 seconds before moving to the next
 

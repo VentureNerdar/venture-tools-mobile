@@ -3,24 +3,24 @@
     <VanForm @submit="onSubmit">
       <VanCellGroup>
         <!-- Name -->
-        <VanField v-model="d.form.name" label="Name" placeholder="Please Input"
+        <VanField v-model="d.form.name" :label="h.translate('name')" :placeholder="h.translate('please_input')"
           :rules="[{ required: true, message: 'Name is required' }]" required />
         <!-- e.o Name -->
       </VanCellGroup>
 
-      <VanCellGroup title="Location">
+      <VanCellGroup :title="h.translate('location')">
         <!-- LONGITUDE -->
-        <VanField v-model="d.form.location_longitude" label="Longitude" placeholder="Please Input"
+        <VanField v-model="d.form.location_longitude" :label="h.translate('longitude')" :placeholder="h.translate('please_input')"
           :rules="[{ required: true, message: 'Longitude is required' }]" required readonly />
         <!-- e.o LONGITUDE -->
 
         <!-- LATITUDE  -->
-        <VanField v-model="d.form.location_latitude" label="Latitude" placeholder="Please Input"
+        <VanField v-model="d.form.location_latitude" :label="h.translate('latitude')" :placeholder="h.translate('please_input')"
           :rules="[{ required: true, message: 'Latitude is required' }]" required readonly />
         <!-- e.o LATITUDE -->
          <van-dialog 
           v-model:show="showMaps" 
-          title="Select Location"
+          :title="h.translate('select_location')"
           :show-cancel-button="true"
           width="90%"
           @confirm="handleLocationConfirm"
@@ -37,8 +37,8 @@
       </VanCellGroup>
 
       <!-- COMMUNITY CHECKLISTS -->
-      <VanCellGroup title="Community Checklist">
-        <VanField name="checkboxGroup" label="CheckboxGroup">
+      <VanCellGroup :title="h.translate('community_checklist')">
+        <VanField name="checkboxGroup" :label="h.translate('community_checklist')">
           <template #input>
             <VanCheckboxGroup v-model="d.form.checklists" direction="vertical">
               <VanCheckbox v-for="checklist in communicationChecklist" :key="checklist.id" :name="checklist.id"
@@ -52,7 +52,7 @@
       <!-- e.o COMMUNITY CHECKLISTS -->
 
       <!-- PERSON OF PEACE -->
-      <VanCellGroup title="Person of Peace">
+      <VanCellGroup :title="h.translate('person_of_peace')">
         <FormPartialsCommunityPeacePerson :peace-persons="d.form.peace_persons"
           @added="m.handle.emits.communityPeacePersonAdded" @updated="m.handle.emits.communityPeacePersonUpdated"
           @deleted="m.handle.emits.communityPeacePersonDeleted" />
@@ -60,7 +60,7 @@
       <!-- e.o PERSON OF PEACE  -->
 
       <!-- COMMITTEES -->
-      <VanCellGroup title="Committees">
+      <VanCellGroup :title="h.translate('committees')">
         <FormPartialsCommunityCommittees :committees="d.form.committees" @added="m.handle.emits.communityCommitteeAdded"
           @updated="m.handle.emits.communityCommitteeUpdated" @deleted="m.handle.emits.communityCommitteeDeleted" />
       </VanCellGroup>
@@ -72,25 +72,25 @@
           <div style="display: flex; align-items: center;">
             <VanCheckbox v-model="d.form.conducted_survey_of_community_needs" style="margin-right: 8px;"
               shape="square" />
-            <span>Conducted Survey of Community Needs</span>
+            <span>{{ h.translate('conducted_survey_of_community_needs') }}</span>
           </div>
         </template>
-        <VanField v-model="d.form.community_needs_1" label="Community Needs 1" placeholder="Please Input"
+        <VanField v-model="d.form.community_needs_1" :label="h.translate('community_needs') + ' 1'" :placeholder="h.translate('please_input')"
           :disabled="!d.form.conducted_survey_of_community_needs" />
-        <VanField v-model="d.form.community_needs_2" label="Community Needs 2" placeholder="Please Input"
+        <VanField v-model="d.form.community_needs_2" :label="h.translate('community_needs') + ' 2'" :placeholder="h.translate('please_input')"
           :disabled="!d.form.conducted_survey_of_community_needs" />
-        <VanField v-model="d.form.community_needs_3" label="Community Needs 3" placeholder="Please Input"
+        <VanField v-model="d.form.community_needs_3" :label="h.translate('community_needs') + ' 3'" :placeholder="h.translate('please_input')"
           :disabled="!d.form.conducted_survey_of_community_needs" />
-        <VanField v-model="d.form.community_needs_4" label="Community Needs 4" placeholder="Please Input"
+        <VanField v-model="d.form.community_needs_4" :label="h.translate('community_needs') + ' 4'" :placeholder="h.translate('please_input')"
           :disabled="!d.form.conducted_survey_of_community_needs" />
-        <VanField v-model="d.form.community_needs_5" label="Community Needs 5" placeholder="Please Input"
+        <VanField v-model="d.form.community_needs_5" :label="h.translate('community_needs') + ' 5'" :placeholder="h.translate('please_input')"
           :disabled="!d.form.conducted_survey_of_community_needs" />
       </VanCellGroup>
 
       <!-- e.o COMMUNITY NEEDS -->
 
       <!-- CHURCHES -->
-      <VanCellGroup :title="'Church : ' + d.form.churches.length">
+      <VanCellGroup :title="h.translate('churches') + ': ' + d.form.churches.length">
         <div style="height: 200px; overflow: auto;">
           <VanList>
             <VanCell v-for="church in d.form.churches" :key="church.id" :title="church.name" />
@@ -100,7 +100,7 @@
       <!-- e.o CHURCHES -->
 
       <!-- CHURCH PLANTERS -->
-      <VanCellGroup :title="'Church Planter : ' + d.form.churchPlanters.length">
+      <VanCellGroup :title="h.translate('church_planters') + ': ' + d.form.churchPlanters.length">
         <VanList>
           <VanCell v-for="church in d.form.churchPlanters" :key="church.id" :title="church.name" />
         </VanList>
@@ -135,6 +135,7 @@ const router = useRouter()
 const communityID = route.query.id ? Number(route.query.id) : undefined
 const communicationChecklist = ref<CommunityChecklistFormModel[]>([])
 const showMaps = ref(false)
+const h = useHelpers()
 
 const d = reactive({
   form: {

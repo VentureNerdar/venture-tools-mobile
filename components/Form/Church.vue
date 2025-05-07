@@ -3,7 +3,7 @@
     <VanForm @submit="onSubmit">
       <VanCellGroup>
         <!-- IS ACTIVE -->
-        <VanField name="isActive" label="isActive">
+        <VanField name="isActive" :label="h.translate('is_active')">
           <template #input>
             <VanSwitch v-model="d.form.is_active" />
           </template>
@@ -12,7 +12,7 @@
 
         <!-- COMMUNITY -->
         <VanField
-v-model="communityFieldValue" readonly label="Community" placeholder="Select a community"
+v-model="communityFieldValue" readonly :label="h.translate('community')" :placeholder="h.translate('select_community')"
           :rules="[{ required: true, message: 'Community is required' }]" required
           @click="d.visibility.communityPicker = true" />
         <VanPopup v-model:show="d.visibility.communityPicker" destroy-on-close round position="bottom">
@@ -23,22 +23,22 @@ v-model="communityFieldValue" readonly label="Community" placeholder="Select a c
         <!-- e.o COMMUNITY -->
 
         <!-- CHURCH PLANTERS -->
-        <VanField label="Church Planters" :model-value="auth.authUser.name" readonly />
+        <VanField :label="h.translate('church_planters')" :model-value="auth.authUser.name" readonly />
         <!-- e.o CHURCH PLANTERS -->
 
         <!-- CHURCH NAME -->
         <VanField
-v-model="d.form.name" label="Church Name" placeholder="Enter church name" required
+v-model="d.form.name" :label="h.translate('church_name')" :placeholder="h.translate('enter_church_name')" required
           :rules="[{ required: true, message: 'Church name is required' }]" />
         <!-- e.o CHURCH NAME -->
 
         <!-- CHURCH DESCRIPTION -->
-        <VanField v-model="d.form.description" label="Church Description" placeholder="Enter church description" />
+        <VanField v-model="d.form.description" :label="h.translate('church_description')" :placeholder="h.translate('enter_church_description')" />
         <!-- e.o CHURCH DESCRIPTION -->
 
         <!-- PARENT CHURCH -->
         <VanField
-v-model="parentChurchFieldValue" readonly label="Parent Church" placeholder="Select a parent church"
+v-model="parentChurchFieldValue" readonly :label="h.translate('parent_church')" :placeholder="h.translate('select_parent_church')"
           @click="d.visibility.parentChurchPicker = true" />
         <VanPopup v-model:show="d.visibility.parentChurchPicker" destroy-on-close round position="bottom">
           <VanPicker
@@ -48,12 +48,12 @@ v-model="parentChurchFieldValue" readonly label="Parent Church" placeholder="Sel
         <!-- e.o PARENT CHURCH -->
 
         <!-- CHURCH WEBSITE -->
-        <VanField v-model="d.form.website" label="Church Website" placeholder="Enter church website" />
+        <VanField v-model="d.form.website" :label="h.translate('church_website')" :placeholder="h.translate('enter_church_website')" />
         <!-- e.o CHURCH WEBSITE -->
 
         <!-- FOUNDED AT -->
         <VanField
-v-model="d.form.founded_at" readonly label="Founded At" placeholder="Select a date"
+v-model="d.form.founded_at" readonly :label="h.translate('founded_at')" :placeholder="h.translate('select_date')"
           @click="d.visibility.foundedAtPicker = true" />
         <VanPopup v-model:show="d.visibility.foundedAtPicker" destroy-on-close round position="bottom">
           <VanDatePicker
@@ -64,8 +64,8 @@ v-model="d.form.founded_at" readonly label="Founded At" placeholder="Select a da
 
         <!-- DENOMINATION -->
         <VanField
-v-model="denominationFieldValue" readonly label="Denomination"
-          placeholder="Select a church denomination" @click="d.visibility.denominationPicker = true" />
+v-model="denominationFieldValue" readonly :label="h.translate('denomination')"
+          :placeholder="h.translate('select_church_denomination')" @click="d.visibility.denominationPicker = true" />
         <VanPopup v-model:show="d.visibility.denominationPicker" destroy-on-close round position="bottom">
           <VanPicker
 :model-value="denominationID" :columns="d.options.denominations"
@@ -74,11 +74,11 @@ v-model="denominationFieldValue" readonly label="Denomination"
         <!-- e.o DENOMINATION` -->
 
         <!-- CHURCH PHONE NUMBER -->
-        <VanField v-model="d.form.phone_number" label="Church phone number" placeholder="Enter Church Phone Number" />
+        <VanField v-model="d.form.phone_number" :label="h.translate('church_phone_number')" :placeholder="h.translate('enter_church_phone_number')" />
         <!-- e.o CHURCH PHONE NUMBER -->
 
         <!-- IS VISITED -->
-        <VanField name="isVisited" label="isVisited">
+        <VanField name="isVisited" :label="h.translate('is_visited')">
           <template #input>
             <VanSwitch v-model="d.form.is_visited" />
           </template>
@@ -86,7 +86,7 @@ v-model="denominationFieldValue" readonly label="Denomination"
         <!-- e.o IS VISITED -->
 
         <!-- CHURCH MEMBER COUNT -->
-        <VanField label="Church members count">
+        <VanField :label="h.translate('church_members_count')">
           <template #input>
             <VanStepper v-model="d.form.church_members_count" :min="0" :default-value="0" />
           </template>
@@ -94,7 +94,7 @@ v-model="denominationFieldValue" readonly label="Denomination"
         <!-- e.o CHURCH MEMBER COUNT -->
 
         <!-- CONFESSION OF FAITH COUNT -->
-        <VanField label="Confession of Faith Count">
+        <VanField :label="h.translate('confession_of_faith_count')">
           <template #input>
             <VanStepper v-model="d.form.confession_of_faith_count" :min="0" :default-value="0" />
           </template>
@@ -102,7 +102,7 @@ v-model="denominationFieldValue" readonly label="Denomination"
         <!-- e.o CONFESSION OF FAITH COUNT -->
 
         <!-- BAPTIZED COUNT -->
-        <VanField label="Baptized count">
+        <VanField :label="h.translate('baptized_count')">
           <template #input>
             <VanStepper v-model="d.form.baptism_count" :min="0" :default-value="0" />
           </template>
@@ -110,17 +110,17 @@ v-model="denominationFieldValue" readonly label="Denomination"
         <!-- e.o BAPTIZED COUNT -->
 
         <!-- CURRENT PRAYERS -->
-        <VanField v-model="d.form.current_prayers" label="Current prayers" placeholder="Please Input" />
+        <VanField v-model="d.form.current_prayers" :label="h.translate('current_prayers')" :placeholder="h.translate('please_input')" />
         <!-- e.o CURRENT PRAYERS -->
 
       </VanCellGroup>
 
       <div style="margin: 16px; display: flex; gap: 16px;">
         <VanButton round block type="default" style="flex: 1;" @click="$router.back">
-          Cancel
+          {{ h.translate('cancel') }}
         </VanButton>
         <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
-          Submit
+          {{ h.translate('submit') }}
         </VanButton>
       </div>
 
@@ -150,6 +150,7 @@ const parentChurchID = ref<Numeric[]>([])
 const foundedAt = ref<string[]>([])
 const denominationID = ref<Numeric[]>([])
 const churchPlanterList = ref<UserFormModel[]>([])
+const h = useHelpers()
 
 const d = reactive({
   visibility: {

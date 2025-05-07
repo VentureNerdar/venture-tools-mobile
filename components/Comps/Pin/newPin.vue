@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanCellGroup
-      title="Enter your PIN number"
+      :title="h.translate('enter_your_pin_number')"
       style="padding-top: 10px; padding-bottom: 10px"
     >
       <VanPasswordInput
@@ -19,7 +19,7 @@
     </VanCellGroup>
 
     <VanCellGroup
-      title="Confirm your PIN number"
+      :title="h.translate('confirm_your_pin_number')"
       style="padding-top: 10px; padding-bottom: 10px"
     >
       <VanPasswordInput
@@ -39,14 +39,15 @@
 
     <VanCell>
       <VanButton block type="success" :disabled="!bothPinFilledAndMatch">
-        Save
+        {{ h.translate("save") }}
       </VanButton>
     </VanCell>
   </div>
 </template>
 
 <script lang="ts" setup>
-const emits = defineEmits(["newPinChanged"]);
+const emits = defineEmits(["newPinChanged"])
+const h = useHelpers()
 
 const d = reactive({
   form: {

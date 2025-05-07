@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanCellGroup>
-      <VanSearch show-action v-model="searchWord" placeholder="Search communities by name" @search="handleSearch" shape="round" >
+      <VanSearch show-action v-model="searchWord" :placeholder="h.translate('search_communities_by_name')" @search="handleSearch" shape="round" >
         <template #action>
             <div style="display: flex; align-items: center; height: 100%;">
               <template v-if="toggleTrash">
@@ -17,6 +17,15 @@
             </div>
         </template>
       </VanSearch>
+
+      <div v-if="toggleTrash && !d.communities.length" style="margin-top: 10px;">
+        <VanField
+           type="textarea"
+           :placeholder="h.translate('no_trashed_community_found')"
+           rows="1"
+           autosize
+        />
+      </div>
 
       <VanSwipeCell v-for="(community, index) in d.communities" :key="index">
         <template v-if="toggleTrash" #right>
@@ -44,7 +53,7 @@ definePageMeta({
 
 const searchWord = ref("")
 const toggleTrash = ref(false)
-
+const h = useHelpers()
 const d = reactive({
   communities: [] as CommunityFormModel[],
   browseOption: { all: true } as BrowseCondition,

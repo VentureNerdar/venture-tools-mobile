@@ -7,14 +7,14 @@
 definePageMeta({
   layout: "application",
   name: "PIN Number",
-});
+})
 
 const d = reactive({
   form: {
     pin: "" as string | number,
     confirmPin: "",
   },
-});
+})
 
 const m = {
   handle: {
@@ -25,5 +25,5 @@ const m = {
       },
     },
   },
-};
+}
 </script>

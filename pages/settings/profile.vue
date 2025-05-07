@@ -1,21 +1,21 @@
 <template>
   <div>
     <VanCellGroup>
-      <VanField v-model="form.name" label="Name" placeholder="Name" />
-      <VanCell title="User Role">
+      <VanField v-model="form.name" :label="helpers.translate('name') " :placeholder="helpers.translate('name')" />
+      <VanCell :title="helpers.translate('user_role')">
         <template #value>
           <VanTag type="primary">{{ authUserRoleName }}</VanTag>
         </template>
       </VanCell>
 
-      <VanField v-model="form.username" label="Username" placeholder="Username" readonly />
+      <VanField v-model="form.username" :label="helpers.translate('username')" :placeholder="helpers.translate('username')" readonly />
 
-      <VanField v-model="form.email" label="Email" placeholder="Email" />
-      <VanField v-model="form.phone_number" label="Phone" placeholder="Phone" />
-      <VanField v-model="form.biography" label="Biography" placeholder="Biography" />
+      <VanField v-model="form.email" :label="helpers.translate('email')" :placeholder="helpers.translate('email')" />
+      <VanField v-model="form.phone_number" :label="helpers.translate('phone')" :placeholder="helpers.translate('phone')" />
+      <VanField v-model="form.biography" :label="helpers.translate('biography')" :placeholder="helpers.translate('biography')" />
 
       <VanField
-v-model="userPreferredLanguage" label="Language" placeholder="Preferred Language" is-link readonly
+v-model="userPreferredLanguage" :label="helpers.translate('language')" :placeholder="helpers.translate('language')" is-link readonly
         @click="showPicker = true" />
 
       <VanPopup v-model:show="showPicker" position="bottom" round>
@@ -25,16 +25,16 @@ v-model="userPreferredLanguage" label="Language" placeholder="Preferred Language
       </VanPopup>
 
       <VanCell>
-        <VanButton type="primary" block size="small" @click="m.handle.click.update">Update</VanButton>
+        <VanButton type="primary" block size="small" @click="m.handle.click.update">{{ helpers.translate('update') }}</VanButton>
       </VanCell>
     </VanCellGroup>
 
-    <VanCellGroup title="Authentication">
-      <VanCell is-link title="Change Password" />
+    <VanCellGroup :title="helpers.translate('authentication') ">
+      <VanCell is-link :title="helpers.translate('change_password')" />
 
-      <VanCell title="Logout">
+      <VanCell :title="helpers.translate('log_out')">
         <template #value>
-          <VanButton type="danger" size="mini" plain block @click="m.handle.click.logout">Logout</VanButton>
+          <VanButton type="danger" size="mini" plain block @click="m.handle.click.logout">{{ helpers.translate('log_out') }}</VanButton>
         </template>
       </VanCell>
     </VanCellGroup>
@@ -48,10 +48,13 @@ import { useLanguageStore } from "~/stores/useLanguageStore"
 import { useUserStore } from "~/stores/useUserStore"
 import type { Numeric } from "vant/es/utils"
 import { RoutePaths } from "~/types/index.d"
+import { useSettingStore } from "../../stores/useSettingStore"
 
 definePageMeta({
   layout: "application",
 })
+
+const helpers = useHelpers()
 
 const showPicker = ref(false)
 const pickerValue = ref<Numeric[]>([])
@@ -88,7 +91,9 @@ onMounted(() => {
       if (selected) {
         pickerValue.value = [selected.id]
         userPreferredLanguage.value = selected.name
+        useSettingStore().setUserPreferredLanguage(selected)
       }
+
     }
 
   }

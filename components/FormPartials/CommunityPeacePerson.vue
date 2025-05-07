@@ -1,6 +1,6 @@
 <template>
   <div>
-     <VanField center clearable label="Person of Peace">
+     <VanField center clearable :label="h.translate('person_of_peace')">
       <template #input>
         <VanButton icon="plus" type="primary" @click="m.handle.click.modal"/>
       </template>
@@ -8,7 +8,7 @@
     
     <VanDialog 
       v-model:show="d.visibility.modal" 
-      title="Add Person of Peace" 
+      :title="h.translate('add_person_of_peace')" 
       show-cancel-button
       @confirm="m.handle.click.save"
       @cancel="m.handle.click.close"
@@ -20,18 +20,18 @@
               <div>
                 <VanField
                   v-model="d.form.name"
-                  label="Name"
-                  placeholder="Name"
+                  :label="h.translate('name')"
+                  :placeholder="h.translate('name')"
                 />
                 <VanField
                   v-model="d.form.email"
-                  label="Email"
-                  placeholder="Email"
+                  :label="h.translate('email')"
+                  :placeholder="h.translate('email')"
                 />
                 <VanField
                   v-model="d.form.phone"
-                  label="Phone"
-                  placeholder="Phone"
+                  :label="h.translate('phone')"
+                  :placeholder="h.translate('phone')"
                 />
                   <!-- @click="selectChurchPlanter(churchPlanter)" -->
               </div>
@@ -52,9 +52,9 @@
                 >
                   <template #title>
                     <div>
-                      <div><strong>Name:</strong> {{ person.name }}</div>
-                      <div><strong>Email:</strong> {{ person.email }}</div>
-                      <div><strong>Phone:</strong> {{ person.phone }}</div>
+                      <div><strong>{{ h.translate('name') }}:</strong> {{ person.name }}</div>
+                      <div><strong>{{ h.translate('email') }}:</strong> {{ person.email }}</div>
+                      <div><strong>{{ h.translate('phone') }}:</strong> {{ person.phone }}</div>
                     </div>
                   </template>
                       <template #right-icon>
@@ -66,7 +66,7 @@
             </div>
             <div  v-else>
               <VanList>
-                <VanCell title="No person of peace" />
+                <VanCell :title="h.translate('no_person_of_peace')" />
               </VanList>
             </div>
           </template>
@@ -85,6 +85,7 @@ const p = defineProps<{
   peacePersons: CommunityPeacePersonFormModel[]
 }>()
 
+const h = useHelpers()
 const emits = defineEmits(['added', 'updated', 'deleted'])
 
 const d = reactive({

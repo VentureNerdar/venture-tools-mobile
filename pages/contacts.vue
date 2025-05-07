@@ -1,7 +1,7 @@
 <template>
   <div>
     <VanCellGroup>
-      <VanSearch show-action v-model="searchWord" placeholder="Search contacts by name" @search="handleSearch" shape="round" >
+      <VanSearch show-action v-model="searchWord" :placeholder="h.translate('search_contacts_by_name')" @search="handleSearch" shape="round" >
         <template #action>
             <div style="display: flex; align-items: center; height: 100%;">
               <template v-if="toggleTrash">
@@ -18,7 +18,16 @@
         </template>
       </VanSearch>
 
-      <VanSwipeCell v-for="(contact, index) in d.contacts" :key="index">
+      <div v-if="toggleTrash && !d.contacts.length" style="margin-top: 10px;">
+        <VanField
+           type="textarea"
+           :placeholder="h.translate('no_trashed_contact_found')"
+           rows="1"
+           autosize
+        />
+      </div>
+
+      <VanSwipeCell  v-for="(contact, index) in d.contacts" :key="index" >
         <template v-if="toggleTrash" #right>
           <VanButton square type="primary" text="Restore" @click="handleRestore(contact.id)" />
           <VanButton square type="danger" text="Destroy" @click="handleDestroy(contact.id)" />
@@ -45,7 +54,7 @@ definePageMeta({
 
 const searchWord = ref("")
 const toggleTrash = ref(false)
-
+const h = useHelpers()
 const d = reactive({
   contacts: [] as ContactFormModel[],
   browseOption: { all: true } as BrowseCondition,
