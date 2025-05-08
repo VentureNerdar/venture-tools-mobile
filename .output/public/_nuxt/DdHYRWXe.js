@@ -1,0 +1,1 @@
+import{u as o}from"./8Z8x03M_.js";import{g as t,n as a,c as s,o as r}from"./Dmm6Q3hy.js";const u=t({__name:"index",setup(i){const{pinNumber:e,maskOption:n}=o();return a(!e||!n?"/login":"/mask"),(m,c)=>(r(),s("div"))}});export{u as default};
