@@ -18,11 +18,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-      apiURL: "http://localhost:8000/api/",
-      apiURLUnSlashed: "http://localhost:8000/api",
+      apiURL: process.env.API_URL,
+      apiURLUnSlashed: process.env.API_URL_UNSLASHED,
 
-      rootURL: "http://localhost:8000/",
-      rootURLUnSlashed: "http://localhost:8000",
+      rootURL: process.env.ROOT_URL,
+      rootURLUnSlashed: process.env.ROOT_URL_UNSLASHED,
 
       // apiURL: "http://api.venture-tools.klonotech.com/api/",
       // apiURLUnSlashed: "http://api.venture-tools.klonotech.com/api",
