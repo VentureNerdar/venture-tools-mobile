@@ -13,7 +13,7 @@
         <!-- COMMUNITY -->
         <VanField
 v-model="communityFieldValue" readonly :label="h.translate('community')" :placeholder="h.translate('select_community')"
-          :rules="[{ required: true, message: 'Community is required' }]" required
+          :rules="[{ required: true, message: h.translate('the_community_id_field_is_required') }]" required
           @click="d.visibility.communityPicker = true" />
         <VanPopup v-model:show="d.visibility.communityPicker" destroy-on-close round position="bottom">
           <VanPicker
@@ -29,7 +29,7 @@ v-model="communityFieldValue" readonly :label="h.translate('community')" :placeh
         <!-- CHURCH NAME -->
         <VanField
 v-model="d.form.name" :label="h.translate('church_name')" :placeholder="h.translate('enter_church_name')" required
-          :rules="[{ required: true, message: 'Church name is required' }]" />
+          :rules="[{ required: true, message: h.translate('name_is_required') }]" />
         <!-- e.o CHURCH NAME -->
 
         <!-- CHURCH DESCRIPTION -->

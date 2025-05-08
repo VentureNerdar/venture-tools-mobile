@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p style="padding-left: 10px;;">Search for a place here:</p>
+    <p style="padding-left: 10px;;">{{ h.translate('search_for_a_place_here') }}</p>
     <div ref="autocompleteContainer"></div>
     <!--
     <p v-if="placeData">Selected Place:</p>
@@ -24,6 +24,7 @@ const props = defineProps({
   }
 })
 const emit = defineEmits(['update'])
+const h = useHelpers()
 const autocompleteContainer = ref<HTMLElement | null>(null)
 const mapElement = ref<HTMLElement | null>(null)
 const placeData = ref<string | null>(null)

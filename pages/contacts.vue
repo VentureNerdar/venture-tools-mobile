@@ -29,14 +29,14 @@
 
       <VanSwipeCell  v-for="(contact, index) in d.contacts" :key="index" >
         <template v-if="toggleTrash" #right>
-          <VanButton square type="primary" text="Restore" @click="handleRestore(contact.id)" />
-          <VanButton square type="danger" text="Destroy" @click="handleDestroy(contact.id)" />
+          <VanButton square type="primary" :text="h.translate('restore')" @click="handleRestore(contact.id)" />
+          <VanButton square type="danger" :text="h.translate('destroy')" @click="handleDestroy(contact.id)" />
         </template>
         <template v-else #right>
-          <VanButton square type="primary" text="Edit" @click="handleEdit(contact.id)" />
-          <VanButton square type="danger" text="Delete" @click="handleDelete(contact.id)" />
+          <VanButton square type="danger" :text="h.translate('delete')" @click="handleDelete(contact.id)" />
+          
         </template>
-        <VanCell :title="contact.name" />
+        <VanCell :title="contact.name" @click=" toggleTrash ? null : handleEdit(contact.id)" />
       </VanSwipeCell>
     </VanCellGroup>
   </div>

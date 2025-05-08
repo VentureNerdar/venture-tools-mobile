@@ -33,10 +33,9 @@
           <VanButton square type="danger" :text="h.translate('destroy')" @click="handleDestroy(church.id)" />
         </template>
         <template v-else #right>
-          <VanButton square type="primary" :text="h.translate('edit')" @click="handleEdit(church.id)" />
           <VanButton square type="danger" :text="h.translate('delete')" @click="handleDelete(church.id)" />
         </template>
-        <VanCell :title="church.name" />
+        <VanCell :title="church.name" @click=" toggleTrash ? null : handleEdit(church.id)" />
       </VanSwipeCell>
     </VanCellGroup>
   </div>

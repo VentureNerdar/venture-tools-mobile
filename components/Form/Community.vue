@@ -4,19 +4,19 @@
       <VanCellGroup>
         <!-- Name -->
         <VanField v-model="d.form.name" :label="h.translate('name')" :placeholder="h.translate('please_input')"
-          :rules="[{ required: true, message: 'Name is required' }]" required />
+          :rules="[{ required: true, message: h.translate('name_is_required') }]" required />
         <!-- e.o Name -->
       </VanCellGroup>
 
       <VanCellGroup :title="h.translate('location')">
         <!-- LONGITUDE -->
         <VanField v-model="d.form.location_longitude" :label="h.translate('longitude')" :placeholder="h.translate('please_input')"
-          :rules="[{ required: true, message: 'Longitude is required' }]" required readonly />
+          :rules="[{ required: true, message: h.translate('longitude_is_required') }]" required readonly />
         <!-- e.o LONGITUDE -->
 
         <!-- LATITUDE  -->
         <VanField v-model="d.form.location_latitude" :label="h.translate('latitude')" :placeholder="h.translate('please_input')"
-          :rules="[{ required: true, message: 'Latitude is required' }]" required readonly />
+          :rules="[{ required: true, message: h.translate('latitude_is_required') }]" required readonly />
         <!-- e.o LATITUDE -->
          <van-dialog 
           v-model:show="showMaps" 
@@ -32,7 +32,7 @@
           />
         </van-dialog>
         <div style="display: flex; justify-content: center; padding: 10px;">
-          <VanButton type="primary" @click="handleOpenMaps">Select Location</VanButton>
+          <VanButton type="primary" @click="handleOpenMaps">{{ h.translate('select_location') }}</VanButton>
         </div>
       </VanCellGroup>
 
@@ -109,10 +109,10 @@
 
       <div style="margin: 16px; display: flex; gap: 16px;">
         <VanButton round block type="default" style="flex: 1;" @click="$router.back">
-          Cancel
+          {{ h.translate('cancel') }}
         </VanButton>
         <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
-          Submit
+          {{ h.translate('submit') }}
         </VanButton>
       </div>
 

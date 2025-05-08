@@ -61,7 +61,8 @@ const pickerValue = ref<Numeric[]>([])
 const userPreferredLanguage = ref<string>("")
 const s = {
   roles: useUserStore().userRoles,
-  auth: useAuthStore()
+  auth: useAuthStore(),
+  languages: useLanguageStore().languages
 }
 
 const form = ref({
@@ -87,7 +88,7 @@ onMounted(() => {
     console.log("authStore", s.auth.authUser)
     form.value = { ...s.auth.authUser }
     if (form.value.preferred_language_id) {
-      const selected = useLanguageStore().languages.find((l: any) => l.id === form.value.preferred_language_id)
+      const selected = s.languages.find((l: any) => l.id === form.value.preferred_language_id)
       if (selected) {
         pickerValue.value = [selected.id]
         userPreferredLanguage.value = selected.name
@@ -135,9 +136,12 @@ const m = {
         }
         useAuthStore().authUser = updatedUser
         localStorage.setItem("authUser", JSON.stringify(updatedUser))
+        const selected = s.languages.find((l: any) => l.id === form.value.preferred_language_id)
+        if(selected) {
+          useSettingStore().setUserPreferredLanguage(selected)
+        }
       }
 
     },
   },
 }
-</script>

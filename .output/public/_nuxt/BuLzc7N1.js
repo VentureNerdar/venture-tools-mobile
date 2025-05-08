@@ -1,1 +1,0 @@
-import{aV as p,aP as n,i as e,a5 as u}from"./Dmm6Q3hy.js";function c(o,{args:i=[],done:s,canceled:t,error:f}){if(o){const a=o.apply(null,i);p(a)?a.then(l=>{l?s():t&&t()}).catch(f||n):a?s():t&&t()}else s()}const P=Symbol();function m(o){const i=e(P,null);i&&u(i,s=>{s&&o()})}export{P,c,m as o};

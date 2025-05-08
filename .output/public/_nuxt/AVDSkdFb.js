@@ -1,1 +1,0 @@
-import{p as g}from"./Dmm6Q3hy.js";const t=g("languages",()=>{const e=JSON.parse(localStorage.getItem("languages")||"[]"),a=JSON.parse(localStorage.getItem("languageWords")||"[]");return{languages:e,words:a}});export{t as u};
