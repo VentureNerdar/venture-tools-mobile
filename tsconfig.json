@@ -4,8 +4,17 @@
   "compilerOptions": {
     // "noSemi": true
     "moduleResolution": "node",
+    "baseUrl": ".",
     "paths": {
-      "@vicons/material": ["./node_modules/@vicons/material"]
+      "@vicons/material": [
+        "./node_modules/@vicons/material"
+      ],
+      "~/*": [
+        "./*"
+      ],
+      "@/*": [
+        "./*"
+      ]
     }
   }
 }

@@ -36,7 +36,6 @@ let marker: google.maps.marker.AdvancedMarkerElement
 onMounted(async () => {
   if (!import.meta.client) return
 
-
   // Load required libraries
   // @ts-expect-error google maps 
   const { PlaceAutocompleteElement } = await google.maps.importLibrary("places") as google.maps.PlacesLibrary

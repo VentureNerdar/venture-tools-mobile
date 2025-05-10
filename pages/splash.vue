@@ -180,11 +180,10 @@ const downloadSequence = async () => {
       if (languages) {
         defaultLang = languages.find((l: LanguageFormModel) => l.locale === 'en')
         settingStore.setUserPreferredLanguage(defaultLang)
-
       }
     }
 
-    await delay(500) // Wait 3 seconds before moving to the next
+    await delay(500)
 
     if (!d.logoLoaded) {
       d.logoLoaded = true
@@ -201,7 +200,6 @@ const consume = async (
   storeOptions: StoreOptions,
 ) => {
   const consumer = useConsumeApi(routePaths)
-
   await consumer.browse(query, storeOptions)
 
   d.completedModules.push(moduleName)

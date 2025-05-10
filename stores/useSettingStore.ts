@@ -4,9 +4,7 @@ import type { LanguageFormModel } from "~/types"
 export const useSettingStore = defineStore("setting", () => {
   const statuses = JSON.parse(localStorage.getItem("statuses") || "{}")
   const pinNumber = JSON.parse(localStorage.getItem("PINNumber") || "false")
-  const maskOption = JSON.parse(localStorage.getItem("maskOption") || "false")
-
-
+  const applicationMask = ref(localStorage.getItem("applicationMask") === "true")
   const userPreferredLanguage = ref<LanguageFormModel>(
     JSON.parse(localStorage.getItem("user_preferred_language") || "null"),
   )
@@ -55,6 +53,11 @@ export const useSettingStore = defineStore("setting", () => {
     localStorage.setItem("user_preferred_language", JSON.stringify(lang))
   }
 
+  function setApplicationMask(value: boolean) {
+    applicationMask.value = value
+    localStorage.setItem("applicationMask", value.toString())
+  }
+
   return {
     statuses,
     contactStatuses,
@@ -64,8 +67,8 @@ export const useSettingStore = defineStore("setting", () => {
     userPreferredLanguage,
     setUserPreferredLanguage,
     currentPreferredLanguage,
-
     pinNumber,
-    maskOption,
+    applicationMask,
+    setApplicationMask,
   }
 })

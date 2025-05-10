@@ -1,29 +1,33 @@
 <template>
   <div>
-    <CompsPinNewPin @new-pin-changed="m.handle.emit.newPinChanged" />
+    <template v-if="hasPin">
+      <VanCellGroup>
+        <VanCell>
+          <VanButton block type="primary" @click="router.push('/settings/security/edit-pin')">
+            Change PIN Number
+          </VanButton>
+        </VanCell>
+        <VanCell>
+          <VanButton block type="danger" @click="router.push('/settings/security/delete-pin')">
+            Remove PIN Number
+          </VanButton>
+        </VanCell>
+      </VanCellGroup>
+    </template>
+    <CompsPinNewPin v-else />
   </div>
 </template>
+
 <script lang="ts" setup>
 definePageMeta({
   layout: "application",
   name: "PIN Number",
 })
 
-const d = reactive({
-  form: {
-    pin: "" as string | number,
-    confirmPin: "",
-  },
-})
+const router = useRouter()
+const hasPin = ref(false)
 
-const m = {
-  handle: {
-    emit: {
-      newPinChanged: (pinNumber: string | number) => {
-        console.log(pinNumber);
-        d.form.pin = pinNumber;
-      },
-    },
-  },
-}
+onMounted(() => {
+  hasPin.value = !!localStorage.getItem('PINNumber')
+})
 </script>

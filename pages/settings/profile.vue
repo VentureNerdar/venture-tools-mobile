@@ -60,7 +60,7 @@ const showPicker = ref(false)
 const pickerValue = ref<Numeric[]>([])
 const userPreferredLanguage = ref<string>("")
 const s = {
-  roles: useUserStore().userRoles,
+  roles: computed(() => useUserStore().userRoles),
   auth: useAuthStore(),
   languages: useLanguageStore().languages
 }
@@ -101,11 +101,12 @@ onMounted(() => {
 })
 
 const authUserRoleName = computed(() => {
-  return s.roles.find((role: any) => role.id === form.value.user_role_id)
+  return 'Church Planter'
+  /*
+  return s.roles.value.find((role: any) => role.id === form.value.user_role_id)
     ?.label
+    */
 })
-
-
 
 const m = {
   handle: {
