@@ -188,7 +188,7 @@ const m = {
         }, 300);
       } else {
         showNotify({
-          type: 'error',
+          type: 'danger',
           message: 'Incorrect PIN',
           duration: 2000,
         });
@@ -218,11 +218,35 @@ watch([() => d.form.pin, () => d.form.confirmPin], () => {
 watch(
   () => d.form.pin,
   (newPin) => {
+    if(newPin.length > 4) {
+      d.form.pin = newPin.slice(0, 4)
+      console.log('new pin!', d.form.pin)
+    }
+
     if (newPin.length === 4) {
       emits("newPinChanged", newPin);
     }
   },
 );
+
+watch(
+  () => d.form.confirmPin,
+  (newPin) => {
+    if(newPin.length > 4) {
+      d.form.confirmPin = newPin.slice(0, 4)
+    }
+  }
+)
+
+watch(
+  () => d.form.currentPin,
+  (val) => {
+    console.log(d.form.currentPin)
+    if (val.length > 4) {
+      d.form.currentPin = val.slice(0, 4)
+    }
+  }
+)
 
 const savePin = () => {
   if (bothPinFilledAndMatch.value) {

@@ -68,7 +68,7 @@
 <script lang="ts" setup>
 definePageMeta({
   layout: "application",
-  name: "Change PIN",
+  name: "Change-PIN",
 })
 
 const router = useRouter()

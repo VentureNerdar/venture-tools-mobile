@@ -1,8 +1,12 @@
 <template>
   <div>
     <VanNavBar
-fixed :left-arrow="showBackButton" :title="pageName.translated" @click-left="() => $router.back()"
-      @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined">
+      fixed
+      :left-arrow="showBackButton"
+      :title="pageName.translated"
+      @click-left="() => $router.back()"
+      @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined"
+    >
       <template #right>
         <span v-if="hasCreateButton">
           <PlusRound style="width: 24px; height: 24px" />

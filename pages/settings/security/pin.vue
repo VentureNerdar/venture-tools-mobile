@@ -4,6 +4,7 @@
       <VanCellGroup>
         <VanCell>
           <VanButton block type="primary" @click="router.push('/settings/security/edit-pin')">
+          <!-- <VanButton block type="primary" @click="navigateTo('Change PIN')"> -->
             Change PIN Number
           </VanButton>
         </VanCell>
