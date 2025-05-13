@@ -96,7 +96,7 @@ const handleSuggestionSelect = async (suggestion: any) => {
         suggestions.value = []
         
         // Emit the selected location
-        emit('update', position)
+        emit('update', position, place)
       }
     })
   } catch (error) {

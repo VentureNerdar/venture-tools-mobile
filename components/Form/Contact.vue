@@ -36,7 +36,12 @@ v-model="d.form.name" :label="h.translate('name')" :placeholder="h.translate('en
       <!-- e.o NICKNAME -->
 
       <!-- GENDER -->
-      <VanCellGroup :title="h.translate('gender')">
+      <VanCellGroup>
+         <template #title>
+          <span>
+            <span style="color: red">*</span> {{ h.translate('gender') }}
+          </span>
+        </template>
         <VanRadioGroup v-model="d.form.gender" required :rules="[{ required: true, message: h.translate('the_gender_field_is_required') }]">
           <VanCellGroup v-for="g in s.settings.options.genders" :key="g.value" inset>
             <VanCell :title="h.translate(h.toSnakeCase(g.text))" clickable @click="d.form.gender = g.value as GenderTypes">
@@ -47,7 +52,6 @@ v-model="d.form.name" :label="h.translate('name')" :placeholder="h.translate('en
           </VanCellGroup>
         </VanRadioGroup>
 
-        <!-- </VanField> -->
       </VanCellGroup>
       <!-- e.o GENDER -->
 
@@ -569,7 +573,7 @@ onMounted(async () => {
         }
       }
       if (d.form && d.form.baptism_date) {
-        const date = new Date(d.form.baptism_date * 1000)
+        const date = new Date(d.form.baptism_date)
         const displayDate = new Intl.DateTimeFormat('en-GB', {
           day: '2-digit',
           month: 'long',

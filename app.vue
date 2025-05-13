@@ -49,6 +49,9 @@ const themeVars: ConfigProviderThemeVars = {
   numberKeyboardKeyActiveColor: bgColor3,
 
   popupBackground: bgColor2,
+
+  dialogBackground: bgColor2,
+  
 }
 </script>
 

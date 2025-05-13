@@ -164,6 +164,13 @@ const tasks: Task[] = [
   ],
 ]
 
+const s = reactive({
+  faithMilestoneStore: useFaithMilestoneStore(),
+  settings: useSettingStore(),
+  peopleGroupStore: usePeopleGroupStore(),
+  languageStore: useLanguageStore(),
+})
+
 const downloadSequence = async () => {
   for (const [moduleName, model, key, store, query] of tasks) {
     d.currentTaskText = `Fetching ${moduleName}...`
@@ -175,12 +182,31 @@ const downloadSequence = async () => {
 
     if (moduleName === 'Languages') {
       const languages = JSON.parse(localStorage.getItem('languages') || "[]")
-      const settingStore = useSettingStore()
       let defaultLang
       if (languages) {
         defaultLang = languages.find((l: LanguageFormModel) => l.locale === 'en')
-        settingStore.setUserPreferredLanguage(defaultLang)
+        s.settings.setUserPreferredLanguage(defaultLang)
       }
+    }
+    if (moduleName === 'Statuses') {
+      const statuses = JSON.parse(localStorage.getItem('statuses') || "[]")
+      s.settings.setStatuses(statuses)
+    }
+    if (moduleName === 'Faith Milestones') {
+      const faithMilestoneValues = JSON.parse(localStorage.getItem('faithMilestones') || "[]")
+      s.faithMilestoneStore.setFaithMilestones(faithMilestoneValues)
+    }
+    if (moduleName === 'People Groups') {
+      const peopleGroupValues = JSON.parse(localStorage.getItem('peopleGroups') || "[]")
+      s.peopleGroupStore.setPeopleGroups(peopleGroupValues)
+    }
+    if (moduleName === 'Language Words') {
+      const wordValues = JSON.parse(localStorage.getItem('languageWords') || "[]")
+      s.languageStore.setWords(wordValues)
+    }
+    if (moduleName === 'Languages') {
+      const languageValues = JSON.parse(localStorage.getItem('languages') || "[]")
+      s.languageStore.setLanguages(languageValues)
     }
 
     await delay(500)
@@ -210,6 +236,8 @@ const consume = async (
 }
 
 downloadSequence()
+
+
 </script>
 
 <style scoped lang="scss">

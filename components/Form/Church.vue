@@ -31,6 +31,33 @@ v-model="communityFieldValue" readonly :label="h.translate('community')" :placeh
 v-model="d.form.name" :label="h.translate('church_name')" :placeholder="h.translate('enter_church_name')" required
           :rules="[{ required: true, message: h.translate('name_is_required') }]" />
         <!-- e.o CHURCH NAME -->
+        
+        <!-- LONGITUDE -->
+        <VanField v-model="d.form.location_longitude as string" :label="h.translate('longitude')" :placeholder="h.translate('please_input')"
+          :rules="[{ required: true, message: h.translate('longitude_is_required') }]" required readonly />
+        <!-- e.o LONGITUDE -->
+
+        <!-- LATITUDE  -->
+        <VanField v-model="d.form.location_latitude as string" :label="h.translate('latitude')" :placeholder="h.translate('please_input')"
+          :rules="[{ required: true, message: h.translate('latitude_is_required') }]" required readonly />
+        <!-- e.o LATITUDE -->
+         <van-dialog 
+          v-model:show="d.visibility.showMaps" 
+          :title="h.translate('select_location')"
+          :show-cancel-button="true"
+          width="90%"
+          @confirm="m.handle.click.handleLocationConfirm"
+        >
+          <FormPartialsSelectLocation 
+            :latitude="Number(d.form.location_latitude)"
+            :longitude="Number(d.form.location_longitude)"
+            @update="m.handle.emits.handleLocationSelected" 
+          />
+        </van-dialog>
+        <div style="display: flex; justify-content: center; padding: 10px;">
+          <VanButton type="primary" @click="m.handle.click.handleOpenMaps">{{ h.translate('select_location') }}</VanButton>
+        </div>
+ 
 
         <!-- CHURCH DESCRIPTION -->
         <VanField v-model="d.form.description" :label="h.translate('church_description')" :placeholder="h.translate('enter_church_description')" />
@@ -130,7 +157,6 @@ v-model="denominationFieldValue" readonly :label="h.translate('denomination')"
 </template>
 
 <script lang="ts" setup>
-import { VanCellGroup, VanForm } from '#components'
 import type { Numeric } from 'vant/es/utils'
 import { useAuthStore } from '~/stores/useAuthStore'
 import { RoutePaths, type UserFormModel, type BrowseConditionAll, type ChurchFormModel, type BrowseCondition } from '~/types/index.d'
@@ -159,6 +185,7 @@ const d = reactive({
     foundedAtPicker: false,
     denominationPicker: false,
     churchPlanterDialog: false,
+    showMaps: false,
   },
   form: {
     is_active: true,
@@ -168,6 +195,9 @@ const d = reactive({
     founded_at: null,
     phone_number: "",
     website: "",
+    location_longitude: "",
+    location_latitude: "",
+    google_location_data: "",
     denomination_id: null,
     is_visited: false,
     church_members_count: undefined,
@@ -264,6 +294,27 @@ const m = {
         denominationFieldValue.value = selectedOptions[0].text
         denominationID.value = [selectedOptions[0].value as Numeric]
         d.visibility.denominationPicker = false
+      },
+      handleLocationConfirm: () => {
+        d.visibility.showMaps = false
+      },
+      handleOpenMaps: () => {
+        d.visibility.showMaps = true
+      }
+    },
+    emits: {
+     // handleLocationSelected: (location: { lat: string; lng: string }) => {
+    //    d.form.location_latitude = location.lat
+   //     d.form.location_longitude = location.lng
+    //  console.log("location from parent", d.form.location_latitude, d.form.location_longitude)
+     //   console.log("location from child", location)  
+    //  }
+    handleLocationSelected: (location: { lat: string; lng: string }, place: any) => {
+        d.form.location_latitude = location.lat
+        d.form.location_longitude = location.lng
+        d.form.google_location_data = JSON.stringify(place)
+        console.log("location from parent", d.form.location_latitude, d.form.location_longitude, d.form.google_location_data)
+        console.log("location from child", location)  
       }
     }
   }
@@ -341,3 +392,13 @@ m.consume.defaultDenominationsForDenominationOption()
 m.consume.defaultChurchPlanters()
 
 </script>
+
+<style scoped>
+::v-deep(.van-dialog__confirm) {
+  background-color: #0a233d !important;
+}
+
+::v-deep(.van-dialog__cancel) {
+  background-color: #0a233d !important;
+}
+</style>

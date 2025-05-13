@@ -1,8 +1,14 @@
 import { defineStore } from "pinia"
 import type { LanguageFormModel } from "~/types"
 
+interface Status {
+  id: number
+  name: string
+  type: 'contact' | 'group' | 'faith_status'
+}
 export const useSettingStore = defineStore("setting", () => {
-  const statuses = JSON.parse(localStorage.getItem("statuses") || "{}")
+  const statuses = ref<Status[]>(JSON.parse(localStorage.getItem('statuses') || '[]'))
+
   const pinNumber = JSON.parse(localStorage.getItem("PINNumber") || "false")
   const applicationMask = ref(localStorage.getItem("applicationMask") === "true")
   const userPreferredLanguage = ref<LanguageFormModel>(
@@ -12,15 +18,15 @@ export const useSettingStore = defineStore("setting", () => {
   const currentPreferredLanguage = computed(() => userPreferredLanguage)
 
   const contactStatuses = computed(() =>
-    statuses.filter((s: any) => s.type === "contact"),
+    statuses.value.filter((s: any) => s.type === "contact"),
   )
 
   const groupStatuses = computed(() =>
-    statuses.filter((s: any) => s.type === "group"),
+    statuses.value.filter((s: any) => s.type === "group"),
   )
 
   const faithStatuses = computed(() =>
-    statuses.filter((s: any) => s.type === "faith_status"),
+    statuses.value.filter((s: any) => s.type === "faith_status"),
   )
 
   const options = computed(() => ({
@@ -52,6 +58,10 @@ export const useSettingStore = defineStore("setting", () => {
     userPreferredLanguage.value = lang
     localStorage.setItem("user_preferred_language", JSON.stringify(lang))
   }
+  function setStatuses(status: Status[]) {
+    statuses.value = status
+    // localStorage.setItem("statuses", JSON.stringify(statuses))
+  }
 
   function setApplicationMask(value: boolean) {
     applicationMask.value = value
@@ -70,5 +80,6 @@ export const useSettingStore = defineStore("setting", () => {
     pinNumber,
     applicationMask,
     setApplicationMask,
+    setStatuses,
   }
 })

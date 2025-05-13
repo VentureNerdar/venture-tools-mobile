@@ -53,6 +53,9 @@ export interface ChurchFormModel {
   church_planters?: any | null
 
   name: string 
+  location_longitude: string | null
+  location_latitude: string | null
+  google_location_data: string | null
   description?: string
   founded_at?: any | null
   phone_number?: string 
@@ -178,12 +181,14 @@ export interface CommunityFormModel {
   name: string | null
   location_longitude: string | null
   location_latitude: string | null
+  google_location_data: string | null
   conducted_survey_of_community_needs: boolean
   community_needs_1: string | null
   community_needs_2: string | null
   community_needs_3: string | null
   community_needs_4: string | null
   community_needs_5: string | null
+  created_by: number
 
   peace_persons: CommunityPeacePersonFormModel[]
   committees: CommunityCommittee[]

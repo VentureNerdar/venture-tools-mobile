@@ -122,6 +122,7 @@
 
 
 <script lang="ts" setup>
+import { useAuthStore } from '~/stores/useAuthStore'
 import { 
   RoutePaths, 
   type BrowseCondition, 
@@ -136,12 +137,14 @@ const communityID = route.query.id ? Number(route.query.id) : undefined
 const communicationChecklist = ref<CommunityChecklistFormModel[]>([])
 const showMaps = ref(false)
 const h = useHelpers()
+const auth = useAuthStore()
 
 const d = reactive({
   form: {
     name: "",
     location_longitude: "",
     location_latitude: "",
+    google_location_data: "",
     conducted_survey_of_community_needs: false,
     checklists: [],
     community_needs_1: "",
@@ -149,6 +152,7 @@ const d = reactive({
     community_needs_3: "",
     community_needs_4: "",
     community_needs_5: "",
+    created_by: 0,
     churches: [] as ChurchFormModel[],
     churchPlanters: [] as any,
     peace_persons: [] as CommunityPeacePersonFormModel[],
@@ -216,9 +220,10 @@ const m = {
           d.form.committees.splice(index, 1)
         }
       },
-      handleLocationSelected: (location: { lat: string; lng: string }) => {
+      handleLocationSelected: (location: { lat: string; lng: string }, place: any) => {
         d.form.location_latitude = location.lat
         d.form.location_longitude = location.lng
+        d.form.google_location_data = JSON.stringify(place)
         console.log("location from parent", d.form.location_latitude, d.form.location_longitude)
         console.log("location from child", location)  
       },
@@ -257,6 +262,7 @@ const handleLocationConfirm = () => {
 }
 
 const onSubmit = async () => {
+  d.form.created_by = auth.authUser.id
   let response
   if (communityID) {
     const editChurchConsume = useConsumeApi(RoutePaths.COMMUNITIES, communityID)
@@ -270,3 +276,16 @@ const onSubmit = async () => {
   }
 }
 </script>
+
+<style scoped>
+
+::v-deep(.van-dialog__confirm) {
+  background-color: #0a233d !important;
+}
+
+::v-deep(.van-dialog__cancel) {
+  background-color: #0a233d !important;
+}
+
+
+</style>
