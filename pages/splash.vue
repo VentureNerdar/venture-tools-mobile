@@ -169,6 +169,7 @@ const s = reactive({
   settings: useSettingStore(),
   peopleGroupStore: usePeopleGroupStore(),
   languageStore: useLanguageStore(),
+  communicationPlatformStore: useCommunicationPlatformStore(),
 })
 
 const downloadSequence = async () => {
@@ -207,6 +208,11 @@ const downloadSequence = async () => {
     if (moduleName === 'Languages') {
       const languageValues = JSON.parse(localStorage.getItem('languages') || "[]")
       s.languageStore.setLanguages(languageValues)
+    }
+
+    if (moduleName === 'Communication Platforms') {
+      const communicationPlatformValues = JSON.parse(localStorage.getItem('communicationPlatforms') || "[]")
+      s.communicationPlatformStore.setCommunicationPlatforms(communicationPlatformValues)
     }
 
     await delay(500)
