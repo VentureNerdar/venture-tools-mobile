@@ -1,0 +1,1 @@
+import{x as r}from"./DSRRTXY0.js";const t=r("user",()=>{const e=JSON.parse(localStorage.getItem("users")||"{}"),s=JSON.parse(localStorage.getItem("userRoles")||"{}");return{users:e,userRoles:s}});export{t as u};
