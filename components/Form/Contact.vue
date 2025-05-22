@@ -172,8 +172,12 @@ title="BaptismDate" :model-value="baptizedDatePicker" :max-date="new Date(2030, 
       <!-- e.o BAPTISM DATE -->
     </VanCellGroup>
     <!-- e.o BAPTISM -->
+
+     <!-- CURRENT PRAYERS -->
+        <VanField v-model="d.form.current_prayers" :label="h.translate('current_prayers')" :placeholder="h.translate('please_input')" />
+      <!-- e.o CURRENT PRAYERS -->
     <div style="margin: 16px; display: flex; gap: 16px;">
-      <VanButton round block type="default" style="flex: 1;" @click="$router.back">
+      <VanButton round block type="default" style="flex: 1;" @click="router.back">
         {{ h.translate('cancel') }}
       </VanButton>
       <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
@@ -263,6 +267,7 @@ const d = reactive({
     baptized_by: null,
     baptism_date: null,
     assigned_to: null,
+    current_prayers: "",
   } as ContactFormModel,
 
   currentCommunicationPlatform: {

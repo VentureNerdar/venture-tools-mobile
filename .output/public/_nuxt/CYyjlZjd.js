@@ -1,1 +1,0 @@
-import{u as s}from"./Dbq6bm_i.js";import{g as o,p as e,c as n,o as r}from"./DSRRTXY0.js";const f=o({__name:"index",setup(i){const{pinNumber:t,applicationMask:a}=s();return localStorage.getItem("authUser")?a?e("/mask"):t?e("/pin"):e("/splash"):e("/login"),(c,l)=>(r(),n("div"))}});export{f as default};

@@ -11,12 +11,12 @@
       <VanCellGroup :title="h.translate('location')">
         <!-- LONGITUDE -->
         <VanField v-model="d.form.location_longitude" :label="h.translate('longitude')" :placeholder="h.translate('please_input')"
-          :rules="[{ required: true, message: h.translate('longitude_is_required') }]" required readonly />
+          :rules="[{ required: true, message: h.translate('longitude_is_required') }]" required />
         <!-- e.o LONGITUDE -->
 
         <!-- LATITUDE  -->
         <VanField v-model="d.form.location_latitude" :label="h.translate('latitude')" :placeholder="h.translate('please_input')"
-          :rules="[{ required: true, message: h.translate('latitude_is_required') }]" required readonly />
+          :rules="[{ required: true, message: h.translate('latitude_is_required') }]" required />
         <!-- e.o LATITUDE -->
          <van-dialog 
           v-model:show="showMaps" 
@@ -108,7 +108,7 @@
       <!-- e.o CHURCH PLANTERS -->
 
       <div style="margin: 16px; display: flex; gap: 16px;">
-        <VanButton round block type="default" style="flex: 1;" @click="$router.back">
+        <VanButton round block type="default" style="flex: 1;" @click="router.back">
           {{ h.translate('cancel') }}
         </VanButton>
         <VanButton round block type="primary" style="flex: 1;" @click="onSubmit">
