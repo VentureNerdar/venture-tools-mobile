@@ -1,5 +1,15 @@
 <template>
-  <div />
+  <div v-if="!authUser" class="wrapper">
+    <div class="title">Venture Tools</div>
+
+    <div class="subtitle">Welcome to Venture Tools</div>
+
+    <VanButton type="primary" block @click="navigateTo('/login')">LOGIN</VanButton>
+
+    <VanDivider>OR</VanDivider>
+
+    <VanButton type="primary" block @click="navigateTo('/register')">REGISTER</VanButton>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -21,7 +31,26 @@ if(authUser) {
       navigateTo('/splash')
     }
   }
-} else { // Not logged in
-  navigateTo("/login")
 }
 </script>
+
+<style scoped>
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #17badf;
+  text-align: center;
+  margin: 20px 0;
+  text-transform: uppercase;
+}
+
+.wrapper {
+  padding: 20px;
+}
+
+.subtitle {
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+</style>
