@@ -224,6 +224,22 @@
             method: 'POST',
             body: d.form
           })
+
+          if (response) {
+            showNotify({
+              type: 'success',
+              message: 'Registration successful'
+            })
+
+            setTimeout(() => {
+              navigateTo('/login')
+            }, 300)
+          } else {
+            showNotify({
+              type: 'danger',
+              message: 'Registration failed'
+            })
+          }
         }
       }
     }
