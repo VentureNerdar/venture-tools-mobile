@@ -126,6 +126,7 @@
         type="primary"
         plain
         block
+        @click="router.push('/login')"
       >Cancel</VanButton>
     </VanSpace>
   </VanSpace>
@@ -137,7 +138,7 @@
 >
   import type { Numeric } from "vant/lib/utils"
   const config = useRuntimeConfig()
-
+  const router = useRouter()
   const preferredLanguageFieldValue = ref('')
   const preferredLanguageID = ref<Numeric[]>([])
 

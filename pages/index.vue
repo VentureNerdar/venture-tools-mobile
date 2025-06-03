@@ -1,56 +1,68 @@
 <template>
-  <div v-if="!authUser" class="wrapper">
-    <div class="title">Venture Tools</div>
-
-    <div class="subtitle">Welcome to Venture Tools</div>
-
-    <VanButton type="primary" block @click="navigateTo('/login')">LOGIN</VanButton>
-
-    <VanDivider>OR</VanDivider>
-
-    <VanButton type="primary" block @click="navigateTo('/register')">REGISTER</VanButton>
+  <div class="photo-slider" @click="handleTap">
+    <van-swipe
+      class="swipe-container"
+      :loop="true"
+      :show-indicators="false"
+      :touchable="true"
+    >
+      <van-swipe-item v-for="i in 10" :key="i">
+        <img :src="`/images/${i}.jpg`" class="slide-image" />
+      </van-swipe-item>
+    </van-swipe>
   </div>
 </template>
 
-<script setup lang="ts">
-import { useSettingStore } from "~/stores/useSettingStore"
-const { pinNumber, applicationMask } = useSettingStore()
-
+<script lang="ts" setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const tapCount = ref(0)
+const lastTapTime = ref(0)
+const TAP_TIMEOUT = 3000 // 3 seconds
+const REQUIRED_TAPS = 7
 const authUser = localStorage.getItem("authUser")
 
-// Check if user is logged in
-if(authUser) {
-  // Check if mask option is set
-  if(applicationMask) {
-    navigateTo("/mask")
-  } else { // No mask option
-    // Check if pin is set
-    if(pinNumber) {
-      navigateTo("/pin")
-    } else { // No pin
-      navigateTo('/splash')
+function handleTap() {
+  const currentTime = Date.now()
+  
+  if (currentTime - lastTapTime.value > TAP_TIMEOUT) {
+    // Reset if more than 3 seconds have passed
+    tapCount.value = 1
+  } else {
+    tapCount.value++
+  }
+  lastTapTime.value = currentTime
+  
+  if (tapCount.value >= REQUIRED_TAPS) {
+    const pinNumber = localStorage.getItem('PINNumber')
+    if (!authUser) {
+      router.push('/welcome')
+    } else if(authUser && pinNumber) {
+      router.push('/pin')
+    } else if(authUser && !pinNumber) {
+      router.push('/splash')
     }
+
   }
 }
 </script>
 
 <style scoped>
-.title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #17badf;
-  text-align: center;
-  margin: 20px 0;
-  text-transform: uppercase;
+.photo-slider {
+  width: 100vw;
+  height: 100vh;
+  background: #000;
 }
 
-.wrapper {
-  padding: 20px;
+.swipe-container {
+  width: 100%;
+  height: 100%;
 }
 
-.subtitle {
-  font-size: 16px;
-  text-align: center;
-  margin-bottom: 30px;
+.slide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 </style>

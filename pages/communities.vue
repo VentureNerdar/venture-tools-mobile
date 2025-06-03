@@ -6,12 +6,12 @@
             <div style="display: flex; align-items: center; height: 100%;">
               <template v-if="toggleTrash">
                 <VanButton @click="handleToggleTrash" size="small" type="danger" style="display: flex; align-items: center; justify-content: center;">
-                  <DeleteFilled style="width: 16px; height: 16px;" />
+                  <ArchiveRound style="width: 16px; height: 16px;" />
                 </VanButton>
               </template>
               <template v-else>
                 <VanButton @click="handleToggleTrash" plain size="small" type="primary" style="display: flex; align-items: center; justify-content: center;">
-                  <DeleteFilled style="width: 16px; height: 16px;" />
+                  <ArchiveRound style="width: 16px; height: 16px;" />
                 </VanButton>
               </template>
             </div>
@@ -21,7 +21,7 @@
       <div v-if="toggleTrash && !d.communities.length" style="margin-top: 10px;">
         <VanField
            type="textarea"
-           :placeholder="h.translate('no_trashed_community_found')"
+           :placeholder="h.translate('no_archived_community_found')"
            rows="1"
            autosize
         />
@@ -29,11 +29,11 @@
 
       <VanSwipeCell v-for="(community, index) in d.communities" :key="index">
         <template v-if="toggleTrash" #right>
-          <VanButton square type="primary" text="Restore" @click="handleRestore(community.id)" />
-          <VanButton square type="danger" text="Destroy" @click="handleDestroy(community.id)" />
+          <VanButton square type="primary" :text="h.translate('restore')" @click="handleRestore(community.id)" />
+          <VanButton square type="danger" :text="h.translate('destroy')" @click="handleDestroy(community.id)" />
         </template>
         <template v-else #right>
-          <VanButton square type="danger" text="Delete" @click="handleDelete(community.id)" />
+          <VanButton square type="danger" :text="h.translate('archive')" @click="handleDelete(community.id)" />
         </template>
         <VanCell :title="community.name || ''" @click=" toggleTrash ? null : handleEdit(community.id)" />
       </VanSwipeCell>
@@ -43,7 +43,7 @@
 
 <script lang="ts" setup>
 import { RoutePaths, type BrowseCondition } from '../types/index.d'
-import { DeleteFilled } from '@vicons/material'
+import { ArchiveRound } from '@vicons/material'
 import type { CommunityFormModel } from '../types/models.ts'
 definePageMeta({
   layout: "application",

@@ -6,12 +6,12 @@
             <div style="display: flex; align-items: center; height: 100%;">
               <template v-if="toggleTrash">
                 <VanButton @click="handleToggleTrash" size="small" type="danger" style="display: flex; align-items: center; justify-content: center;">
-                  <DeleteFilled style="width: 16px; height: 16px;" />
+                  <ArchiveRound style="width: 16px; height: 16px;" />
                 </VanButton>
               </template>
               <template v-else>
                 <VanButton @click="handleToggleTrash" plain size="small" type="primary" style="display: flex; align-items: center; justify-content: center;">
-                  <DeleteFilled style="width: 16px; height: 16px;" />
+                  <ArchiveRound style="width: 16px; height: 16px;" />
                 </VanButton>
               </template>
             </div>
@@ -21,7 +21,7 @@
       <div v-if="toggleTrash && !d.contacts.length" style="margin-top: 10px;">
         <VanField
            type="textarea"
-           :placeholder="h.translate('no_trashed_contact_found')"
+           :placeholder="h.translate('no_archived_contact_found')"
            rows="1"
            autosize
         />
@@ -33,7 +33,7 @@
           <VanButton square type="danger" :text="h.translate('destroy')" @click="handleDestroy(contact.id)" />
         </template>
         <template v-else #right>
-          <VanButton square type="danger" :text="h.translate('delete')" @click="handleDelete(contact.id)" />
+          <VanButton square type="danger" :text="h.translate('archive')" @click="handleDelete(contact.id)" />
           
         </template>
         <VanCell :title="contact.name" @click=" toggleTrash ? null : handleEdit(contact.id)" />
@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-import { DeleteFilled } from '@vicons/material'
+import { ArchiveRound } from '@vicons/material'
 import { RoutePaths, type BrowseCondition } from '../types/index.d'
 import type { ContactFormModel } from '../types/models.ts'    
 

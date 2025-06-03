@@ -14,6 +14,7 @@
         placeholder="Password"
         type="password"
       />
+      
     </VanCellGroup>
 
     <VanCellGroup :inset="true" style="margin-top: 10px">
@@ -27,6 +28,16 @@
         Login
       </VanButton>
     </VanCellGroup>
+
+    <div style="margin-top: 10px">
+      <div style="text-align: center">
+        <div>
+          Don't have an account?
+          <span @click="router.push('/register')" style="color: #007aff">Register here</span>
+        </div>
+      </div>
+    </div>
+
   </VanSpace>
 </template>
 
@@ -34,6 +45,9 @@
 import type { Credentials } from "~/types"
 import { useAuthStore } from "~/stores/useAuthStore"
 import { showNotify } from "vant"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
 
 const d = reactive({
   loading: {
