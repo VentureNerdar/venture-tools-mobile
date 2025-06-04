@@ -1,8 +1,17 @@
 <template>
-  <VanSpace direction="vertical" fill>
-    <VanNavBar title="Venture Tools" :border="false" />
+  <VanSpace
+    direction="vertical"
+    fill
+  >
+    <VanNavBar
+      title="Venture Tools"
+      :border="false"
+    />
 
-    <VanCellGroup :inset="true" title="Welcome! Please login to continue">
+    <VanCellGroup
+      :inset="true"
+      title="Welcome! Please login to continue"
+    >
       <VanField
         v-model="d.form.identifier"
         label="Username"
@@ -16,7 +25,10 @@
       />
     </VanCellGroup>
 
-    <VanCellGroup :inset="true" style="margin-top: 10px">
+    <VanCellGroup
+      :inset="true"
+      style="margin-top: 10px"
+    >
       <VanButton
         type="primary"
         block
@@ -32,7 +44,9 @@
       <div style="text-align: center">
         <div>
           Don't have an account?
-          <span @click="router.push('/register')" style="color: #007aff"
+          <span
+            @click="router.push('/register')"
+            style="color: #007aff"
             >Register here</span
           >
         </div>
