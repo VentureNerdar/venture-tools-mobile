@@ -4,9 +4,9 @@
 
     <VanCellGroup :inset="true" title="Welcome! Please login to continue">
       <VanField
-        v-model="d.form.email"
+        v-model="d.form.identifier"
         label="Username"
-        placeholder="Username"
+        placeholder="Username or Email"
       />
       <VanField
         v-model="d.form.password"
@@ -14,7 +14,6 @@
         placeholder="Password"
         type="password"
       />
-      
     </VanCellGroup>
 
     <VanCellGroup :inset="true" style="margin-top: 10px">
@@ -33,11 +32,12 @@
       <div style="text-align: center">
         <div>
           Don't have an account?
-          <span @click="router.push('/register')" style="color: #007aff">Register here</span>
+          <span @click="router.push('/register')" style="color: #007aff"
+            >Register here</span
+          >
         </div>
       </div>
     </div>
-
   </VanSpace>
 </template>
 
@@ -54,7 +54,7 @@ const d = reactive({
     btnLogin: false,
   },
   form: {
-    email: "seb@demo.com",
+    identifier: "seb@demo.com",
     password: "demodemo",
   } as Credentials,
 })
@@ -87,6 +87,6 @@ const m = {
 }
 
 const loginButtonDisabled = computed(() => {
-  return !d.form.email || !d.form.password
+  return !d.form.identifier || !d.form.password
 })
 </script>

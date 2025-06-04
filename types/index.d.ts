@@ -108,7 +108,7 @@ export type FormModalOptions = {
 }
 
 export type Credentials = {
-  email: string
+  identifier: string
   password: string
 }
 
