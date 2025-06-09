@@ -70,6 +70,7 @@ const d = reactive({
   form: {
     identifier: "seb@demo.com",
     password: "demodemo",
+    platform: "mobile"
   } as Credentials,
 })
 

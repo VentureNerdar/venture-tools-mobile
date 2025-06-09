@@ -110,6 +110,7 @@ export type FormModalOptions = {
 export type Credentials = {
   identifier: string
   password: string
+  platform: string
 }
 
 export type AuthUser = {
