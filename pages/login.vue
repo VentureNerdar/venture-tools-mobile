@@ -42,11 +42,11 @@
 
     <div style="margin-top: 10px">
       <div style="text-align: center">
-        <div>
+        <div style="font-size: 16px">
           Don't have an account?
           <span
+            style="color: #007aff; font-size: 16px"
             @click="router.push('/register')"
-            style="color: #007aff"
             >Register here</span
           >
         </div>
