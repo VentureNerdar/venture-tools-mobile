@@ -1,1 +1,0 @@
-import{v as a,m as n}from"./CtjwzQZY.js";const e=a("communicationPlatform",()=>{const o=n(JSON.parse(localStorage.getItem("communicationPlatforms")||"{}"));function m(t){o.value=t,localStorage.setItem("communicationPlatforms",JSON.stringify(t))}return{communicationPlatforms:o,setCommunicationPlatforms:m}});export{e as u};
