@@ -2,7 +2,7 @@ import type { AgeGroups, GenderTypes } from "."
 import type { Numeric } from "vant/es/utils"
 
 export interface UserFormModel {
-  name: string 
+  name: string
   username: string | null
   email: string | null
   user_role_id: string | null
@@ -22,8 +22,8 @@ export interface UserFormModel {
 
 export interface ContactFormModel {
   id?: number
-  contact_status_id?: number | null
   // contact_status_id: Numeric[]
+  is_active: boolean
   faith_status_id?: Numeric | null
   assigned_to?: number | null
 
@@ -33,7 +33,7 @@ export interface ContactFormModel {
   age: AgeGroups | null
   baptism_date?: any | null
   baptized_by?: Numeric | null
-  current_prayers?: string 
+  current_prayers?: string
   faith_milestones?: number[] | null
   people_group?: Numeric[] | null
   // contact_communication_platforms?: { [key: number]: any[] }
@@ -52,24 +52,24 @@ export interface ChurchFormModel {
 
   church_planters?: any | null
 
-  name: string 
+  name: string
   location_longitude: string | null
   location_latitude: string | null
   google_location_data: string | null
   description?: string
   founded_at?: any | null
-  phone_number?: string 
-  website?: string 
+  phone_number?: string
+  website?: string
   denomination_id?: number | null
   is_visited?: boolean | null
   church_members_count?: number | undefined
   confession_of_faith_count?: number | undefined
-  baptism_count?: number | undefined 
+  baptism_count?: number | undefined
   community_id: number | null
   community?: CommunityFormModel[] | null
 
   parent_church_id?: number | null
-  current_prayers?: string 
+  current_prayers?: string
 
   deleted_at?: Date
   created_at?: Date
@@ -159,17 +159,17 @@ export interface CommunityChecklistFormModel {
 export interface CommunityPeacePersonFormModel {
   id?: number
   name: string
-  email: string 
-  phone: string 
-  originalName?: string 
+  email: string
+  phone: string
+  originalName?: string
   created_at?: Date
   updated_at?: Date
 }
 
 export interface CommunityCommittee {
   id?: number
-  name: string 
-  originalName?: string 
+  name: string
+  originalName?: string
 
   created_at?: Date
   updated_at?: Date
