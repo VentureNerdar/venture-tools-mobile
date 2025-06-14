@@ -295,6 +295,31 @@
     </VanCellGroup>
     <!-- e.o BAPTISM -->
 
+    <!-- PRAYERS PROMPT -->
+    <VanField
+      v-model="prayerPromptFieldValue"
+      readonly
+      :label="h.translate('prayer_prompts')"
+      :placeholder="h.translate('choose_prayer_prompts')"
+      @click="d.visibility.prayerPromptPicker = true"
+    />
+    <VanPopup
+      v-model:show="d.visibility.prayerPromptPicker"
+      destroy-on-close
+      round
+      position="bottom"
+    >
+      <VanPicker
+        :model-value="prayerPromptID"
+        :title="h.translate('title')"
+        :columns="prayerPromptList"
+        @cancel="d.visibility.prayerPromptPicker = false"
+        @confirm="m.handle.click.confirmPrayerPromptPicker"
+      />
+    </VanPopup>
+
+    <!-- e.o PRAYERS PROMPT -->
+
     <!-- CURRENT PRAYERS -->
     <VanField
       v-model="d.form.current_prayers"
@@ -346,6 +371,7 @@ import { useAuthStore } from "~/stores/useAuthStore"
 
 const consume = {
   contacts: useConsumeApi(RoutePaths.CONTACTS),
+  prayerPrompt: useConsumeApi(RoutePaths.PRAYER_PROMPTS),
 }
 
 const s = {
@@ -363,6 +389,7 @@ const contactID = route.query.id ? Number(route.query.id) : undefined
 const helpers = useHelpers()
 const authUser = useAuthStore().authUser
 const faithStatusFieldValue = ref("")
+const prayerPromptFieldValue = ref("")
 const ageGroupFieldValue = ref("")
 const peopleGroupFieldValue = ref("")
 const faithMilestoneFieldValue = ref("")
@@ -370,6 +397,7 @@ const baptizedByFieldValue = ref("")
 const baptismDateFieldValue = ref("")
 
 const faithStatusID = ref<Numeric[]>([3])
+const prayerPromptID = ref<Numeric[]>([])
 const ageGroupID = ref<AgeGroups[]>([])
 const peopleGroupID = ref<Numeric[]>([])
 const faithMilestoneID = ref<Numeric[]>([])
@@ -389,6 +417,7 @@ const d = reactive({
     faithMielstonePicker: false,
     baptizedByPicker: false,
     baptismDatePicker: false,
+    prayerPromptPicker: false,
   },
   form: {
     name: "",
@@ -403,13 +432,16 @@ const d = reactive({
     baptism_date: null,
     assigned_to: null,
     current_prayers: "",
+    user_profile_id: null,
   } as ContactFormModel,
+  prayer_prompt_id: null as number | null,
 
   currentCommunicationPlatform: {
     name: "",
   } as CommunicationPlatformFormModel,
 
   contacts: [],
+  prayerPrompts: [],
 })
 
 type SelectedOptionsType = {
@@ -428,6 +460,18 @@ const m = {
         d.form.faith_status_id = selectedOptions[0].value as number
         faithStatusFieldValue.value = selectedOptions[0].text
         d.visibility.faithStatusPicker = false
+      },
+
+      confirmPrayerPromptPicker: ({
+        selectedOptions,
+      }: {
+        selectedOptions: SelectedOptionsType[]
+      }) => {
+        d.prayer_prompt_id = selectedOptions[0].value as number
+        prayerPromptFieldValue.value = selectedOptions[0].text
+        prayerPromptID.value = [selectedOptions[0].value as Numeric]
+        d.form.current_prayers = selectedOptions[0].text
+        d.visibility.prayerPromptPicker = false
       },
 
       confirmAgeGroupPicker: ({
@@ -588,6 +632,14 @@ const m = {
         false,
       )
     },
+    prayerPrompt: async () => {
+      d.prayerPrompts = await consume.prayerPrompt.browse(
+        {
+          all: true,
+        },
+        false,
+      )
+    },
   },
 
   helper: {
@@ -739,7 +791,12 @@ const contactList = computed(() => {
   return d.contacts.map((pg: any) => ({ text: pg.name, value: pg.id }))
 })
 
-console.log("s.settings.options.faith", s.settings.options.faith)
+const prayerPromptList = computed(() => {
+  return d.prayerPrompts.map((pg: any) => ({
+    text: pg.prompt_text,
+    value: pg.id,
+  }))
+})
 
 const defaultOption = s.settings.options.faith.find((o) => o.value === 8)
 if (defaultOption) {
@@ -748,6 +805,8 @@ if (defaultOption) {
 }
 
 m.consume.contacts()
+m.consume.prayerPrompt()
+
 const onSubmit = async () => {
   d.form.assigned_to = authUser.id
   let response

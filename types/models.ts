@@ -39,6 +39,7 @@ export interface ContactFormModel {
   // contact_communication_platforms?: { [key: number]: any[] }
   // contact_communication_platforms?: number[] | string[]
   contact_communication_platforms?: any[]
+  user_profile_id?: number | null
 
   created_at?: Date
   updated_at?: Date
