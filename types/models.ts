@@ -33,6 +33,7 @@ export interface ContactFormModel {
   age: AgeGroups | null
   baptism_date?: any | null
   baptized_by?: Numeric | null
+  baptized_by_name?: string | null
   current_prayers?: string
   faith_milestones?: number[] | null
   people_group?: Numeric[] | null

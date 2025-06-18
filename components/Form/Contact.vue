@@ -56,6 +56,14 @@
       />
       <!-- e.o NICKNAME -->
 
+      <!-- USER PROFILE -->
+      <FormPartialsUserProfile
+        :user-profile-id="d.form.user_profile_id"
+        @update="m.handle.emits.updateUserProfile"
+        @clear="m.handle.emits.clearUserProfile"
+      />
+      <!-- e.o USER PROFILE -->
+
       <!-- GENDER -->
       <VanCellGroup>
         <template #title>
@@ -155,7 +163,7 @@
       <!-- e.o PEOPLE GROUP -->
     </VanCellGroup>
 
-    <!-- CONTACT PLAGFORMS -->
+    <!-- CONTACT PLATFORMS -->
     <VanCellGroup :title="h.translate('contact_platforms')">
       <VanCell
         v-for="cp in s.communicationPlatform.communicationPlatforms"
@@ -223,7 +231,7 @@
                   width="26"
                   height="26"
                   style="margin-right: 10px"
-                  :src="useRuntimeConfig().public.rootURL + item.icon"
+                  :src="config.public.rootURL + item.icon"
                 />
                 {{ item.name }}
               </div>
@@ -235,31 +243,63 @@
     <!-- e.o FAITH MILESTONES -->
 
     <!-- BAPTISM -->
-    <VanCellGroup :title="h.translate('baptism')">
-      <!-- BAPTIZED BY -->
-      <VanField
-        v-model="baptizedByFieldValue"
-        readonly
-        :label="h.translate('baptized_by')"
-        :placeholder="h.translate('choose_baptized_by')"
-        @click="d.visibility.baptizedByPicker = true"
-      />
 
-      <VanPopup
-        v-model:show="d.visibility.baptizedByPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
-        <VanPicker
-          :model-value="baptizedByID"
-          :title="h.translate('baptized_by')"
-          :columns="contactList"
-          @cancel="d.visibility.baptizedByPicker = false"
-          @confirm="m.handle.click.confirmBaptizedByPicker"
+    <VanCellGroup :title="h.translate('baptism')">
+      <!-- BAPTIZED BY SELECT -->
+      <VanField :label="h.translate('baptized_by')">
+        <template #input>
+          <VanRadioGroup
+            v-model="d.visibility.baptizedByRadio"
+            direction="horizontal"
+            @change="m.handle.click.baptizedBySelect"
+          >
+            <VanRadio
+              style="margin-right: 10px"
+              name="contact"
+              >{{ h.translate("contact") }}</VanRadio
+            >
+            <VanRadio name="name">{{ h.translate("name") }}</VanRadio>
+          </VanRadioGroup>
+        </template>
+      </VanField>
+      <!-- e.o BAPTIZED BY SELECT -->
+
+      <!-- BAPTIZED BY CONTACT -->
+      <div v-if="d.visibility.baptizedByRadio === 'contact'">
+        <VanField
+          v-model="baptizedByFieldValue"
+          readonly
+          :label="h.translate('contact')"
+          :placeholder="h.translate('choose_contact')"
+          @click="d.visibility.baptizedByPicker = true"
         />
-      </VanPopup>
-      <!-- e.o BAPTIZED BY -->
+
+        <VanPopup
+          v-model:show="d.visibility.baptizedByPicker"
+          destroy-on-close
+          round
+          position="bottom"
+        >
+          <VanPicker
+            :model-value="baptizedByID"
+            :title="h.translate('baptized_by')"
+            :columns="contactList"
+            @cancel="d.visibility.baptizedByPicker = false"
+            @confirm="m.handle.click.confirmBaptizedByPicker"
+          />
+        </VanPopup>
+      </div>
+      <!-- e.o BAPTIZED BY CONTACT -->
+
+      <!-- BAPTIZED BY NAME -->
+      <div v-if="d.visibility.baptizedByRadio === 'name'">
+        <VanField
+          v-model="d.form.baptized_by_name as string"
+          :label="h.translate('name')"
+          :placeholder="h.translate('enter_name')"
+        />
+      </div>
+      <!-- e.o BAPTIZED BY NAME -->
 
       <!-- :model-value="baptizedByID"  -->
       <!-- BAPTISM DATE -->
@@ -384,6 +424,7 @@ const s = {
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 const h = useHelpers()
 const contactID = route.query.id ? Number(route.query.id) : undefined
 const helpers = useHelpers()
@@ -418,6 +459,7 @@ const d = reactive({
     baptizedByPicker: false,
     baptismDatePicker: false,
     prayerPromptPicker: false,
+    baptizedByRadio: "contact",
   },
   form: {
     name: "",
@@ -429,6 +471,7 @@ const d = reactive({
     faith_milestones: [] as number[],
     contact_communication_platforms: [] as any[],
     baptized_by: null,
+    baptized_by_name: "",
     baptism_date: null,
     assigned_to: null,
     current_prayers: "",
@@ -593,6 +636,9 @@ const m = {
         baptizedDatePicker.value = [day.value, month.value, year.value]
         d.visibility.baptismDatePicker = false
       },
+      baptizedBySelect: (e: any) => {
+        console.log("Selected Baptized By", e)
+      },
     },
 
     emits: {
@@ -619,6 +665,12 @@ const m = {
         if (index !== -1) {
           d.form.contact_communication_platforms.splice(index, 1)
         }
+      },
+      updateUserProfile: (value: number) => {
+        d.form.user_profile_id = value
+      },
+      clearUserProfile: () => {
+        d.form.user_profile_id = null
       },
     },
   },
@@ -708,6 +760,9 @@ onMounted(async () => {
     console.log("Res Data", res.data)
     if (res.data && res.data.length > 0) {
       d.form = res.data[0]
+      if (!d.form.baptized_by && d.form.baptized_by_name) {
+        d.visibility.baptizedByRadio = "name"
+      }
       if (d.form.faith_status_id) {
         helpers.setFromOptions({
           options: s.settings.options.faith,
