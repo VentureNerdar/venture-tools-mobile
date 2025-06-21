@@ -210,8 +210,34 @@
         </VanField>
         <!-- e.o IS VISITED -->
 
+        <!-- MEMBER COUNT BY PEOPLE GROUP BOOLEAN -->
+        <VanField
+          name="isMemberCountByPeopleGroup"
+          :label="h.translate('member_count_by_people_group')"
+        >
+          <template #input>
+            <VanSwitch
+              v-model="d.form.member_count_by_people_group"
+              @change="m.handle.click.memberCountByPeopleGroup"
+            />
+          </template>
+        </VanField>
+        <!-- e.o MEMBER COUNT BY PEOPLE GROUP BOOLEAN -->
+
+        <!-- MEMBER COUNT BY PEOPLE GROUP -->
+        <FormPartialsMemberCountByPeopleGroup
+          v-if="d.form.member_count_by_people_group"
+          :people-group-list="d.peopleGroupList"
+          :model-value="d.form.member_count_list_by_people_group"
+          @update:model-value="m.handle.emits.updateMemberCountByPeopleGroup"
+        />
+        <!-- e.o MEMBER COUNT BY PEOPLE GROUP -->
+
         <!-- CHURCH MEMBER COUNT -->
-        <VanField :label="h.translate('church_members_count')">
+        <VanField
+          v-if="!d.form.member_count_by_people_group"
+          :label="h.translate('church_members_count')"
+        >
           <template #input>
             <VanStepper
               v-model="d.form.church_members_count"
@@ -313,6 +339,7 @@ import {
   type BrowseConditionAll,
   type ChurchFormModel,
   type BrowseCondition,
+  type PeopleGroupFormModel,
 } from "~/types/index.d"
 
 const helpers = useHelpers()
@@ -363,8 +390,12 @@ const d = reactive({
     community_id: null,
     parent_church_id: null,
     current_prayers: "",
+    member_count_by_people_group: false,
+    member_count_list_by_people_group: [],
+    church_members: [],
   } as ChurchFormModel,
   prayer_prompt_id: null as number | null,
+  peopleGroupList: [] as PeopleGroupFormModel[],
   options: {
     communities: [] as FormattedOption[],
     parentChurches: [] as FormattedOption[],
@@ -379,6 +410,7 @@ const consume = {
   denominations: useConsumeApi(RoutePaths.DENOMINATIONS),
   churchPlanter: useConsumeApi(RoutePaths.USERS),
   prayerPrompts: useConsumeApi(RoutePaths.PRAYER_PROMPTS),
+  peopleGroups: useConsumeApi(RoutePaths.PEOPLE_GROUPS),
 }
 
 const m = {
@@ -474,6 +506,21 @@ const m = {
         d.form.current_prayers = selectedOptions[0].text
         d.visibility.prayerPromptPicker = false
       },
+      memberCountByPeopleGroup: async (value: boolean) => {
+        if (value && d.peopleGroupList.length === 0) {
+          d.peopleGroupList = await consume.peopleGroups.browse({
+            all: true,
+          })
+        }
+        if (!value) {
+          d.form.member_count_list_by_people_group = []
+        }
+
+        console.log(
+          "Value From Switch",
+          d.form.member_count_list_by_people_group,
+        )
+      },
     },
     emits: {
       // handleLocationSelected: (location: { lat: string; lng: string }) => {
@@ -497,6 +544,12 @@ const m = {
         )
         console.log("location from child", location)
       },
+      updateMemberCountByPeopleGroup: (memberCountList: any) => {
+        const filteredList = memberCountList.filter(
+          (item: any) => item.amount != 0,
+        )
+        d.form.member_count_list_by_people_group = filteredList
+      },
     },
   },
 }
@@ -510,13 +563,22 @@ onMounted(async () => {
           value: churchId,
         },
       ]),
-      with: `["churchPlanters"]`,
+      with: `["churchPlanters", "churchMembers"]`,
     } as BrowseCondition
     const res = await consume.churches.browse(bc)
 
     if (res.data && res.data.length > 0) {
       d.form = res.data[0]
       d.form.church_planters = []
+      if (res.data[0].church_members && res.data[0].church_members.length > 0) {
+        d.form.member_count_list_by_people_group = res.data[0].church_members
+      }
+
+      if (d.form.member_count_by_people_group) {
+        d.peopleGroupList = await consume.peopleGroups.browse({
+          all: true,
+        })
+      }
 
       helpers.setFromOptions({
         options: d.options.communities,

@@ -65,6 +65,13 @@ export interface ChurchFormModel {
   denomination_id?: number | null
   is_visited?: boolean | null
   church_members_count?: number | undefined
+  member_count_by_people_group?: boolean | null
+  member_count_list_by_people_group?: {
+    people_group_id: number
+    amount: number
+  }[]
+  church_members?: { people_group_id: number; amount: number }[]
+
   confession_of_faith_count?: number | undefined
   baptism_count?: number | undefined
   community_id: number | null
