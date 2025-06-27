@@ -1,0 +1,1 @@
+import{v as r}from"./C5sXpT68.js";const t=r("user",()=>{const e=JSON.parse(localStorage.getItem("users")||"{}"),s=JSON.parse(localStorage.getItem("userRoles")||"{}");return{users:e,userRoles:s}});export{t as u};
