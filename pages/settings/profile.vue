@@ -176,11 +176,10 @@ onMounted(() => {
 })
 
 const authUserRoleName = computed(() => {
-  return "Church Planter"
-  /*
+  // return "Disciple Maker"
+
   return s.roles.value.find((role: any) => role.id === form.value.user_role_id)
     ?.label
-    */
 })
 
 const m = {
