@@ -108,7 +108,7 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       // Register device with backend
-      await $fetch(`${config.public.apiURL}users/id/${userId}/devices/`, {
+      await $fetch(`${config.public.apiURL}users/id/${userId}/devices`, {
         method: "POST",
         body: {
           device_id: deviceId,
