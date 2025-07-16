@@ -88,6 +88,7 @@
         <!-- e.o LATITUDE -->
         <van-dialog
           v-model:show="d.visibility.showMaps"
+          :class="themeStore.darkMode ? 'dark-theme' : 'light-theme'"
           :title="h.translate('select_location')"
           :show-cancel-button="true"
           width="90%"
@@ -341,11 +342,13 @@ import {
   type BrowseCondition,
   type PeopleGroupFormModel,
 } from "~/types/index.d"
+import { useThemeStore } from "~/stores/useTheme"
 
 const helpers = useHelpers()
 const route = useRoute()
 const router = useRouter()
 const auth = useAuthStore()
+const themeStore = useThemeStore()
 const churchId = route.query.id ? Number(route.query.id) : undefined
 
 const communityFieldValue = ref("")
@@ -645,11 +648,19 @@ m.consume.defaultPrayerPrompts()
 </script>
 
 <style scoped>
-::v-deep(.van-dialog__confirm) {
+:global(.van-dialog.dark-theme .van-dialog__footer .van-dialog__confirm) {
   background-color: #0a233d !important;
 }
 
-::v-deep(.van-dialog__cancel) {
+:global(.van-dialog.dark-theme .van-dialog__footer .van-dialog__cancel) {
   background-color: #0a233d !important;
+}
+
+:global(.van-dialog.light-theme .van-dialog__footer .van-dialog__confirm) {
+  background-color: #fff !important;
+}
+
+:global(.van-dialog.light-theme .van-dialog__footer .van-dialog__cancel) {
+  background-color: #fff !important;
 }
 </style>

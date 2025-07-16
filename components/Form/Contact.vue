@@ -680,9 +680,11 @@ const m = {
       d.contacts = await consume.contacts.browse(
         {
           all: true,
+          with: JSON.stringify(["assignedTo", "assignedTo.movement"]),
         },
         false,
       )
+      console.log("Contacts Data", d.contacts)
     },
     prayerPrompt: async () => {
       d.prayerPrompts = await consume.prayerPrompt.browse(
@@ -843,7 +845,10 @@ onMounted(async () => {
 })
 
 const contactList = computed(() => {
-  return d.contacts.map((pg: any) => ({ text: pg.name, value: pg.id }))
+  return d.contacts.map((pg: any) => ({
+    text: `${pg.name}\n | ${pg.assigned_to?.name ?? ""} | (${pg.assigned_to?.movement?.name ?? ""}) `,
+    value: pg.id,
+  }))
 })
 
 const prayerPromptList = computed(() => {
@@ -876,3 +881,11 @@ const onSubmit = async () => {
   }
 }
 </script>
+
+<style scoped>
+::v-deep(.van-ellipsis) {
+  white-space: pre-line !important;
+  text-align: center;
+  line-height: 1.4;
+}
+</style>

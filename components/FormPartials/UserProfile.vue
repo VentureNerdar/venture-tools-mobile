@@ -37,6 +37,7 @@
     <!-- show-cancel-button -->
     <VanDialog
       v-model:show="d.visibility.modal"
+      :class="themeStore.darkMode ? 'dark-theme' : 'light-theme'"
       :title="h.translate('add_user_profile')"
       :confirm-button-text="h.translate('cancel')"
       @cancel="m.handle.click.close"
@@ -59,6 +60,7 @@
         >
           <VanCell
             :title="user.label"
+            :label="user?.verifier + '(' + user.movement + ')'"
             @click="m.handle.click.rowClick(user)"
           />
         </VanCellGroup>
@@ -69,11 +71,14 @@
 
 <script lang="ts" setup>
 import { RoutePaths } from "~/types/index.d"
+import { useThemeStore } from "~/stores/useTheme"
 
 const h = useHelpers()
 const consume = {
   users: useConsumeApi(RoutePaths.USERS),
 }
+
+const themeStore = useThemeStore()
 
 const props = withDefaults(
   defineProps<{
@@ -90,7 +95,12 @@ const d = reactive({
   visibility: {
     modal: false,
   },
-  profileUsers: [] as { label: string; value: number }[],
+  profileUsers: [] as {
+    label: string
+    value: number
+    verifier: string
+    movement: string
+  }[],
   profileUser: "",
   isEditing: false,
   isAllowClear: false,
@@ -137,17 +147,27 @@ const m = {
         return {
           label: user.name,
           value: user.id,
+          verifier: user.verifier?.name ?? "",
+          movement: user.movement?.name ?? "",
         }
       })
     },
   },
   consume: {
     defaultUserProfileOptions: async () => {
-      const users = await consume.users.list({
-        labelOption: "name",
+      const users = await consume.users.browse({
+        all: true,
         limit: 20,
+        with: JSON.stringify(["verifier", "movement"]),
       })
-      d.profileUsers = users
+      d.profileUsers = users.map((user: any) => {
+        return {
+          label: user.name,
+          value: user.id,
+          verifier: user.verifier?.name ?? "",
+          movement: user.movement?.name ?? "",
+        }
+      })
     },
   },
 }
@@ -188,9 +208,16 @@ watch(
 </script>
 
 <style scoped>
-::v-deep(.van-dialog__confirm),
-::v-deep(.van-dialog__cancel) {
+.dark-theme ::v-deep(.van-dialog__confirm),
+.dark-theme ::v-deep(.van-dialog__cancel) {
   background-color: #0c3156 !important;
+  color: white;
+}
+
+.light-theme ::v-deep(.van-dialog__confirm),
+.light-theme ::v-deep(.van-dialog__cancel) {
+  background-color: #f1f3f5 !important;
+  color: black;
 }
 .scrollable-dialog-content {
   min-height: 300px;
@@ -199,7 +226,11 @@ watch(
   margin-top: 10px;
 }
 
-::v-deep(.van-search__action) {
+.dark-theme ::v-deep(.van-search__action) {
   color: white !important;
+}
+
+.light-theme ::v-deep(.van-search__action) {
+  color: black !important;
 }
 </style>

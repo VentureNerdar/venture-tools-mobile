@@ -53,6 +53,7 @@
         <van-dialog
           v-model:show="showMaps"
           :title="h.translate('select_location')"
+          :class="themeStore.darkMode ? 'dark-theme' : 'light-theme'"
           :show-cancel-button="true"
           width="90%"
           @confirm="handleLocationConfirm"
@@ -233,9 +234,11 @@ import type {
   CommunityCommittee,
   CommunityPeacePersonFormModel,
 } from "../../types/models"
+import { useThemeStore } from "~/stores/useTheme"
 
 const route = useRoute()
 const router = useRouter()
+const themeStore = useThemeStore()
 const communityID = route.query.id ? Number(route.query.id) : undefined
 const communicationChecklist = ref<CommunityChecklistFormModel[]>([])
 const showMaps = ref(false)
@@ -388,11 +391,19 @@ const onSubmit = async () => {
 </script>
 
 <style scoped>
-::v-deep(.van-dialog__confirm) {
+.dark-theme ::v-deep(.van-dialog__confirm) {
   background-color: #0a233d !important;
 }
 
-::v-deep(.van-dialog__cancel) {
+.light-theme ::v-deep(.van-dialog__confirm) {
+  background-color: #fff !important;
+}
+
+.dark-theme ::v-deep(.van-dialog__cancel) {
   background-color: #0a233d !important;
+}
+
+.light-theme ::v-deep(.van-dialog__cancel) {
+  background-color: #fff !important;
 }
 </style>

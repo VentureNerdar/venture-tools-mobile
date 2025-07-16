@@ -1,5 +1,8 @@
 <template>
-  <VanConfigProvider theme="dark" :theme-vars="themeVars">
+  <VanConfigProvider
+    :theme="currentTheme"
+    :theme-vars="currentThemeVars"
+  >
     <NuxtLayout>
       <NuxtPage />
     </NuxtLayout>
@@ -8,15 +11,32 @@
 
 <script setup lang="ts">
 import type { ConfigProviderThemeVars } from "vant"
+import { useThemeStore } from "./stores/useTheme"
+
+const themeStore = useThemeStore()
+
+const darkTheme = "dark"
+const lightTheme = "light"
+
+const currentTheme = computed(() =>
+  themeStore.darkMode ? darkTheme : lightTheme,
+)
 
 const bgColor1 = "#021526"
 const bgColor2 = "#0a233d"
 const bgColor3 = "#0c3156"
-
 const colorTransparent = "rgba(255, 255, 255, 0.1)"
 const colorTransparent2 = "rgba(255, 255, 255, 0.5)"
 
-const themeVars: ConfigProviderThemeVars = {
+// light theme
+const lightBgColor1 = "#ffffff"
+const lightBgColor2 = "#f7f8fa"
+const lightBgColor3 = "#e5e5e5"
+
+const colorTransparentLight = "rgba(0, 0, 0, 0.06)"
+const colorTransparentLight2 = "rgba(0, 0, 0, 0.3)"
+
+const darkThemeVars: ConfigProviderThemeVars = {
   borderColor: colorTransparent,
   primaryColor: "#17badf",
 
@@ -51,8 +71,47 @@ const themeVars: ConfigProviderThemeVars = {
   popupBackground: bgColor2,
 
   dialogBackground: bgColor2,
-  
 }
+
+const lightThemeVars: ConfigProviderThemeVars = {
+  borderColor: colorTransparentLight,
+  primaryColor: "#17badf",
+
+  background: lightBgColor1,
+  navBarBackground: lightBgColor2,
+
+  tabbarBackground: lightBgColor2,
+  tabbarItemActiveBackground: lightBgColor3,
+  tabsNavBackground: lightBgColor2,
+
+  searchBackground: lightBgColor2,
+  searchContentBackground: "#ffffff",
+  searchActionTextColor: "#1989fa",
+  fieldPlaceholderTextColor: colorTransparentLight2,
+
+  cellGroupBackground: "#ffffff",
+  cellGroupTitleColor: colorTransparentLight2,
+
+  cellBackground: "#ffffff",
+  cellActiveColor: lightBgColor3,
+  cellBorderColor: colorTransparentLight,
+
+  passwordInputBackground: "#ffffff",
+  pickerBackground: "#ffffff",
+  pickerMaskColor:
+    "linear-gradient(180deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, .4)), linear-gradient(0deg, rgba(255, 255, 255, .8), rgba(255, 255, 255, .4))",
+
+  numberKeyboardBackground: "#ffffff",
+  numberKeyboardKeyBackground: "#ffffff",
+  numberKeyboardKeyActiveColor: lightBgColor3,
+
+  popupBackground: "#ffffff",
+  dialogBackground: "#ffffff",
+}
+
+const currentThemeVars = computed(() =>
+  themeStore.darkMode ? darkThemeVars : lightThemeVars,
+)
 </script>
 
 <style lang="scss">
