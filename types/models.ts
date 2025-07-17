@@ -58,6 +58,8 @@ export interface ChurchFormModel {
   location_longitude: string | null
   location_latitude: string | null
   google_location_data: string | null
+  province_name: string | null
+  district_name: string | null
   description?: string
   founded_at?: any | null
   phone_number?: string
@@ -191,6 +193,8 @@ export interface CommunityFormModel {
   location_longitude: string | null
   location_latitude: string | null
   google_location_data: string | null
+  province_name: string | null
+  district_name: string | null
   conducted_survey_of_community_needs: boolean
   community_needs_1: string | null
   community_needs_2: string | null

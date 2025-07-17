@@ -252,6 +252,8 @@ const d = reactive({
     location_longitude: "",
     location_latitude: "",
     google_location_data: "",
+    province_name: "",
+    district_name: "",
     conducted_survey_of_community_needs: false,
     checklists: [],
     community_needs_1: "",
@@ -339,6 +341,10 @@ const m = {
           d.form.location_latitude,
           d.form.location_longitude,
         )
+        if (place.adminLevels) {
+          d.form.province_name = place.adminLevels.administrative_area_level_1
+          d.form.district_name = place.adminLevels.administrative_area_level_2
+        }
         console.log("location from child", location)
       },
     },

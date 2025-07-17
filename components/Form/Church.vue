@@ -385,6 +385,8 @@ const d = reactive({
     location_longitude: "",
     location_latitude: "",
     google_location_data: "",
+    province_name: "",
+    district_name: "",
     denomination_id: null,
     is_visited: false,
     church_members_count: undefined,
@@ -539,6 +541,10 @@ const m = {
         d.form.location_latitude = location.lat
         d.form.location_longitude = location.lng
         d.form.google_location_data = JSON.stringify(place)
+        if (place.adminLevels) {
+          d.form.province_name = place.adminLevels.administrative_area_level_1
+          d.form.district_name = place.adminLevels.administrative_area_level_2
+        }
         console.log(
           "location from parent",
           d.form.location_latitude,

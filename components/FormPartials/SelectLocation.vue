@@ -332,6 +332,38 @@ const getPlaceByPlaceID = async (
   const lng = place.location.lng()
   const lat = place.location.lat()
 
+  const components =
+    place.addressComponents as google.maps.places.AddressComponent[]
+  const adminLevels = {
+    administrative_area_level_1: "",
+    administrative_area_level_2: "",
+    administrative_area_level_3: "",
+    locality: "",
+    sublocality: "",
+    country: "",
+    postal_code: "",
+  }
+
+  components.forEach((component) => {
+    const types = component.types
+
+    if (types.includes("administrative_area_level_1")) {
+      adminLevels.administrative_area_level_1 = component.longText
+    } else if (types.includes("administrative_area_level_2")) {
+      adminLevels.administrative_area_level_2 = component.longText
+    } else if (types.includes("administrative_area_level_3")) {
+      adminLevels.administrative_area_level_3 = component.longText
+    } else if (types.includes("locality")) {
+      adminLevels.locality = component.longText
+    } else if (types.includes("sublocality")) {
+      adminLevels.sublocality = component.longText
+    } else if (types.includes("country")) {
+      adminLevels.country = component.longText
+    } else if (types.includes("postal_code")) {
+      adminLevels.postal_code = component.longText
+    }
+  })
+
   modalTitle.value = place.displayName
   modalAddress.value = place.formattedAddress
 
@@ -364,7 +396,50 @@ const setMap = (post: { lat: number; lng: number }, viewport: any) => {
 const getGeoCode = async (position: any) => {
   const geocoder = new Geocoder()
   const response = await geocoder.geocode({ location: position })
-  emit("update", position, response)
+  // emit("update", position, response)
+  if (!response.results || response.results.length === 0) return
+
+  const result = response.results[0]
+  const components = result.address_components
+
+  const adminLevels = {
+    administrative_area_level_1: "",
+    administrative_area_level_2: "",
+    administrative_area_level_3: "",
+    locality: "",
+    sublocality: "",
+    country: "",
+    postal_code: "",
+  }
+
+  components.forEach((component: any) => {
+    const types = component.types
+
+    if (types.includes("administrative_area_level_1")) {
+      adminLevels.administrative_area_level_1 = component.long_name
+    } else if (types.includes("administrative_area_level_2")) {
+      adminLevels.administrative_area_level_2 = component.long_name
+    } else if (types.includes("administrative_area_level_3")) {
+      adminLevels.administrative_area_level_3 = component.long_name
+    } else if (types.includes("locality")) {
+      adminLevels.locality = component.long_name
+    } else if (types.includes("sublocality")) {
+      adminLevels.sublocality = component.long_name
+    } else if (types.includes("country")) {
+      adminLevels.country = component.long_name
+    } else if (types.includes("postal_code")) {
+      adminLevels.postal_code = component.long_name
+    }
+  })
+
+  modalTitle.value = `Latitude: ${position.lat}, Longitude: ${position.lng}`
+  modalAddress.value = result.formatted_address
+
+  emit("update", position, {
+    formatted_address: result.formatted_address,
+    adminLevels,
+    raw: result,
+  })
 }
 </script>
 
