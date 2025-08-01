@@ -12,12 +12,16 @@ definePageMeta({
   name: "Communication Platforms",
 })
 
+onMounted(async () => {
+  await useCommunicationPlatformStore().loadFromSecureStorage()
+})
+
 const route = useRoute()
 
 const currentPlatform = computed(() => {
   return "platform" in route.query
     ? useCommunicationPlatformStore().communicationPlatforms.find(
-        (x: any) => x.id === parseInt(route.query.platform as string),
+        (x: any) => x.id === parseInt(route.query.platform as string)
       )
     : null
 })

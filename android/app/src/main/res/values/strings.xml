@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Venture</string>
+    <string name="title_activity_main">Venture</string>
+    <string name="package_name">com.klonotech.venture</string>
+    <string name="custom_url_scheme">com.klonotech.venture</string>
+</resources>

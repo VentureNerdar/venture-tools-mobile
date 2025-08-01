@@ -1,7 +1,14 @@
 <template>
   <div class="pin-container">
     <div class="pin-header">
-      <h2>{{ h.translate('enter_pin') == "" ? 'Enter PIN Number' : h.translate('enter_pin') }}</h2>
+      <h2>
+        <!-- {{
+          h.translate("enter_pin") == ""
+            ? "Enter PIN Number"
+            : h.translate("enter_pin")
+        }} -->
+        Enter Pin
+      </h2>
     </div>
 
     <VanPasswordInput
@@ -21,27 +28,32 @@
 </template>
 
 <script lang="ts" setup>
-import { reactive } from 'vue'
-import { useRouter } from 'vue-router'
-import { useSettingStore } from '~/stores/useSettingStore'
-import { useHelpers } from '~/composables/useHelpers'
+import { reactive } from "vue"
+import { useRouter } from "vue-router"
+import { useSettingStore } from "~/stores/useSettingStore"
+import { useHelpers } from "~/composables/useHelpers"
 
 definePageMeta({
   name: "Enter PIN",
 })
 
+onMounted(async () => {
+  await useSettingStore().loadFromSecureStorage()
+})
+
 const router = useRouter()
 const settingStore = useSettingStore()
+
 const h = useHelpers()
 
 const d = reactive({
   form: {
-    confirmPin: '',
+    confirmPin: "",
   },
   show: {
     confirmPinKeyboard: false,
   },
-  errorInfo: '',
+  errorInfo: "",
 })
 
 const m = {
@@ -54,24 +66,35 @@ const m = {
   },
 }
 
-watch(() => d.form.confirmPin, (newValue) => {
-  if (newValue.length === 4) {
-    verifyPin(newValue)
+watch(
+  () => d.form.confirmPin,
+  (newValue) => {
+    if (newValue.length === 4) {
+      verifyPin(newValue)
+    }
   }
-})
+)
 
 async function verifyPin(pin: string) {
   try {
-    const storedPin = settingStore.pinNumber.toString()
+    const storedPin = settingStore.pinCode
+
     if (pin === storedPin) {
-      router.push('/splash')
+      router.push("/splash")
     } else {
-      d.errorInfo = h.translate('incorrect_pin') == "" ? "Incorrect PIN" : h.translate('incorrect_pin')
-      d.form.confirmPin = ''
+      d.errorInfo =
+        h.translate("incorrect_pin") == ""
+          ? "Incorrect PIN"
+          : h.translate("incorrect_pin")
+      d.form.confirmPin = ""
     }
   } catch (e) {
-    d.errorInfo = h.translate('error_occurred') == "" ? "Error Occurred" : h.translate('error_occurred')
-    d.form.confirmPin = ''
+    console.log(e)
+    d.errorInfo =
+      h.translate("error_occurred") == ""
+        ? "Error Occurred"
+        : h.translate("error_occurred")
+    d.form.confirmPin = ""
   }
 }
 </script>

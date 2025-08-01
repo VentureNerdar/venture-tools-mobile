@@ -4,12 +4,20 @@
     <template v-if="d.hasPin && !d.showPinForm">
       <VanCellGroup>
         <VanCell>
-          <VanButton block type="primary" @click="m.handle.showChangePinForm">
+          <VanButton
+            block
+            type="primary"
+            @click="m.handle.showChangePinForm"
+          >
             Change PIN Number
           </VanButton>
         </VanCell>
         <VanCell>
-          <VanButton block type="danger" @click="m.handle.focus.removePin">
+          <VanButton
+            block
+            type="danger"
+            @click="m.handle.focus.removePin"
+          >
             Remove PIN Number
           </VanButton>
         </VanCell>
@@ -28,11 +36,14 @@
           <VanNumberKeyboard
             v-model="d.form.currentPin"
             :show="d.show.removePinKeyboard"
-            @blur="d.show.removePinKeyboard = false"
           />
         </VanCell>
         <VanCell>
-          <VanButton block type="danger" @click="m.handle.removePin">
+          <VanButton
+            block
+            type="danger"
+            @click="m.handle.removePin"
+          >
             Confirm Remove
           </VanButton>
         </VanCell>
@@ -98,7 +109,12 @@
       </VanCellGroup>
 
       <VanCell>
-        <VanButton block type="success" :disabled="!bothPinFilledAndMatch" @click="savePin">
+        <VanButton
+          block
+          type="success"
+          :disabled="!bothPinFilledAndMatch"
+          @click="savePin"
+        >
           {{ h.translate("save") }}
         </VanButton>
       </VanCell>
@@ -107,6 +123,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useSettingStore } from "~/stores/useSettingStore"
+
 const emits = defineEmits(["newPinChanged"])
 const h = useHelpers()
 const router = useRouter()
@@ -130,109 +148,116 @@ const d = reactive({
 
   isChangingPin: false,
   hasPin: false,
-});
+})
 
 // Check if pin exists in localStorage
-onMounted(() => {
-  const existingPin = localStorage.getItem('PINNumber');
-  d.hasPin = !!existingPin;
-});
+// onMounted(() => {
+//   const existingPin = localStorage.getItem("PINNumber")
+//   d.hasPin = !!existingPin
+// })
+
+const settingStore = useSettingStore()
+
+onMounted(async () => {
+  await settingStore.loadFromSecureStorage()
+  d.hasPin = settingStore.pinNumber
+})
 
 const m = {
   handle: {
     focus: {
       pin: () => {
-        d.show.pinKeyboard = true;
-        d.show.confirmPinKeyboard = false;
-        d.show.currentPinKeyboard = false;
-        d.show.removePinKeyboard = false;
+        d.show.pinKeyboard = true
+        d.show.confirmPinKeyboard = false
+        d.show.currentPinKeyboard = false
+        d.show.removePinKeyboard = false
       },
 
       confirmPin: () => {
-        d.show.confirmPinKeyboard = true;
-        d.show.pinKeyboard = false;
-        d.show.currentPinKeyboard = false;
-        d.show.removePinKeyboard = false;
+        d.show.confirmPinKeyboard = true
+        d.show.pinKeyboard = false
+        d.show.currentPinKeyboard = false
+        d.show.removePinKeyboard = false
       },
 
       currentPin: () => {
-        d.show.currentPinKeyboard = true;
-        d.show.pinKeyboard = false;
-        d.show.confirmPinKeyboard = false;
-        d.show.removePinKeyboard = false;
+        d.show.currentPinKeyboard = true
+        d.show.pinKeyboard = false
+        d.show.confirmPinKeyboard = false
+        d.show.removePinKeyboard = false
       },
 
       removePin: () => {
-        d.show.removePinKeyboard = true;
-        d.show.pinKeyboard = false;
-        d.show.confirmPinKeyboard = false;
-        d.show.currentPinKeyboard = false;
+        d.show.removePinKeyboard = true
+        d.show.pinKeyboard = false
+        d.show.confirmPinKeyboard = false
+        d.show.currentPinKeyboard = false
       },
     },
 
     showChangePinForm: () => {
-      d.showPinForm = true;
-      d.isChangingPin = true;
+      d.showPinForm = true
+      d.isChangingPin = true
     },
 
-    removePin: () => {
-      if (d.form.currentPin === localStorage.getItem('PINNumber')) {
-        localStorage.removeItem('PINNumber');
+    removePin: async () => {
+      d.show.removePinKeyboard = false
+      if (d.form.currentPin === settingStore.pinCode) {
+        await settingStore.removePinNumber()
         showNotify({
-          type: 'success',
-          message: 'PIN removed successfully',
+          type: "success",
+          message: "PIN removed successfully",
           duration: 2000,
-        });
+        })
         setTimeout(() => {
-          router.push('/settings/security');
-        }, 300);
+          router.push("/settings/security")
+        }, 300)
       } else {
         showNotify({
-          type: 'danger',
-          message: 'Incorrect PIN',
+          type: "danger",
+          message: "Incorrect PIN",
           duration: 2000,
-        });
+        })
       }
     },
   },
-};
+}
 
 const bothPinFilledAndMatch = computed(() => {
-  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4;
-  const matchFlag = d.form.pin === d.form.confirmPin;
-  
+  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4
+  const matchFlag = d.form.pin === d.form.confirmPin
+
   if (d.isChangingPin) {
-    return lengthFlag && matchFlag && d.form.currentPin === localStorage.getItem('pin');
+    return lengthFlag && matchFlag && d.form.currentPin === settingStore.pinCode
   }
-  
-  return lengthFlag && matchFlag;
-});
+
+  return lengthFlag && matchFlag
+})
 
 watch([() => d.form.pin, () => d.form.confirmPin], () => {
-  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4;
-  const matchFlag = d.form.pin === d.form.confirmPin;
+  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4
+  const matchFlag = d.form.pin === d.form.confirmPin
 
-  d.errorInfo = lengthFlag && !matchFlag ? "PINs do not match" : "";
-});
+  d.errorInfo = lengthFlag && !matchFlag ? "PINs do not match" : ""
+})
 
 watch(
   () => d.form.pin,
   (newPin) => {
-    if(newPin.length > 4) {
+    if (newPin.length > 4) {
       d.form.pin = newPin.slice(0, 4)
-      console.log('new pin!', d.form.pin)
     }
 
     if (newPin.length === 4) {
-      emits("newPinChanged", newPin);
+      emits("newPinChanged", newPin)
     }
-  },
-);
+  }
+)
 
 watch(
   () => d.form.confirmPin,
   (newPin) => {
-    if(newPin.length > 4) {
+    if (newPin.length > 4) {
       d.form.confirmPin = newPin.slice(0, 4)
     }
   }
@@ -241,28 +266,29 @@ watch(
 watch(
   () => d.form.currentPin,
   (val) => {
-    console.log(d.form.currentPin)
     if (val.length > 4) {
       d.form.currentPin = val.slice(0, 4)
     }
   }
 )
 
-const savePin = () => {
+const savePin = async () => {
   if (bothPinFilledAndMatch.value) {
-    localStorage.setItem('PINNumber', d.form.pin);
-    
+    await settingStore.setPinNumber(d.form.pin)
+
     // Show success notification
     showNotify({
-      type: 'success',
-      message: d.isChangingPin ? 'PIN changed successfully' : 'PIN created successfully',
+      type: "success",
+      message: d.isChangingPin
+        ? "PIN changed successfully"
+        : "PIN created successfully",
       duration: 2000,
-    });
+    })
 
     // Navigate back to security page after a short delay
     setTimeout(() => {
-      router.push('/settings/security');
-    }, 300);
+      router.push("/settings/security")
+    }, 300)
   }
-};
+}
 </script>

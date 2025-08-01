@@ -57,7 +57,12 @@
     </VanCellGroup>
 
     <VanCell>
-      <VanButton block type="success" :disabled="!bothPinFilledAndMatch" @click="savePin">
+      <VanButton
+        block
+        type="success"
+        :disabled="!bothPinFilledAndMatch"
+        @click="savePin"
+      >
         Save
       </VanButton>
     </VanCell>
@@ -65,6 +70,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useSettingStore } from "~/stores/useSettingStore"
+
 const router = useRouter()
 
 const d = reactive({
@@ -82,70 +89,79 @@ const d = reactive({
     confirmPinKeyboard: false,
     currentPinKeyboard: false,
   },
-});
+})
+
+const settingStore = useSettingStore()
+
+onMounted(async () => {
+  await settingStore.loadFromSecureStorage()
+})
 
 const m = {
   handle: {
     focus: {
       pin: () => {
-        d.show.pinKeyboard = true;
-        d.show.confirmPinKeyboard = false;
-        d.show.currentPinKeyboard = false;
+        d.show.pinKeyboard = true
+        d.show.confirmPinKeyboard = false
+        d.show.currentPinKeyboard = false
       },
 
       confirmPin: () => {
-        d.show.confirmPinKeyboard = true;
-        d.show.pinKeyboard = false;
-        d.show.currentPinKeyboard = false;
+        d.show.confirmPinKeyboard = true
+        d.show.pinKeyboard = false
+        d.show.currentPinKeyboard = false
       },
 
       currentPin: () => {
-        d.show.currentPinKeyboard = true;
-        d.show.pinKeyboard = false;
-        d.show.confirmPinKeyboard = false;
+        d.show.currentPinKeyboard = true
+        d.show.pinKeyboard = false
+        d.show.confirmPinKeyboard = false
       },
     },
     blur: {
       currentPin: () => {
-        d.show.currentPinKeyboard = false;
-        if (d.form.currentPin.length === 4 && d.form.currentPin !== localStorage.getItem('PINNumber')) {
-          d.currentPinError = 'Incorrect PIN';
+        d.show.currentPinKeyboard = false
+        if (
+          d.form.currentPin.length === 4 &&
+          d.form.currentPin !== settingStore.pinCode
+        ) {
+          d.currentPinError = "Incorrect PIN"
         } else {
-          d.currentPinError = '';
+          d.currentPinError = ""
         }
       },
     },
   },
-};
+}
 
 const bothPinFilledAndMatch = computed(() => {
-  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4;
-  const matchFlag = d.form.pin === d.form.confirmPin;
-  const currentPinCorrect = d.form.currentPin === localStorage.getItem('PINNumber');
-  
-  return lengthFlag && matchFlag && currentPinCorrect;
-});
+  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4
+  const matchFlag = d.form.pin === d.form.confirmPin
+  const currentPinCorrect = d.form.currentPin === settingStore.pinCode
+
+  return lengthFlag && matchFlag && currentPinCorrect
+})
 
 watch([() => d.form.pin, () => d.form.confirmPin], () => {
-  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4;
-  const matchFlag = d.form.pin === d.form.confirmPin;
+  const lengthFlag = d.form.pin.length === 4 && d.form.confirmPin.length === 4
+  const matchFlag = d.form.pin === d.form.confirmPin
 
-  d.errorInfo = lengthFlag && !matchFlag ? "PINs do not match" : "";
-});
+  d.errorInfo = lengthFlag && !matchFlag ? "PINs do not match" : ""
+})
 
 const savePin = () => {
   if (bothPinFilledAndMatch.value) {
-    localStorage.setItem('PINNumber', d.form.pin);
-    
+    settingStore.setPinNumber(d.form.pin)
+
     showNotify({
-      type: 'success',
-      message: 'PIN changed successfully',
+      type: "success",
+      message: "PIN changed successfully",
       duration: 2000,
-    });
+    })
 
     setTimeout(() => {
-      router.push('/settings/security');
-    }, 300);
+      router.push("/settings/security")
+    }, 300)
   }
-};
-</script> 
+}
+</script>

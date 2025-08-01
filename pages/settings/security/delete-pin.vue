@@ -20,7 +20,12 @@
     </VanCellGroup>
 
     <VanCell>
-      <VanButton block type="danger" :disabled="!isPinCorrect" @click="removePin">
+      <VanButton
+        block
+        type="danger"
+        :disabled="!isPinCorrect"
+        @click="removePin"
+      >
         Remove PIN
       </VanButton>
     </VanCell>
@@ -28,10 +33,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useSettingStore } from '~/stores/useSettingStore'
+import { useSettingStore } from "~/stores/useSettingStore"
 
 const router = useRouter()
 const settingStore = useSettingStore()
+onMounted(async () => {
+  await settingStore.loadFromSecureStorage()
+})
 
 const d = reactive({
   form: {
@@ -43,44 +51,50 @@ const d = reactive({
   show: {
     currentPinKeyboard: false,
   },
-});
+})
 
 const m = {
   handle: {
     focus: {
       currentPin: () => {
-        d.show.currentPinKeyboard = true;
+        d.show.currentPinKeyboard = true
       },
     },
     blur: {
       currentPin: () => {
-        d.show.currentPinKeyboard = false;
-        if (d.form.currentPin.length === 4 && d.form.currentPin !== localStorage.getItem('PINNumber')) {
-          d.currentPinError = 'Incorrect PIN';
+        d.show.currentPinKeyboard = false
+        if (
+          d.form.currentPin.length === 4 &&
+          d.form.currentPin !== settingStore.pinCode
+        ) {
+          d.currentPinError = "Incorrect PIN"
         } else {
-          d.currentPinError = '';
+          d.currentPinError = ""
         }
       },
     },
   },
-};
+}
 
 const isPinCorrect = computed(() => {
-  return d.form.currentPin.length === 4 && d.form.currentPin === localStorage.getItem('PINNumber');
-});
+  return (
+    d.form.currentPin.length === 4 && d.form.currentPin === settingStore.pinCode
+  )
+})
 
 const removePin = () => {
+  console.log(isPinCorrect.value)
   if (isPinCorrect.value) {
-    localStorage.removeItem('PINNumber');
-    settingStore.setApplicationMask(false);
+    settingStore.removePinNumber()
+    settingStore.setApplicationMask(false)
     showNotify({
-      type: 'success',
-      message: 'PIN removed successfully',
+      type: "success",
+      message: "PIN removed successfully",
       duration: 2000,
-    });
+    })
     setTimeout(() => {
-      router.push('/settings/security');
-    }, 300);
+      router.push("/settings/security")
+    }, 300)
   }
-};
+}
 </script>

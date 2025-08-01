@@ -1,9 +1,12 @@
 <template>
   <div>
-    <div class="landing-title">{{h.translate("venture_tools")}}</div>
+    <div class="landing-title">{{ h.translate("venture_tools") }}</div>
 
     <div class="wrap-links">
-      <VanRow :gutter="[20, 20]" justify="space-between">
+      <VanRow
+        :gutter="[20, 20]"
+        justify="space-between"
+      >
         <VanCol span="12">
           <div>
             <NuxtLink to="/prayers">
@@ -50,7 +53,10 @@
     </div>
 
     <div class="wrap-profile">
-      <NuxtLink to="/settings" style="color: white">
+      <NuxtLink
+        to="/settings"
+        style="color: white"
+      >
         <SettingsRound />
       </NuxtLink>
     </div>
@@ -70,14 +76,21 @@ import { useAuthStore } from "~/stores/useAuthStore"
 import { useLanguageStore } from "~/stores/useLanguageStore"
 import { useSettingStore } from "~/stores/useSettingStore"
 
-const authUser = useAuthStore().authUser
-const languages = useLanguageStore().languages
+const authStore = useAuthStore()
+const languageStore = useLanguageStore()
+const languages = languageStore.languages
 
-onMounted(() => {
-  const userPreferredLanguage = languages.find((language:any) => language.id === authUser.preferred_language_id)
-  console.log("+++++++++", userPreferredLanguage)
-  if(userPreferredLanguage) {
-    useSettingStore().setUserPreferredLanguage(userPreferredLanguage)
+onMounted(async () => {
+  await languageStore.loadFromSecureStorage()
+
+  const settingStore = useSettingStore()
+  await settingStore.loadFromSecureStorage()
+
+  const userPreferredLanguage = languages.find(
+    (language: any) => language.id === authStore.authUser?.preferred_language_id
+  )
+  if (userPreferredLanguage) {
+    settingStore.setUserPreferredLanguage(userPreferredLanguage)
   }
 })
 

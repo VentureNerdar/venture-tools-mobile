@@ -523,7 +523,7 @@ const m = {
 
         console.log(
           "Value From Switch",
-          d.form.member_count_list_by_people_group,
+          d.form.member_count_list_by_people_group
         )
       },
     },
@@ -536,7 +536,7 @@ const m = {
       //  }
       handleLocationSelected: (
         location: { lat: string; lng: string },
-        place: any,
+        place: any
       ) => {
         d.form.location_latitude = location.lat
         d.form.location_longitude = location.lng
@@ -549,13 +549,13 @@ const m = {
           "location from parent",
           d.form.location_latitude,
           d.form.location_longitude,
-          d.form.google_location_data,
+          d.form.google_location_data
         )
         console.log("location from child", location)
       },
       updateMemberCountByPeopleGroup: (memberCountList: any) => {
         const filteredList = memberCountList.filter(
-          (item: any) => item.amount != 0,
+          (item: any) => item.amount != 0
         )
         d.form.member_count_list_by_people_group = filteredList
       },
@@ -631,9 +631,9 @@ const onSubmit = async () => {
     !Array.isArray(d.form.church_planters) ||
     d.form.church_planters.length === 0
   ) {
-    d.form.church_planters = [auth.authUser.id]
+    d.form.church_planters = [auth.authUser?.id]
   }
-  d.form.assigned_to = auth.authUser.id
+  d.form.assigned_to = auth.authUser?.id
   let response
   if (churchId) {
     const editChurchConsume = useConsumeApi(RoutePaths.CHURCHES, churchId)

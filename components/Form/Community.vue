@@ -284,7 +284,7 @@ const m = {
       },
       communityPeacePersonUpdated: (pp: CommunityPeacePersonFormModel) => {
         const index = d.form.peace_persons.findIndex(
-          (p: CommunityPeacePersonFormModel) => p.name === pp.originalName,
+          (p: CommunityPeacePersonFormModel) => p.name === pp.originalName
         )
 
         if (index !== -1) {
@@ -296,7 +296,7 @@ const m = {
       },
       communityPeacePersonDeleted: (pp: CommunityPeacePersonFormModel) => {
         const index = d.form.peace_persons.findIndex(
-          (p: CommunityPeacePersonFormModel) => p.name === pp.name,
+          (p: CommunityPeacePersonFormModel) => p.name === pp.name
         )
 
         if (index !== -1) {
@@ -310,7 +310,7 @@ const m = {
       },
       communityCommitteeUpdated: (pp: CommunityCommittee) => {
         const index = d.form.committees.findIndex(
-          (p: CommunityCommittee) => p.name === pp.originalName,
+          (p: CommunityCommittee) => p.name === pp.originalName
         )
 
         if (index !== -1) {
@@ -322,7 +322,7 @@ const m = {
       },
       communityCommitteeDeleted: (pp: CommunityCommittee) => {
         const index = d.form.committees.findIndex(
-          (p: CommunityCommittee) => p.name === pp.name,
+          (p: CommunityCommittee) => p.name === pp.name
         )
 
         if (index !== -1) {
@@ -331,7 +331,7 @@ const m = {
       },
       handleLocationSelected: (
         location: { lat: string; lng: string },
-        place: any,
+        place: any
       ) => {
         d.form.location_latitude = location.lat
         d.form.location_longitude = location.lng
@@ -339,7 +339,7 @@ const m = {
         console.log(
           "location from parent",
           d.form.location_latitude,
-          d.form.location_longitude,
+          d.form.location_longitude
         )
         if (place.adminLevels) {
           d.form.province_name = place.adminLevels.administrative_area_level_1
@@ -382,7 +382,9 @@ const handleLocationConfirm = () => {
 }
 
 const onSubmit = async () => {
-  d.form.created_by = auth.authUser.id
+  if (auth.authUser?.id) {
+    d.form.created_by = auth.authUser.id
+  }
   let response
   if (communityID) {
     const editChurchConsume = useConsumeApi(RoutePaths.COMMUNITIES, communityID)

@@ -1,16 +1,42 @@
 import { defineStore } from "pinia"
+import { ref, computed } from "vue"
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 
 export const useFaithMilestoneStore = defineStore("faithMilestone", () => {
-  const faithMilestones = ref<any[]>(JSON.parse(
-    localStorage.getItem("faithMilestones") || "{}",
-  ))
+  const faithMilestones = ref<any[]>([])
+
+  // Computed list of options
   const options = computed(() => {
-    return faithMilestones.value.map((pg: any) => ({ text: pg.name, value: pg.id }))
+    return faithMilestones.value.map((pg: any) => ({
+      text: pg.name,
+      value: pg.id,
+    }))
   })
-  const setFaithMilestones = (faithMilestoneValues: any[]) => {
-    faithMilestones.value = faithMilestoneValues
-    localStorage.setItem("faithMilestones", JSON.stringify(faithMilestoneValues))
+
+  // Load from secure storage
+  const loadFromSecureStorage = async () => {
+    try {
+      const stored = await SecureStoragePlugin.get({ key: "faithMilestones" })
+      faithMilestones.value = JSON.parse(stored.value)
+    } catch (error) {
+      console.log(error)
+      faithMilestones.value = []
+    }
   }
 
-  return { faithMilestones, options, setFaithMilestones }
+  // Save to secure storage
+  const setFaithMilestones = async (faithMilestoneValues: any[]) => {
+    faithMilestones.value = faithMilestoneValues
+    await SecureStoragePlugin.set({
+      key: "faithMilestones",
+      value: JSON.stringify(faithMilestoneValues),
+    })
+  }
+
+  return {
+    faithMilestones,
+    options,
+    loadFromSecureStorage,
+    setFaithMilestones,
+  }
 })

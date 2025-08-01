@@ -1,35 +1,57 @@
 <template>
-  <div v-if="!authUser" class="wrapper">
+  <div
+    v-if="!authUser"
+    class="wrapper"
+  >
     <div class="title">Venture Tools</div>
 
     <div class="subtitle">Welcome to Venture Tools</div>
 
-    <VanButton type="primary" block @click="router.push('/login')">LOGIN</VanButton>
+    <VanButton
+      type="primary"
+      block
+      @click="router.push('/login')"
+      >LOGIN</VanButton
+    >
 
     <VanDivider>OR</VanDivider>
 
-    <VanButton type="primary" block @click="router.push('/register')">REGISTER</VanButton>
+    <VanButton
+      type="primary"
+      block
+      @click="router.push('/register')"
+      >REGISTER</VanButton
+    >
   </div>
 </template>
 
 <script setup lang="ts">
 import { useSettingStore } from "~/stores/useSettingStore"
-const { pinNumber, applicationMask } = useSettingStore()
+import { storeToRefs } from "pinia"
+
+const settingStore = useSettingStore()
+const { pinNumber, applicationMask } = storeToRefs(settingStore)
+
+onMounted(async () => {
+  await settingStore.loadFromSecureStorage()
+})
 
 const authUser = localStorage.getItem("authUser")
 const router = useRouter()
 
 // Check if user is logged in
-if(authUser) {
+if (authUser) {
   // Check if mask option is set
-  if(applicationMask) {
+  if (applicationMask.value) {
     navigateTo("/mask")
-  } else { // No mask option
+  } else {
+    // No mask option
     // Check if pin is set
-    if(pinNumber) {
+    if (pinNumber.value) {
       navigateTo("/pin")
-    } else { // No pin
-      navigateTo('/splash')
+    } else {
+      // No pin
+      navigateTo("/splash")
     }
   }
 }

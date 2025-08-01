@@ -18,8 +18,15 @@
       <NuxtPage />
     </div>
 
-    <VanTabbar v-if="!showBackButton" fixed route>
-      <VanTabbarItem replace to="/prayers">
+    <VanTabbar
+      v-if="!showBackButton"
+      fixed
+      route
+    >
+      <VanTabbarItem
+        replace
+        to="/prayers"
+      >
         <template #icon>
           <PrayingHands style="width: 18px; height: 18px" />
         </template>
@@ -27,7 +34,10 @@
         {{ h.translate("prayers") }}
       </VanTabbarItem>
 
-      <VanTabbarItem replace to="/contacts">
+      <VanTabbarItem
+        replace
+        to="/contacts"
+      >
         <template #icon>
           <PersonRound style="width: 18px; height: 18px" />
         </template>
@@ -35,7 +45,10 @@
         {{ h.translate("contacts") }}
       </VanTabbarItem>
 
-      <VanTabbarItem replace to="/churches">
+      <VanTabbarItem
+        replace
+        to="/churches"
+      >
         <template #icon>
           <ChurchRound style="width: 18px; height: 18px" />
         </template>
@@ -43,7 +56,10 @@
         {{ h.translate("churches") }}
       </VanTabbarItem>
 
-      <VanTabbarItem replace to="/communities">
+      <VanTabbarItem
+        replace
+        to="/communities"
+      >
         <template #icon>
           <GroupRound style="width: 18px; height: 18px" />
         </template>
@@ -51,7 +67,10 @@
         {{ h.translate("communities") }}
       </VanTabbarItem>
 
-      <VanTabbarItem replace to="/settings">
+      <VanTabbarItem
+        replace
+        to="/settings"
+      >
         <template #icon>
           <SettingsRound style="width: 18px; height: 18px" />
         </template>
@@ -81,7 +100,6 @@ const pageName = computed(() => {
   const moduleName = route.query.moduleName as string | undefined
 
   let rawPageName = name[0].toUpperCase() + name.slice(1)
-  
 
   if (rawPageName === "Create") {
     if (isEdit) {
@@ -91,10 +109,10 @@ const pageName = computed(() => {
     }
   }
 
-    let translated = h.translate(h.toSnakeCase(rawPageName))
-    if(rawPageName == 'Settings-profile'){
-      translated = h.translate('profile')
-    }
+  let translated = h.translate(h.toSnakeCase(rawPageName))
+  if (rawPageName == "Settings-profile") {
+    translated = h.translate("profile")
+  }
   return {
     raw: rawPageName,
     translated,
@@ -127,7 +145,7 @@ const showBackButton = computed(() => {
   return route.name === "Create"
     ? true
     : route.path.split("/").length > 2
-      ? true
-      : false
+    ? true
+    : false
 })
 </script>

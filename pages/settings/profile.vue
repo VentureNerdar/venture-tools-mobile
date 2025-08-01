@@ -159,12 +159,13 @@ const languagePicker = computed(() => {
   }))
 })
 
-onMounted(() => {
+onMounted(async () => {
   if (s.auth.authUser) {
+    console.log("Auth User ", s.auth.authUser)
     form.value = { ...s.auth.authUser }
     if (form.value.preferred_language_id) {
       const selected = s.languages.find(
-        (l: any) => l.id === form.value.preferred_language_id,
+        (l: any) => l.id === form.value.preferred_language_id
       )
       if (selected) {
         pickerValue.value = [selected.id]
@@ -212,7 +213,7 @@ const m = {
         useAuthStore().authUser = updatedUser
         localStorage.setItem("authUser", JSON.stringify(updatedUser))
         const selected = s.languages.find(
-          (l: any) => l.id === form.value.preferred_language_id,
+          (l: any) => l.id === form.value.preferred_language_id
         )
         if (selected) {
           useSettingStore().setUserPreferredLanguage(selected)

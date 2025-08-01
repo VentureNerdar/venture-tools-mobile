@@ -1,6 +1,6 @@
 import { defineStore } from "pinia"
 import type { Credentials, AuthUser } from "~/types"
-import { app } from '~/utils/firebase'
+import { app } from "~/utils/firebase"
 
 type User = {
   id?: number
@@ -52,8 +52,6 @@ export const useAuthStore = defineStore("auth", () => {
     }).catch((error) => {
       // todo throw error
       console.log(error)
-
-      return
     })
 
     if (response) {
@@ -71,40 +69,43 @@ export const useAuthStore = defineStore("auth", () => {
 
       // Generate FCM Token and initialize Firebase Messaging
       try {
-        const vapidKey = (config as unknown as FirebaseConfig).public.firebase.vapidKey
-        const { getMessaging, getToken, onMessage } = await import('firebase/messaging')
+        const vapidKey = (config as unknown as FirebaseConfig).public.firebase
+          .vapidKey
+        const { getMessaging, getToken, onMessage } = await import(
+          "firebase/messaging"
+        )
         const messaging = getMessaging(app)
 
         const permission = await Notification.requestPermission()
-        if (permission === 'granted') {
+        if (permission === "granted") {
           currentNotificationToken = await getToken(messaging, { vapidKey })
           if (currentNotificationToken) {
-            localStorage.setItem('notificationToken', currentNotificationToken)
+            localStorage.setItem("notificationToken", currentNotificationToken)
           }
         }
 
         onMessage(messaging, (payload) => {
-          console.log('Message received in foreground:', payload)
+          console.log("Message received in foreground:", payload)
           if (payload.notification?.title && payload.notification?.body) {
             const { title, body } = payload.notification
             new Notification(title, {
               body,
-              icon: '/logo-vertical.png',
+              icon: "/logo-vertical.png",
             })
           }
         })
       } catch (err) {
-        console.error('FCM error:', err)
+        console.error("FCM error:", err)
       }
 
       // Store device ID in localStorage
-      localStorage.setItem('deviceId', deviceId)
+      localStorage.setItem("deviceId", deviceId)
 
       const token = localStorage.getItem("Bearer") || ""
       const headers = {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: token
+        Authorization: token,
       }
 
       // Register device with backend
@@ -116,7 +117,7 @@ export const useAuthStore = defineStore("auth", () => {
           device_name: navigator.userAgent,
           notification_token: currentNotificationToken,
         },
-        headers: headers
+        headers: headers,
       })
     } catch (error: any) {
       console.error("Error registering device:", error)
@@ -124,7 +125,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function generateDeviceId(): string {
-    return 'mobile_' + crypto.randomUUID()
+    return "mobile_" + crypto.randomUUID()
   }
 
   async function login(credentials: Credentials) {

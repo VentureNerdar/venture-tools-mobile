@@ -18,11 +18,13 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       googleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-      apiURL: process.env.API_URL,
-      apiURLUnSlashed: process.env.API_URL_UNSLASHED,
+      apiURL: process.env.API_URL || "http://10.0.2.2:8000/api/",
+      apiURLUnSlashed:
+        process.env.API_URL_UNSLASHED || "http://10.0.2.2:8000/api/",
 
-      rootURL: process.env.ROOT_URL,
-      rootURLUnSlashed: process.env.ROOT_URL_UNSLASHED,
+      rootURL: process.env.ROOT_URL || "http://10.0.2.2:8000/api/",
+      rootURLUnSlashed:
+        process.env.ROOT_URL_UNSLASHED || "http://10.0.2.2:8000/api/",
 
       firebase: {
         apiKey: process.env.FIREBASE_API_KEY,
@@ -32,8 +34,8 @@ export default defineNuxtConfig({
         messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID,
         appId: process.env.FIREBASE_APP_ID,
         measurementId: process.env.FIREBASE_MEASUREMENT_ID,
-        vapidKey: process.env.FIREBASE_VAPID_KEY
-      }
+        vapidKey: process.env.FIREBASE_VAPID_KEY,
+      },
 
       // apiURL: "http://api.venture-tools.klonotech.com/api/",
       // apiURLUnSlashed: "http://api.venture-tools.klonotech.com/api",

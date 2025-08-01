@@ -1,13 +1,40 @@
-import { defineStore } from 'pinia'
+import { defineStore } from "pinia"
+import { ref } from "vue"
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 
-export const useCommunicationPlatformStore = defineStore('communicationPlatform', () => {
-  const communicationPlatforms = ref<any>(JSON.parse(localStorage.getItem('communicationPlatforms') || '{}'))
-  function setCommunicationPlatforms(communicationPlatformValues: any) {
-    communicationPlatforms.value = communicationPlatformValues
-    localStorage.setItem('communicationPlatforms', JSON.stringify(communicationPlatformValues))
+export const useCommunicationPlatformStore = defineStore(
+  "communicationPlatform",
+  () => {
+    const communicationPlatforms = ref<any>({})
+
+    // Load from secure storage
+    const loadFromSecureStorage = async () => {
+      try {
+        const result = await SecureStoragePlugin.get({
+          key: "communicationPlatforms",
+        })
+        communicationPlatforms.value = JSON.parse(result.value)
+      } catch (error) {
+        console.log(error)
+        communicationPlatforms.value = {}
+      }
+    }
+
+    // Save to secure storage
+    const setCommunicationPlatforms = async (
+      communicationPlatformValues: any
+    ) => {
+      communicationPlatforms.value = communicationPlatformValues
+      await SecureStoragePlugin.set({
+        key: "communicationPlatforms",
+        value: JSON.stringify(communicationPlatformValues),
+      })
+    }
+
+    return {
+      communicationPlatforms,
+      loadFromSecureStorage,
+      setCommunicationPlatforms,
+    }
   }
-  return {
-    communicationPlatforms,
-    setCommunicationPlatforms
-  }
-})
+)

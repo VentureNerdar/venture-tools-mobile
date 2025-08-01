@@ -428,7 +428,8 @@ const config = useRuntimeConfig()
 const h = useHelpers()
 const contactID = route.query.id ? Number(route.query.id) : undefined
 const helpers = useHelpers()
-const authUser = useAuthStore().authUser
+const authStore = useAuthStore()
+const authUser = authStore.authUser
 const faithStatusFieldValue = ref("")
 const prayerPromptFieldValue = ref("")
 const ageGroupFieldValue = ref("")
@@ -648,7 +649,7 @@ const m = {
           d.form.contact_communication_platforms = []
         }
         const index = d.form.contact_communication_platforms.findIndex(
-          (p) => p.value === editingValue.originalValue,
+          (p) => p.value === editingValue.originalValue
         )
         if (index !== -1) {
           d.form.contact_communication_platforms[index].value =
@@ -660,7 +661,7 @@ const m = {
           d.form.contact_communication_platforms = []
         }
         const index = d.form.contact_communication_platforms.findIndex(
-          (p) => p.value === editingValue.originalValue,
+          (p) => p.value === editingValue.originalValue
         )
         if (index !== -1) {
           d.form.contact_communication_platforms.splice(index, 1)
@@ -682,7 +683,7 @@ const m = {
           all: true,
           with: JSON.stringify(["assignedTo", "assignedTo.movement"]),
         },
-        false,
+        false
       )
       console.log("Contacts Data", d.contacts)
     },
@@ -691,7 +692,7 @@ const m = {
         {
           all: true,
         },
-        false,
+        false
       )
     },
   },
@@ -747,6 +748,12 @@ const m = {
 }
 
 onMounted(async () => {
+  await s.communicationPlatform.loadFromSecureStorage()
+  await s.contact.loadFromSecureStorage()
+  await s.faithMilestone.loadFromSecureStorage()
+  await s.peopleGroup.loadFromSecureStorage()
+  await s.settings.loadFromSecureStorage()
+
   if (contactID) {
     const bc = {
       where: JSON.stringify([
@@ -781,7 +788,7 @@ onMounted(async () => {
           .map((item: any) => item.name)
           .join(", ")
         d.form.faith_milestones = d.form.faith_milestones.map(
-          (item: any) => item.id,
+          (item: any) => item.id
         )
         faithMilestoneFieldValue.value = newVal
         faithMilestoneID.value = d.form.faith_milestones
@@ -829,10 +836,10 @@ onMounted(async () => {
       ) {
         console.log(
           "d.form.contact_communication_platforms",
-          d.form.contact_communication_platforms,
+          d.form.contact_communication_platforms
         )
         communicationForm.value = d.form.contact_communication_platforms.map(
-          (item: any) => item.value,
+          (item: any) => item.value
         )
         d.form.contact_communication_platforms =
           d.form.contact_communication_platforms.map((item) => ({
@@ -846,7 +853,9 @@ onMounted(async () => {
 
 const contactList = computed(() => {
   return d.contacts.map((pg: any) => ({
-    text: `${pg.name}\n | ${pg.assigned_to?.name ?? ""} | (${pg.assigned_to?.movement?.name ?? ""}) `,
+    text: `${pg.name}\n | ${pg.assigned_to?.name ?? ""} | (${
+      pg.assigned_to?.movement?.name ?? ""
+    }) `,
     value: pg.id,
   }))
 })
