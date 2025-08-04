@@ -1,3 +1,4 @@
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 import type { UseFetchOptions } from "nuxt/app"
 
 import { showNotify } from "vant"
@@ -46,7 +47,7 @@ const request = async (
   requestOptions: any,
   storeOptions: StoreOptions,
   id?: number,
-  permanent?: boolean,
+  permanent?: boolean
 ) => {
   if (consumptionType === "restore") {
     routePath = routePath + "/restore"
@@ -85,18 +86,21 @@ const request = async (
   return false
 }
 
-const respond = (
+const respond = async (
   consumptionType: ConsumptionType,
   response: any,
   storeOptions: StoreOptions,
   id?: number,
-  permanent?: boolean,
+  permanent?: boolean
 ) => {
   // Process store operation
   if (storeOptions !== false) {
     storeOptions.storeState = response
     if (storeOptions.isPersist) {
-      localStorage.setItem(storeOptions.key, JSON.stringify(response))
+      await SecureStoragePlugin.set({
+        key: storeOptions.key,
+        value: JSON.stringify(response),
+      })
     }
   }
 
@@ -129,7 +133,7 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
     // BROWSE
     browse: async (
       query: BrowseCondition,
-      storeOptions: StoreOptions = false,
+      storeOptions: StoreOptions = false
     ) => {
       return await request(
         routePath,
@@ -139,7 +143,7 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
           query,
           ...fetchOptions,
         },
-        storeOptions,
+        storeOptions
       )
     }, // e.o BROWSE
 
@@ -153,7 +157,7 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
           query,
           ...fetchOptions,
         },
-        false,
+        false
       )
     }, // e.o LIST
 
@@ -183,7 +187,7 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
         },
         false,
         id,
-        permanent,
+        permanent
       )
     }, // e.o DELETE
 
@@ -197,7 +201,7 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
           ...fetchOptions,
         },
         false,
-        id,
+        id
       )
     }, // e.o RESTORE
   }

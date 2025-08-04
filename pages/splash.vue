@@ -20,6 +20,7 @@ import { useCommunityStore } from "~/stores/useCommunityStore"
 import { useUserStore } from "~/stores/useUserStore"
 import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
 import type { LanguageFormModel } from "../types/models"
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 
 type ModuleNameType =
   | "User Roles"
@@ -37,6 +38,15 @@ definePageMeta({
   // middleware: "guest",
   // layout: "non-app",
 })
+
+const getSecureData = async <T>(key: string, fallback: T) => {
+  try {
+    const { value } = await SecureStoragePlugin.get({ key })
+    return JSON.parse(value)
+  } catch {
+    return fallback
+  }
+}
 
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -181,38 +191,55 @@ const downloadSequence = async () => {
       store,
     } as StoreOptions)
 
-    if (moduleName === 'Languages') {
-      const languages = JSON.parse(localStorage.getItem('languages') || "[]")
-      let defaultLang
-      if (languages) {
-        defaultLang = languages.find((l: LanguageFormModel) => l.locale === 'en')
-        s.settings.setUserPreferredLanguage(defaultLang)
+    if (moduleName === "Languages") {
+      try {
+        const languages = await getSecureData<any[]>("languages", [])
+        let defaultLang
+        if (languages && languages.length) {
+          defaultLang = languages.find((l: any) => l.locale === "en")
+          s.settings.setUserPreferredLanguage(defaultLang)
+        }
+      } catch (error) {
+        console.error("Error reading languages from secure storage", error)
       }
     }
-    if (moduleName === 'Statuses') {
-      const statuses = JSON.parse(localStorage.getItem('statuses') || "[]")
+    if (moduleName === "Statuses") {
+      const statuses = await getSecureData<any[]>("statuses", [])
       s.settings.setStatuses(statuses)
     }
-    if (moduleName === 'Faith Milestones') {
-      const faithMilestoneValues = JSON.parse(localStorage.getItem('faithMilestones') || "[]")
+    if (moduleName === "Faith Milestones") {
+      const faithMilestoneValues = await getSecureData<any[]>(
+        "faithMilestones",
+        []
+      )
       s.faithMilestoneStore.setFaithMilestones(faithMilestoneValues)
     }
-    if (moduleName === 'People Groups') {
-      const peopleGroupValues = JSON.parse(localStorage.getItem('peopleGroups') || "[]")
+    if (moduleName === "People Groups") {
+      // const peopleGroupValues = JSON.parse(
+      //   localStorage.getItem("peopleGroups") || "[]"
+      // )
+      const peopleGroupValues = await getSecureData<any[]>("peopleGroups", [])
+
       s.peopleGroupStore.setPeopleGroups(peopleGroupValues)
     }
-    if (moduleName === 'Language Words') {
-      const wordValues = JSON.parse(localStorage.getItem('languageWords') || "[]")
+    if (moduleName === "Language Words") {
+      const wordValues = await getSecureData<any[]>("languageWords", [])
+
       s.languageStore.setWords(wordValues)
     }
-    if (moduleName === 'Languages') {
-      const languageValues = JSON.parse(localStorage.getItem('languages') || "[]")
+    if (moduleName === "Languages") {
+      const languageValues = await getSecureData<any[]>("languages", [])
       s.languageStore.setLanguages(languageValues)
     }
 
-    if (moduleName === 'Communication Platforms') {
-      const communicationPlatformValues = JSON.parse(localStorage.getItem('communicationPlatforms') || "[]")
-      s.communicationPlatformStore.setCommunicationPlatforms(communicationPlatformValues)
+    if (moduleName === "Communication Platforms") {
+      const communicationPlatformValues = await getSecureData<any[]>(
+        "communicationPlatforms",
+        []
+      )
+      s.communicationPlatformStore.setCommunicationPlatforms(
+        communicationPlatformValues
+      )
     }
 
     await delay(500)
@@ -229,7 +256,7 @@ const consume = async (
   moduleName: ModuleNameType,
   routePaths: RoutePaths,
   query: BrowseCondition,
-  storeOptions: StoreOptions,
+  storeOptions: StoreOptions
 ) => {
   const consumer = useConsumeApi(routePaths)
   await consumer.browse(query, storeOptions)
@@ -242,8 +269,6 @@ const consume = async (
 }
 
 downloadSequence()
-
-
 </script>
 
 <style scoped lang="scss">
