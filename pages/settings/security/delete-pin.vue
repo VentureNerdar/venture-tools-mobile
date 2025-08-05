@@ -83,7 +83,6 @@ const isPinCorrect = computed(() => {
 })
 
 const removePin = () => {
-  console.log(isPinCorrect.value)
   if (isPinCorrect.value) {
     settingStore.removePinNumber()
     settingStore.setApplicationMask(false)

@@ -165,7 +165,6 @@ onMounted(async () => {
   await settingStore.loadFromSecureStorage()
   await authStore.loadFromSecureStorage()
   if (authStore.authUser) {
-    console.log("Auth User ", authStore.authUser)
     form.value = { ...authStore.authUser }
     if (form.value.preferred_language_id) {
       const selected = s.languages.find(
@@ -207,7 +206,7 @@ const m = {
         pickerValue.value = [selectedLanguage.value as Numeric]
       },
       update: async () => {
-        const userConsume = useConsumeApi(
+        const userConsume = await useConsumeApi(
           RoutePaths.USERS,
           authStore.authUser?.id
         )

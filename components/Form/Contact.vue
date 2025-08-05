@@ -410,8 +410,8 @@ import { useConsumeApi } from "~/composables/useConsumeApi"
 import { useAuthStore } from "~/stores/useAuthStore"
 
 const consume = {
-  contacts: useConsumeApi(RoutePaths.CONTACTS),
-  prayerPrompt: useConsumeApi(RoutePaths.PRAYER_PROMPTS),
+  contacts: await useConsumeApi(RoutePaths.CONTACTS),
+  prayerPrompt: await useConsumeApi(RoutePaths.PRAYER_PROMPTS),
 }
 
 const s = {
@@ -877,10 +877,13 @@ m.consume.contacts()
 m.consume.prayerPrompt()
 
 const onSubmit = async () => {
-  d.form.assigned_to = authUser.id
+  d.form.assigned_to = authUser?.id
   let response
   if (contactID) {
-    const editChurchConsume = useConsumeApi(RoutePaths.CONTACTS, contactID)
+    const editChurchConsume = await useConsumeApi(
+      RoutePaths.CONTACTS,
+      contactID
+    )
     response = await editChurchConsume.save(d.form)
   } else {
     response = await consume.contacts.save(d.form)

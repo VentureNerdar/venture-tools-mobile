@@ -75,7 +75,7 @@ import { useThemeStore } from "~/stores/useTheme"
 
 const h = useHelpers()
 const consume = {
-  users: useConsumeApi(RoutePaths.USERS),
+  users: await useConsumeApi(RoutePaths.USERS),
 }
 
 const themeStore = useThemeStore()
@@ -86,7 +86,7 @@ const props = withDefaults(
   }>(),
   {
     userProfileId: null,
-  },
+  }
 )
 
 const emit = defineEmits(["update", "clear"])
@@ -173,7 +173,6 @@ const m = {
 }
 
 m.consume.defaultUserProfileOptions()
-console.log("IS Editing", d.isEditing)
 
 watch(
   () => props.userProfileId,
@@ -193,17 +192,16 @@ watch(
         d.profileUser = user[0].name
       }
     }
-  },
+  }
 )
 
 watch(
   () => d.searchWord,
   () => {
     if (d.searchWord === "") {
-      console.log("Work")
       m.consume.defaultUserProfileOptions()
     }
-  },
+  }
 )
 </script>
 

@@ -156,8 +156,6 @@ export const useAuthStore = defineStore("auth", () => {
       return
     })) as LoginResponse
 
-    console.log("Auth Store Login res", response)
-
     if (response && "token" in response) {
       token.value = "Bearer " + response.token
       await SecureStoragePlugin.set({

@@ -270,9 +270,9 @@ const d = reactive({
 })
 
 const consume = {
-  communities: useConsumeApi(RoutePaths.COMMUNITIES),
-  communityChecklists: useConsumeApi(RoutePaths.COMMUNITY_CHECKLISTS),
-  churches: useConsumeApi(RoutePaths.CHURCHES),
+  communities: await useConsumeApi(RoutePaths.COMMUNITIES),
+  communityChecklists: await useConsumeApi(RoutePaths.COMMUNITY_CHECKLISTS),
+  churches: await useConsumeApi(RoutePaths.CHURCHES),
 }
 
 const m = {
@@ -387,7 +387,10 @@ const onSubmit = async () => {
   }
   let response
   if (communityID) {
-    const editChurchConsume = useConsumeApi(RoutePaths.COMMUNITIES, communityID)
+    const editChurchConsume = await useConsumeApi(
+      RoutePaths.COMMUNITIES,
+      communityID
+    )
     response = await editChurchConsume.save(d.form)
   } else {
     response = await consume.communities.save(d.form)

@@ -410,12 +410,12 @@ const d = reactive({
 })
 
 const consume = {
-  communities: useConsumeApi(RoutePaths.COMMUNITIES),
-  churches: useConsumeApi(RoutePaths.CHURCHES),
-  denominations: useConsumeApi(RoutePaths.DENOMINATIONS),
-  churchPlanter: useConsumeApi(RoutePaths.USERS),
-  prayerPrompts: useConsumeApi(RoutePaths.PRAYER_PROMPTS),
-  peopleGroups: useConsumeApi(RoutePaths.PEOPLE_GROUPS),
+  communities: await useConsumeApi(RoutePaths.COMMUNITIES),
+  churches: await useConsumeApi(RoutePaths.CHURCHES),
+  denominations: await useConsumeApi(RoutePaths.DENOMINATIONS),
+  churchPlanter: await useConsumeApi(RoutePaths.USERS),
+  prayerPrompts: await useConsumeApi(RoutePaths.PRAYER_PROMPTS),
+  peopleGroups: await useConsumeApi(RoutePaths.PEOPLE_GROUPS),
 }
 
 const m = {
@@ -636,7 +636,7 @@ const onSubmit = async () => {
   d.form.assigned_to = auth.authUser?.id
   let response
   if (churchId) {
-    const editChurchConsume = useConsumeApi(RoutePaths.CHURCHES, churchId)
+    const editChurchConsume = await useConsumeApi(RoutePaths.CHURCHES, churchId)
     response = await editChurchConsume.save(d.form)
   } else {
     response = await consume.churches.save(d.form)
