@@ -49,7 +49,7 @@ type Prayers = {
 }
 
 const consume = {
-  prayers: useConsumeApi(RoutePaths.SETTINGS_PRAYERS),
+  prayers: await useConsumeApi(RoutePaths.SETTINGS_PRAYERS),
 }
 
 const d = reactive({

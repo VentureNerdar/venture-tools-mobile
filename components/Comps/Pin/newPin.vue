@@ -150,12 +150,6 @@ const d = reactive({
   hasPin: false,
 })
 
-// Check if pin exists in localStorage
-// onMounted(() => {
-//   const existingPin = localStorage.getItem("PINNumber")
-//   d.hasPin = !!existingPin
-// })
-
 const settingStore = useSettingStore()
 
 onMounted(async () => {

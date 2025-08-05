@@ -215,9 +215,6 @@ const downloadSequence = async () => {
       s.faithMilestoneStore.setFaithMilestones(faithMilestoneValues)
     }
     if (moduleName === "People Groups") {
-      // const peopleGroupValues = JSON.parse(
-      //   localStorage.getItem("peopleGroups") || "[]"
-      // )
       const peopleGroupValues = await getSecureData<any[]>("peopleGroups", [])
 
       s.peopleGroupStore.setPeopleGroups(peopleGroupValues)
@@ -258,7 +255,7 @@ const consume = async (
   query: BrowseCondition,
   storeOptions: StoreOptions
 ) => {
-  const consumer = useConsumeApi(routePaths)
+  const consumer = await useConsumeApi(routePaths)
   await consumer.browse(query, storeOptions)
 
   d.completedModules.push(moduleName)

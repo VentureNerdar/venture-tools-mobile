@@ -80,6 +80,7 @@ const m = {
       d.loading.btnLogin = true
 
       const response = await useAuthStore().login(d.form)
+      console.log("Response", response)
 
       if (response) {
         showNotify({

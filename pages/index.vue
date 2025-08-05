@@ -28,18 +28,21 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useSettingStore } from "~/stores/useSettingStore"
+import { useAuthStore } from "~/stores/useAuthStore"
 
 const router = useRouter()
 const tapCount = ref(0)
 const lastTapTime = ref(0)
 const TAP_TIMEOUT = 3000 // 3 seconds
 const REQUIRED_TAPS = 7
-const authUser = localStorage.getItem("authUser")
 const initialIndex = ref(Math.floor(Math.random() * 10))
 const settingStore = useSettingStore()
+const authStore = useAuthStore()
+const authUser = authStore.authUser
 
 onMounted(async () => {
   await settingStore.loadFromSecureStorage()
+  await authStore.loadFromSecureStorage()
 })
 
 function handleTap() {
@@ -54,7 +57,6 @@ function handleTap() {
   lastTapTime.value = currentTime
 
   if (tapCount.value >= REQUIRED_TAPS) {
-    // const pinNumber = localStorage.getItem("PINNumber")
     const pinCode = settingStore.pinCode
     if (!authUser) {
       router.push("/welcome")

@@ -116,8 +116,10 @@ definePageMeta({
   layout: "application",
 })
 
+const settingStore = useSettingStore()
 const helpers = useHelpers()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const showPicker = ref(false)
 const pickerValue = ref<Numeric[]>([])
@@ -160,9 +162,11 @@ const languagePicker = computed(() => {
 })
 
 onMounted(async () => {
-  if (s.auth.authUser) {
-    console.log("Auth User ", s.auth.authUser)
-    form.value = { ...s.auth.authUser }
+  await settingStore.loadFromSecureStorage()
+  await authStore.loadFromSecureStorage()
+  if (authStore.authUser) {
+    console.log("Auth User ", authStore.authUser)
+    form.value = { ...authStore.authUser }
     if (form.value.preferred_language_id) {
       const selected = s.languages.find(
         (l: any) => l.id === form.value.preferred_language_id
@@ -203,14 +207,17 @@ const m = {
         pickerValue.value = [selectedLanguage.value as Numeric]
       },
       update: async () => {
-        const userConsume = useConsumeApi(RoutePaths.USERS, s.auth.authUser.id)
+        const userConsume = useConsumeApi(
+          RoutePaths.USERS,
+          authStore.authUser?.id
+        )
         await userConsume.save(form.value)
-        const existing = JSON.parse(localStorage.getItem("authUser") || "{}")
+        const existing = authStore.authUser
         const updatedUser = {
           ...existing,
           ...form.value,
         }
-        useAuthStore().authUser = updatedUser
+        authStore.authUser = updatedUser
         localStorage.setItem("authUser", JSON.stringify(updatedUser))
         const selected = s.languages.find(
           (l: any) => l.id === form.value.preferred_language_id

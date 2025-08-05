@@ -1,6 +1,7 @@
 import { defineStore } from "pinia"
 import type { Credentials, AuthUser } from "~/types"
 import { app } from "~/utils/firebase"
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 
 type User = {
   id?: number
@@ -30,44 +31,55 @@ interface FirebaseConfig {
 export const useAuthStore = defineStore("auth", () => {
   const config = useRuntimeConfig()
   const user = ref<User | null>(null)
-  const authUser = ref(JSON.parse(localStorage.getItem("authUser") || "{}"))
-  const token = ref(localStorage.getItem("Bearer") || "")
+  const authUser = ref<AuthUser | null>(null)
+  const token = ref<string>("")
+
+  // Load from secure storage on store init
+  const loadFromSecureStorage = async () => {
+    const storedAuthUser = await SecureStoragePlugin.get({ key: "authUser" })
+    // const storedToken = await secureGet("Bearer")
+    const storedToken = await SecureStoragePlugin.get({ key: "Bearer" })
+
+    if (storedAuthUser.value) {
+      authUser.value = JSON.parse(storedAuthUser.value)
+    }
+    if (storedToken.value) {
+      token.value = storedToken.value
+    }
+  }
 
   async function fetchUser() {
-    const token = localStorage.getItem("Bearer") || ""
+    const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
 
-    const headers = {
+    const headers: Header = {
       Accept: "application/json",
       "Content-Type": "application/json",
-    } as Header
-
-    if (token) {
-      headers["Authorization"] = token as string
+      Authorization: bearer.value || "",
     }
 
     const response = await $fetch(config.public.apiURL + "auth/user", {
       method: "GET",
       credentials: "include",
-      headers: headers,
+      headers,
     }).catch((error) => {
-      // todo throw error
       console.log(error)
     })
 
     if (response) {
       user.value = response as User
-      authUser.value = response as User
-      localStorage.setItem("authUser", JSON.stringify(response) as string)
+      authUser.value = response as AuthUser
+      await SecureStoragePlugin.set({
+        key: "authUser",
+        value: JSON.stringify(response),
+      })
     }
   }
 
   async function registerDevice(userId: number) {
     try {
-      // Generate a unique device ID
-      const deviceId = generateDeviceId()
-      let currentNotificationToken = null
+      const deviceId = "mobile_" + crypto.randomUUID()
+      let currentNotificationToken: string | null = null
 
-      // Generate FCM Token and initialize Firebase Messaging
       try {
         const vapidKey = (config as unknown as FirebaseConfig).public.firebase
           .vapidKey
@@ -80,7 +92,10 @@ export const useAuthStore = defineStore("auth", () => {
         if (permission === "granted") {
           currentNotificationToken = await getToken(messaging, { vapidKey })
           if (currentNotificationToken) {
-            localStorage.setItem("notificationToken", currentNotificationToken)
+            await SecureStoragePlugin.set({
+              key: "notificationToken",
+              value: currentNotificationToken,
+            })
           }
         }
 
@@ -88,27 +103,25 @@ export const useAuthStore = defineStore("auth", () => {
           console.log("Message received in foreground:", payload)
           if (payload.notification?.title && payload.notification?.body) {
             const { title, body } = payload.notification
-            new Notification(title, {
-              body,
-              icon: "/logo-vertical.png",
-            })
+            new Notification(title, { body, icon: "/logo-vertical.png" })
           }
         })
       } catch (err) {
         console.error("FCM error:", err)
       }
 
-      // Store device ID in localStorage
-      localStorage.setItem("deviceId", deviceId)
+      await SecureStoragePlugin.set({
+        key: "deviceId",
+        value: deviceId,
+      })
 
-      const token = localStorage.getItem("Bearer") || ""
-      const headers = {
+      const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+      const headers: Header = {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: token,
+        Authorization: bearer.value || "",
       }
 
-      // Register device with backend
       await $fetch(`${config.public.apiURL}users/id/${userId}/devices`, {
         method: "POST",
         body: {
@@ -117,15 +130,11 @@ export const useAuthStore = defineStore("auth", () => {
           device_name: navigator.userAgent,
           notification_token: currentNotificationToken,
         },
-        headers: headers,
+        headers,
       })
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error registering device:", error)
     }
-  }
-
-  function generateDeviceId(): string {
-    return "mobile_" + crypto.randomUUID()
   }
 
   async function login(credentials: Credentials) {
@@ -143,15 +152,18 @@ export const useAuthStore = defineStore("auth", () => {
         "Content-Type": "application/json",
       },
     }).catch((error) => {
-      // todo : throw error
       console.log(error)
-
       return
     })) as LoginResponse
 
+    console.log("Auth Store Login res", response)
+
     if (response && "token" in response) {
       token.value = "Bearer " + response.token
-      localStorage.setItem("Bearer", token.value)
+      await SecureStoragePlugin.set({
+        key: "Bearer",
+        value: token.value,
+      })
 
       await registerDevice(response.user.id)
       await fetchUser()
@@ -161,34 +173,43 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logout() {
-    const token = localStorage.getItem("Bearer") || ""
-    const deviceId = localStorage.getItem("deviceId") || ""
+    const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+    const deviceId = await SecureStoragePlugin.get({ key: "deviceId" })
 
-    const headers = {
+    const headers: Header = {
       Accept: "application/json",
       "Content-Type": "application/json",
-    } as Header
-
-    if (token) {
-      headers["Authorization"] = token as string
+      Authorization: bearer.value || "",
     }
 
     await $fetch(config.public.apiURL + "auth/logout", {
       method: "POST",
       credentials: "include",
-      body: {
-        device_id: deviceId,
-      },
-      headers: headers,
+      body: { device_id: deviceId },
+      headers,
     }).catch((error) => {
       console.log(error)
-      return
     })
 
     user.value = null
-    localStorage.clear()
+    authUser.value = null
+    token.value = ""
+
+    await SecureStoragePlugin.remove({ key: "Bearer" })
+    await SecureStoragePlugin.remove({ key: "authUser" })
+    await SecureStoragePlugin.remove({ key: "deviceId" })
+    await SecureStoragePlugin.remove({ key: "notificationToken" })
+
     navigateTo("/")
   }
 
-  return { user, login, fetchUser, logout, authUser }
+  return {
+    user,
+    authUser,
+    token,
+    loadFromSecureStorage,
+    login,
+    fetchUser,
+    logout,
+  }
 })

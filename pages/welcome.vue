@@ -27,27 +27,30 @@
 
 <script setup lang="ts">
 import { useSettingStore } from "~/stores/useSettingStore"
-import { storeToRefs } from "pinia"
+import { useAuthStore } from "~/stores/useAuthStore"
 
+const authStore = useAuthStore()
 const settingStore = useSettingStore()
-const { pinNumber, applicationMask } = storeToRefs(settingStore)
+const pinNumber = settingStore.pinNumber
+const applicationMask = settingStore.applicationMask
 
 onMounted(async () => {
   await settingStore.loadFromSecureStorage()
+  await authStore.loadFromSecureStorage()
 })
 
-const authUser = localStorage.getItem("authUser")
+const authUser = authStore.authUser
 const router = useRouter()
 
 // Check if user is logged in
 if (authUser) {
   // Check if mask option is set
-  if (applicationMask.value) {
+  if (applicationMask) {
     navigateTo("/mask")
   } else {
     // No mask option
     // Check if pin is set
-    if (pinNumber.value) {
+    if (pinNumber) {
       navigateTo("/pin")
     } else {
       // No pin

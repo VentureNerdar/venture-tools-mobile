@@ -2,6 +2,7 @@ import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 import type { UseFetchOptions } from "nuxt/app"
 
 import { showNotify } from "vant"
+import { useAuthStore } from "~/stores/useAuthStore"
 
 import type {
   BrowseCondition,
@@ -19,7 +20,7 @@ type ConsumptionType =
   | "list"
 
 // Initial prep
-const initialPreparation = (path: RoutePaths, id?: number) => {
+const initialPreparation = async (path: RoutePaths, id?: number) => {
   const config = useRuntimeConfig()
   const routePath =
     config.public.apiURL + path + (id && id !== 0 ? `/id/${id}` : "")
@@ -28,7 +29,10 @@ const initialPreparation = (path: RoutePaths, id?: number) => {
     accept: "application/json",
   }
 
-  const token = localStorage.getItem("Bearer") || ""
+  const authStore = useAuthStore()
+  await authStore.loadFromSecureStorage()
+  const token = authStore.token || ""
+  console.log("Token", token)
 
   if (token) {
     headers["Authorization"] = token as string
@@ -125,9 +129,9 @@ const respond = async (
   return response
 }
 
-export function useConsumeApi<T>(path: RoutePaths, id?: number) {
+export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
   // Initial prep
-  const { routePath, fetchOptions } = initialPreparation(path, id)
+  const { routePath, fetchOptions } = await initialPreparation(path, id)
 
   const api = {
     // BROWSE
@@ -168,9 +172,6 @@ export function useConsumeApi<T>(path: RoutePaths, id?: number) {
         body: payload,
         ...fetchOptions,
       }
-
-      console.log(requestOptions)
-      console.log(id)
 
       return await request(routePath, "save", requestOptions, storeOptions, id)
     }, // e.o SAVE
