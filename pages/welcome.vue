@@ -32,7 +32,7 @@ import { useAuthStore } from "~/stores/useAuthStore"
 const authStore = useAuthStore()
 const settingStore = useSettingStore()
 const pinNumber = settingStore.pinNumber
-const applicationMask = settingStore.applicationMask
+// const applicationMask = settingStore.applicationMask
 
 onMounted(async () => {
   await settingStore.loadFromSecureStorage()
@@ -45,19 +45,19 @@ const router = useRouter()
 // Check if user is logged in
 if (authUser) {
   // Check if mask option is set
-  if (applicationMask) {
-    navigateTo("/mask")
+  // if (applicationMask) {
+  //   navigateTo("/mask")
+  // } else {
+  // No mask option
+  // Check if pin is set
+  if (pinNumber) {
+    navigateTo("/pin")
   } else {
-    // No mask option
-    // Check if pin is set
-    if (pinNumber) {
-      navigateTo("/pin")
-    } else {
-      // No pin
-      navigateTo("/splash")
-    }
+    // No pin
+    navigateTo("/splash")
   }
 }
+// }
 </script>
 
 <style scoped>

@@ -85,7 +85,7 @@ const isPinCorrect = computed(() => {
 const removePin = () => {
   if (isPinCorrect.value) {
     settingStore.removePinNumber()
-    settingStore.setApplicationMask(false)
+    // settingStore.setApplicationMask(false)
     showNotify({
       type: "success",
       message: "PIN removed successfully",

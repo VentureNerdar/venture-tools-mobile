@@ -13,7 +13,7 @@ export const useSettingStore = defineStore("setting", () => {
   const statuses = ref<Status[]>([])
   const pinNumber = ref<boolean>(false)
   const pinCode = ref<string>("")
-  const applicationMask = ref<boolean>(false)
+  // const applicationMask = ref<boolean>(false)
   const userPreferredLanguage = ref<LanguageFormModel | null>(null)
 
   const currentPreferredLanguage = computed(() => userPreferredLanguage.value)
@@ -70,14 +70,14 @@ export const useSettingStore = defineStore("setting", () => {
       pinNumber.value = false
     }
 
-    try {
-      const storedMask = await SecureStoragePlugin.get({
-        key: "applicationMask",
-      })
-      applicationMask.value = storedMask.value === "true"
-    } catch {
-      applicationMask.value = false
-    }
+    // try {
+    //   const storedMask = await SecureStoragePlugin.get({
+    //     key: "applicationMask",
+    //   })
+    //   applicationMask.value = storedMask.value === "true"
+    // } catch {
+    //   applicationMask.value = false
+    // }
 
     try {
       const storedLang = await SecureStoragePlugin.get({
@@ -115,13 +115,13 @@ export const useSettingStore = defineStore("setting", () => {
     })
   }
 
-  const setApplicationMask = async (value: boolean) => {
-    applicationMask.value = value
-    await SecureStoragePlugin.set({
-      key: "applicationMask",
-      value: value.toString(),
-    })
-  }
+  // const setApplicationMask = async (value: boolean) => {
+  //   applicationMask.value = value
+  //   await SecureStoragePlugin.set({
+  //     key: "applicationMask",
+  //     value: value.toString(),
+  //   })
+  // }
 
   const setPinNumber = async (value: string) => {
     pinCode.value = value
@@ -147,11 +147,11 @@ export const useSettingStore = defineStore("setting", () => {
     currentPreferredLanguage,
     pinNumber,
     pinCode,
-    applicationMask,
+    // applicationMask,
     /** methods **/
     loadFromSecureStorage,
     setUserPreferredLanguage,
-    setApplicationMask,
+    // setApplicationMask,
     setPinNumber,
     setStatuses,
     removePinNumber,
