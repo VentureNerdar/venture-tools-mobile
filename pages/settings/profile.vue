@@ -110,13 +110,11 @@ import { useLanguageStore } from "~/stores/useLanguageStore"
 import { useUserStore } from "~/stores/useUserStore"
 import type { Numeric } from "vant/es/utils"
 import { RoutePaths } from "~/types/index.d"
-import { useSettingStore } from "../../stores/useSettingStore"
 
 definePageMeta({
   layout: "application",
 })
 
-const settingStore = useSettingStore()
 const helpers = useHelpers()
 const router = useRouter()
 const authStore = useAuthStore()
@@ -127,7 +125,7 @@ const userPreferredLanguage = ref<string>("")
 const s = {
   roles: computed(() => useUserStore().userRoles),
   auth: useAuthStore(),
-  languages: useLanguageStore().languages,
+  languageStore: useLanguageStore(),
 }
 
 const form = ref({
@@ -155,25 +153,25 @@ const goToContactProfile = () => {
 }
 
 const languagePicker = computed(() => {
-  return useLanguageStore().languages.map((language: any) => ({
+  return s.languageStore.languages.map((language: any) => ({
     text: language.name,
     value: language.id,
   }))
 })
 
 onMounted(async () => {
-  await settingStore.loadFromSecureStorage()
   await authStore.loadFromSecureStorage()
+
   if (authStore.authUser) {
     form.value = { ...authStore.authUser }
     if (form.value.preferred_language_id) {
-      const selected = s.languages.find(
+      const selected = s.languageStore.languages.find(
         (l: any) => l.id === form.value.preferred_language_id
       )
       if (selected) {
         pickerValue.value = [selected.id]
         userPreferredLanguage.value = selected.name
-        useSettingStore().setUserPreferredLanguage(selected)
+        s.languageStore.setUserPreferredLanguage(selected)
       }
     }
   }
@@ -190,7 +188,7 @@ const m = {
   handle: {
     click: {
       logout: async () => {
-        await useAuthStore().logout()
+        await authStore.logout()
 
         showNotify({
           type: "success",
@@ -218,11 +216,11 @@ const m = {
         }
         authStore.authUser = updatedUser
         localStorage.setItem("authUser", JSON.stringify(updatedUser))
-        const selected = s.languages.find(
+        const selected = s.languageStore.languages.find(
           (l: any) => l.id === form.value.preferred_language_id
         )
         if (selected) {
-          useSettingStore().setUserPreferredLanguage(selected)
+          s.languageStore.setUserPreferredLanguage(selected)
         }
       },
     },

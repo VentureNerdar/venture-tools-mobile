@@ -74,23 +74,17 @@ import { PrayingHands } from "@vicons/fa"
 
 import { useAuthStore } from "~/stores/useAuthStore"
 import { useLanguageStore } from "~/stores/useLanguageStore"
-import { useSettingStore } from "~/stores/useSettingStore"
 
 const authStore = useAuthStore()
 const languageStore = useLanguageStore()
 const languages = languageStore.languages
 
 onMounted(async () => {
-  await languageStore.loadFromSecureStorage()
-
-  const settingStore = useSettingStore()
-  await settingStore.loadFromSecureStorage()
-
   const userPreferredLanguage = languages.find(
     (language: any) => language.id === authStore.authUser?.preferred_language_id
   )
   if (userPreferredLanguage) {
-    settingStore.setUserPreferredLanguage(userPreferredLanguage)
+    languageStore.setUserPreferredLanguage(userPreferredLanguage)
   }
 })
 

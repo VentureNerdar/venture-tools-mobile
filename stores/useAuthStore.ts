@@ -198,7 +198,10 @@ export const useAuthStore = defineStore("auth", () => {
     await SecureStoragePlugin.remove({ key: "deviceId" })
     await SecureStoragePlugin.remove({ key: "notificationToken" })
 
-    navigateTo("/")
+    // router.replace({ path: "/" }).then(() => {
+    //   router.go(0)
+    // })
+    window.location.href = "/"
   }
 
   return {

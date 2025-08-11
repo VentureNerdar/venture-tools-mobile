@@ -14,9 +14,9 @@ export const useSettingStore = defineStore("setting", () => {
   const pinNumber = ref<boolean>(false)
   const pinCode = ref<string>("")
   // const applicationMask = ref<boolean>(false)
-  const userPreferredLanguage = ref<LanguageFormModel | null>(null)
+  // const userPreferredLanguage = ref<LanguageFormModel | null>(null)
 
-  const currentPreferredLanguage = computed(() => userPreferredLanguage.value)
+  // const currentPreferredLanguage = computed(() => userPreferredLanguage.value)
 
   const contactStatuses = computed(() =>
     statuses.value.filter((s: Status) => s.type === "contact")
@@ -71,22 +71,13 @@ export const useSettingStore = defineStore("setting", () => {
     }
 
     // try {
-    //   const storedMask = await SecureStoragePlugin.get({
-    //     key: "applicationMask",
+    //   const storedLang = await SecureStoragePlugin.get({
+    //     key: "user_preferred_language",
     //   })
-    //   applicationMask.value = storedMask.value === "true"
+    //   userPreferredLanguage.value = JSON.parse(storedLang.value)
     // } catch {
-    //   applicationMask.value = false
+    //   userPreferredLanguage.value = null
     // }
-
-    try {
-      const storedLang = await SecureStoragePlugin.get({
-        key: "user_preferred_language",
-      })
-      userPreferredLanguage.value = JSON.parse(storedLang.value)
-    } catch {
-      userPreferredLanguage.value = null
-    }
 
     try {
       const storedPin = await SecureStoragePlugin.get({ key: "PINNumber" })
@@ -99,13 +90,13 @@ export const useSettingStore = defineStore("setting", () => {
     }
   }
 
-  const setUserPreferredLanguage = async (lang: LanguageFormModel) => {
-    userPreferredLanguage.value = lang
-    await SecureStoragePlugin.set({
-      key: "user_preferred_language",
-      value: JSON.stringify(lang),
-    })
-  }
+  // const setUserPreferredLanguage = async (lang: LanguageFormModel) => {
+  //   userPreferredLanguage.value = lang
+  //   await SecureStoragePlugin.set({
+  //     key: "user_preferred_language",
+  //     value: JSON.stringify(lang),
+  //   })
+  // }
 
   const setStatuses = async (status: Status[]) => {
     statuses.value = status
@@ -143,14 +134,14 @@ export const useSettingStore = defineStore("setting", () => {
     groupStatuses,
     faithStatuses,
     options,
-    userPreferredLanguage,
-    currentPreferredLanguage,
+    // userPreferredLanguage,
+    // currentPreferredLanguage,
     pinNumber,
     pinCode,
     // applicationMask,
     /** methods **/
     loadFromSecureStorage,
-    setUserPreferredLanguage,
+    // setUserPreferredLanguage,
     // setApplicationMask,
     setPinNumber,
     setStatuses,

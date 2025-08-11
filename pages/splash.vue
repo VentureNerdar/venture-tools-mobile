@@ -197,7 +197,7 @@ const downloadSequence = async () => {
         let defaultLang
         if (languages && languages.length) {
           defaultLang = languages.find((l: any) => l.locale === "en")
-          s.settings.setUserPreferredLanguage(defaultLang)
+          s.languageStore.setUserPreferredLanguage(defaultLang)
         }
       } catch (error) {
         console.error("Error reading languages from secure storage", error)
@@ -219,14 +219,27 @@ const downloadSequence = async () => {
 
       s.peopleGroupStore.setPeopleGroups(peopleGroupValues)
     }
-    if (moduleName === "Language Words") {
-      const wordValues = await getSecureData<any[]>("languageWords", [])
+    // if (moduleName === "Language Words") {
+    //   const wordValues = await getSecureData<any[]>("languageWords", [])
 
-      s.languageStore.setWords(wordValues)
-    }
+    //   s.languageStore.setWords(wordValues)
+    // }
+    // if (moduleName === "Languages") {
+    //   const languageValues = await getSecureData<any[]>("languages", [])
+    //   s.languageStore.setLanguages(languageValues)
+    // }
     if (moduleName === "Languages") {
-      const languageValues = await getSecureData<any[]>("languages", [])
+      const languageValues = JSON.parse(
+        localStorage.getItem("languages") || "[]"
+      )
       s.languageStore.setLanguages(languageValues)
+    }
+
+    if (moduleName === "Language Words") {
+      const wordValues = JSON.parse(
+        localStorage.getItem("languageWords") || "[]"
+      )
+      s.languageStore.setWords(wordValues)
     }
 
     if (moduleName === "Communication Platforms") {
@@ -260,7 +273,7 @@ const consume = async (
 
   d.completedModules.push(moduleName)
 
-  if (moduleName === "Community Checklists") {
+  if (moduleName === "Faith Milestones") {
     d.currentTaskText = "Redirecting . . . "
   }
 }

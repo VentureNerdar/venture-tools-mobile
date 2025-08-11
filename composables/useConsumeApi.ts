@@ -97,16 +97,44 @@ const respond = async (
   id?: number,
   permanent?: boolean
 ) => {
-  // Process store operation
   if (storeOptions !== false) {
     storeOptions.storeState = response
+
     if (storeOptions.isPersist) {
-      await SecureStoragePlugin.set({
-        key: storeOptions.key,
-        value: JSON.stringify(response),
-      })
+      const isLanguageData =
+        storeOptions.key === "languages" ||
+        storeOptions.key === "languageWords" ||
+        storeOptions.key === "user_preferred_language"
+
+      if (isLanguageData) {
+        // Save to localStorage instead of SecureStorage
+        localStorage.setItem(storeOptions.key, JSON.stringify(response))
+      } else {
+        // Default: save to SecureStorage
+        await SecureStoragePlugin.set({
+          key: storeOptions.key,
+          value: JSON.stringify(response),
+        })
+      }
     }
   }
+
+  // Process store operation
+  // if (storeOptions !== false) {
+  //   storeOptions.storeState = response
+  //   if (storeOptions.isPersist) {
+  //     await SecureStoragePlugin.set({
+  //       key: storeOptions.key,
+  //       value: JSON.stringify(response),
+  //     })
+  //   }
+  //   if (storeOptions.key === "languages") {
+  //     localStorage.setItem("languages", JSON.stringify(response))
+  //   }
+  //   if (storeOptions.key === "languageWords") {
+  //     localStorage.setItem("languageWords", JSON.stringify(response))
+  //   }
+  // }
 
   // Define notification title
   if (["save", "delete", "restore"].includes(consumptionType)) {

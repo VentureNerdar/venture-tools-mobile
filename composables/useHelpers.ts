@@ -3,7 +3,6 @@ import type {
   LanguageTranslationFormModel,
   LanguageWordFormModel,
 } from "../types/models"
-import { useSettingStore } from "../stores/useSettingStore"
 import { useLanguageStore } from "../stores/useLanguageStore"
 export interface Option {
   label: string
@@ -44,7 +43,8 @@ export function useHelpers() {
     translate: (key: string) => {
       let translate = ""
       let wordId = 0
-      const translations = useSettingStore().userPreferredLanguage?.translations
+      const translations =
+        useLanguageStore().userPreferredLanguage?.translations
       // const translations = useLanguagesStore().languages[0].translations
       let words = useLanguageStore().words
       if (words.length == 0) {
