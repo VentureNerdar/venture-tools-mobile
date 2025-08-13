@@ -173,6 +173,7 @@ export const useAuthStore = defineStore("auth", () => {
   async function logout() {
     const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
     const deviceId = await SecureStoragePlugin.get({ key: "deviceId" })
+    const router = useRouter()
 
     const headers: Header = {
       Accept: "application/json",
@@ -196,12 +197,8 @@ export const useAuthStore = defineStore("auth", () => {
     await SecureStoragePlugin.remove({ key: "Bearer" })
     await SecureStoragePlugin.remove({ key: "authUser" })
     await SecureStoragePlugin.remove({ key: "deviceId" })
-    await SecureStoragePlugin.remove({ key: "notificationToken" })
-
-    // router.replace({ path: "/" }).then(() => {
-    //   router.go(0)
-    // })
-    window.location.href = "/"
+    // await SecureStoragePlugin.remove({ key: "notificationToken" })
+    router.replace({ path: "/" })
   }
 
   return {

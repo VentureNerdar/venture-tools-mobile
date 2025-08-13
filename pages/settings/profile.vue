@@ -160,7 +160,7 @@ const languagePicker = computed(() => {
 })
 
 onMounted(async () => {
-  await authStore.loadFromSecureStorage()
+  // await authStore.loadFromSecureStorage()
 
   if (authStore.authUser) {
     form.value = { ...authStore.authUser }
@@ -189,6 +189,7 @@ const m = {
     click: {
       logout: async () => {
         await authStore.logout()
+        router.replace("/")
 
         showNotify({
           type: "success",

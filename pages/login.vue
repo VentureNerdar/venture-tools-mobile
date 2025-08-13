@@ -71,6 +71,9 @@ const d = reactive({
     identifier: "seb@demo.com",
     password: "demodemo",
     platform: "mobile",
+    // identifier: "testdm@gmail.com",
+    // password: "password",
+    // platform: "mobile",
   } as Credentials,
 })
 
@@ -92,6 +95,7 @@ const m = {
           navigateTo("/splash")
         }, 300)
       } else {
+        d.loading.btnLogin = false
         showNotify({
           type: "danger",
           message: "Invalid credentials",

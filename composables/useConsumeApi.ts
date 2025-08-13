@@ -30,7 +30,7 @@ const initialPreparation = async (path: RoutePaths, id?: number) => {
   }
 
   const authStore = useAuthStore()
-  await authStore.loadFromSecureStorage()
+  // await authStore.loadFromSecureStorage()
   const token = authStore.token || ""
   console.log("Token", token)
 

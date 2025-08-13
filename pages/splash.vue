@@ -252,7 +252,7 @@ const downloadSequence = async () => {
       )
     }
 
-    await delay(500)
+    await delay(200)
 
     if (!d.logoLoaded) {
       d.logoLoaded = true

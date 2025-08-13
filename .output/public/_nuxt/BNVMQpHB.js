@@ -1,1 +1,0 @@
-import{an as r}from"./k8-srnks.js";const c={to:[String,Object],url:String,replace:Boolean};function a({to:e,url:o,replace:t,$router:n}){e&&n?n[t?"replace":"push"](e):o&&(t?location.replace(o):location.href=o)}function i(){const e=r().proxy;return()=>a(e)}export{c as a,a as r,i as u};

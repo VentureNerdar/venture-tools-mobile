@@ -12,6 +12,20 @@
 <script setup lang="ts">
 import type { ConfigProviderThemeVars } from "vant"
 import { useThemeStore } from "./stores/useTheme"
+import { App } from "@capacitor/app"
+import { useRouter } from "vue-router"
+
+// SETUP BACK BUTTON ON ANDROID
+App.addListener("backButton", () => {
+  const router = useRouter()
+  if (router.currentRoute.value.path !== "/") {
+    router.back()
+  } else {
+    App.exitApp()
+  }
+})
+
+// SETUP THEME STORE
 
 const themeStore = useThemeStore()
 
@@ -19,7 +33,7 @@ const darkTheme = "dark"
 const lightTheme = "light"
 
 const currentTheme = computed(() =>
-  themeStore.darkMode ? darkTheme : lightTheme,
+  themeStore.darkMode ? darkTheme : lightTheme
 )
 
 const bgColor1 = "#021526"
@@ -110,7 +124,7 @@ const lightThemeVars: ConfigProviderThemeVars = {
 }
 
 const currentThemeVars = computed(() =>
-  themeStore.darkMode ? darkThemeVars : lightThemeVars,
+  themeStore.darkMode ? darkThemeVars : lightThemeVars
 )
 </script>
 
