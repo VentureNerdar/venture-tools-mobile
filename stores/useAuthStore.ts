@@ -2,6 +2,9 @@ import { defineStore } from "pinia"
 import type { Credentials, AuthUser } from "~/types"
 import { app } from "~/utils/firebase"
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
+import { Capacitor } from "@capacitor/core"
+import { FirebaseMessaging, type GetTokenOptions } from "@capacitor-firebase/messaging"
+import { LocalNotifications } from "@capacitor/local-notifications"
 
 type User = {
   id?: number
@@ -75,37 +78,184 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function registerDevice(userId: number) {
+// async function registerDevice(userId: number) {
+//     try {
+//       const deviceId = "mobile_" + crypto.randomUUID()
+//       let currentNotificationToken: string | null = null
+//       const platform = Capacitor.getPlatform() // 'web' or 'android'
+
+//       try {
+//         const vapidKey = (config as unknown as FirebaseConfig).public.firebase.vapidKey
+
+//         if (platform === "web") {
+//           // Web-specific FCM
+//           const { getMessaging, getToken, onMessage } = await import("firebase/messaging")
+//           const messaging = getMessaging(app)
+
+//           const permission = await Notification.requestPermission()
+//           if (permission === "granted") {
+//             currentNotificationToken = await getToken(messaging, { vapidKey })
+//             if (currentNotificationToken) {
+//               await SecureStoragePlugin.set({
+//                 key: "notificationToken",
+//                 value: currentNotificationToken,
+//               })
+//             }
+
+//             onMessage(messaging, (payload) => {
+//               console.log("Message received in foreground:", payload)
+//               if (payload.notification?.title && payload.notification?.body) {
+//                 const { title, body } = payload.notification
+//                 new Notification(title, { body, icon: "/logo-vertical.png" })
+//               }
+//             })
+//           }
+//         } else {
+//           // Android (Capacitor)
+//           const { receive } = await FirebaseMessaging.requestPermissions()
+//           if (receive !== "granted") {
+//             console.error("Notification permissions denied")
+//             return
+//           }
+
+//           const options: GetTokenOptions = { vapidKey }
+//           currentNotificationToken = (await FirebaseMessaging.getToken(options)).token
+//           if (currentNotificationToken) {
+//             await SecureStoragePlugin.set({
+//               key: "notificationToken",
+//               value: currentNotificationToken,
+//             })
+//           }
+
+//           // Handle foreground notifications
+//           FirebaseMessaging.addListener("notificationReceived", (event) => {
+//             console.log("Notification received:", event.notification)
+//             // Handle notification (e.g., show in-app alert)
+//           })
+
+//           // Handle notification taps
+//           FirebaseMessaging.addListener("notificationActionPerformed", (event) => {
+//             console.log("Notification action:", event)
+//             // Navigate or handle click
+//           })
+//         }
+//       } catch (err) {
+//         console.error("FCM error:", err)
+//       }
+
+//       await SecureStoragePlugin.set({
+//         key: "deviceId",
+//         value: deviceId,
+//       })
+
+//       const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+//       const headers: Header = {
+//         Accept: "application/json",
+//         "Content-Type": "application/json",
+//         Authorization: bearer.value || "",
+//       }
+
+//       await $fetch(`${config.public.apiURL}users/id/${userId}/devices`, {
+//         method: "POST",
+//         body: {
+//           device_id: deviceId,
+//           device_type: platform, // 'web' or 'android'
+//           device_name: platform === "web" ? navigator.userAgent : "Android Device",
+//           notification_token: currentNotificationToken,
+//         },
+//         headers,
+//       })
+//     } catch (error) {
+//       console.error("Error registering device:", error)
+//     }
+//   }
+
+
+async function registerDevice(userId: number) {
     try {
       const deviceId = "mobile_" + crypto.randomUUID()
       let currentNotificationToken: string | null = null
+      const platform = Capacitor.getPlatform() // 'web' or 'android'
 
       try {
-        const vapidKey = (config as unknown as FirebaseConfig).public.firebase
-          .vapidKey
-        const { getMessaging, getToken, onMessage } = await import(
-          "firebase/messaging"
-        )
-        const messaging = getMessaging(app)
+        const vapidKey = (config as unknown as FirebaseConfig).public.firebase.vapidKey
 
-        const permission = await Notification.requestPermission()
-        if (permission === "granted") {
-          currentNotificationToken = await getToken(messaging, { vapidKey })
+        if (platform === "web") {
+          // Web-specific FCM
+          const { getMessaging, getToken, onMessage } = await import("firebase/messaging")
+          const messaging = getMessaging(app)
+
+          const permission = await Notification.requestPermission()
+          console.log("Web notification permission:", permission)
+          if (permission === "granted") {
+            currentNotificationToken = await getToken(messaging, { vapidKey })
+            console.log("Web FCM token:", currentNotificationToken)
+            if (currentNotificationToken) {
+              await SecureStoragePlugin.set({
+                key: "notificationToken",
+                value: currentNotificationToken,
+              })
+            }
+
+            onMessage(messaging, (payload) => {
+              console.log("Web foreground message received:", JSON.stringify(payload, null, 2))
+              if (payload.notification?.title && payload.notification?.body) {
+                const { title, body } = payload.notification
+                new Notification(title, { body, icon: "/logo-vertical.png" })
+              }
+            })
+          } else {
+            console.error("Web notification permission denied")
+          }
+        } else {
+          // Android (Capacitor)
+          const { receive } = await FirebaseMessaging.requestPermissions()
+          console.log("Android notification permission:", receive)
+          if (receive !== "granted") {
+            console.error("Android notification permissions denied")
+            return
+          }
+
+          const options: GetTokenOptions = { vapidKey }
+          currentNotificationToken = (await FirebaseMessaging.getToken(options)).token
+          console.log("Android FCM token:", currentNotificationToken)
           if (currentNotificationToken) {
             await SecureStoragePlugin.set({
               key: "notificationToken",
               value: currentNotificationToken,
             })
           }
-        }
 
-        onMessage(messaging, (payload) => {
-          console.log("Message received in foreground:", payload)
-          if (payload.notification?.title && payload.notification?.body) {
-            const { title, body } = payload.notification
-            new Notification(title, { body, icon: "/logo-vertical.png" })
-          }
-        })
+          // Handle foreground notifications ***
+          FirebaseMessaging.addListener("notificationReceived", async (event) => {
+            console.log("Android notification received:", JSON.stringify(event.notification, null, 2))
+            if (event.notification?.title && event.notification?.body) {
+              try {
+                await LocalNotifications.schedule({
+                  notifications: [
+                    {
+                      id: Math.floor(Date.now() / 1000),
+                      title: event.notification.title,
+                      body: event.notification.body,
+                      smallIcon: "notification_icon", // Matches @mipmap/notification_icon
+                    },
+                  ],
+                })
+                console.log("Local notification scheduled")
+              } catch (error) {
+                console.error("Error scheduling local notification:", error)
+              }
+            } else {
+              console.warn("Notification missing title or body:", event.notification)
+            }
+          })
+
+          // Handle notification taps
+          FirebaseMessaging.addListener("notificationActionPerformed", (event) => {
+            console.log("Android notification action:", JSON.stringify(event, null, 2))
+            // Handle tap, e.g., navigate to a route
+          })
+        }
       } catch (err) {
         console.error("FCM error:", err)
       }
@@ -126,16 +276,20 @@ export const useAuthStore = defineStore("auth", () => {
         method: "POST",
         body: {
           device_id: deviceId,
-          device_type: "web",
-          device_name: navigator.userAgent,
+          device_type: platform,
+          device_name: platform === "web" ? navigator.userAgent : "Android Device",
           notification_token: currentNotificationToken,
         },
         headers,
+      }).catch((error) => {
+        console.error("Error registering device with server:", error)
       })
     } catch (error) {
-      console.error("Error registering device:", error)
+      console.error("Error in registerDevice:", error)
     }
   }
+
+  // ------
 
   async function login(credentials: Credentials) {
     await $fetch(config.public.rootURL + "sanctum/csrf-cookie", {

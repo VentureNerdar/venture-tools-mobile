@@ -15,6 +15,7 @@ interface FirebaseConfig {
       messagingSenderId: string
       appId: string
       measurementId: string
+      vapidKey: string
     }
   }
 }

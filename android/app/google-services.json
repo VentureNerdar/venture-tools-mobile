@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "418184685737",
+    "project_id": "venture-notification",
+    "storage_bucket": "venture-notification.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:418184685737:android:1dbccea6cc69a85ce321b8",
+        "android_client_info": {
+          "package_name": "com.klonotech.venture"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBt5cfyPOdc59mQkIzOW5Ify6i4KEfsOjo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
