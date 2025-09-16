@@ -30,6 +30,9 @@ export enum RoutePaths {
   PROFILE_CHANGE_PASSWORD = "profile/change-password",
 
   PRAYER_PROMPTS = "prayer-prompts",
+
+  CONTACT_PRAYER_COUNT = "prayer-count/contact",
+  CHURCH_PRAYER_COUNT = "prayer-count/church",
 }
 
 export type GenderTypes = "male" | "female"

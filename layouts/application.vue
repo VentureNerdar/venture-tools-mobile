@@ -6,6 +6,7 @@
       :title="pageName.translated"
       @click-left="() => $router.back()"
       @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined"
+      style="z-index: 999"
     >
       <template #right>
         <span v-if="hasCreateButton">
@@ -14,7 +15,7 @@
       </template>
     </VanNavBar>
 
-    <div style="margin-top: 46px">
+    <div style="margin-top: 46px; margin-bottom: 48px">
       <NuxtPage />
     </div>
 

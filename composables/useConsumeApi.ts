@@ -61,11 +61,17 @@ const request = async (
     routePath = routePath + "/list"
   }
 
-  const response = await $fetch(routePath, requestOptions).catch(() => {
-    showNotify({
-      type: "danger",
-      message: "Something went wrong",
-    })
+  const response = await $fetch(routePath, requestOptions).catch((error) => {
+    if (error.response.status == 401) {
+      useAuthStore().logout()
+      navigateTo("/")
+    } else {
+      showNotify({
+        type: "danger",
+        message: "Something went wrong",
+      })
+    }
+    // useAuthStore().logout
   })
 
   if (response) {
