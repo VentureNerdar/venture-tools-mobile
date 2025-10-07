@@ -14,6 +14,12 @@ import type { ConfigProviderThemeVars } from "vant"
 import { useThemeStore } from "./stores/useTheme"
 import { App } from "@capacitor/app"
 import { useRouter } from "vue-router"
+import { useBiometricLauncher } from "./composables/useBiometricLauncher"
+useBiometricLauncher()
+
+onMounted(() => {
+  console.log("Ran use Biometric Login")
+})
 
 // SETUP BACK BUTTON ON ANDROID
 App.addListener("backButton", () => {

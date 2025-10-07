@@ -3,7 +3,8 @@ import type { CapacitorConfig } from "@capacitor/cli"
 const config: CapacitorConfig = {
   appId: "com.klonotech.venture",
   appName: "Venture",
-  webDir: "dist",
+  // webDir: "dist",
+  webDir: "./.output/public",
   server: {
     cleartext: true, // ⬅️ Allow HTTP connections
     // hostname: 'localhost', // optional, default is 'localhost'
