@@ -73,13 +73,13 @@ export const useAuthStore = defineStore("auth", () => {
     })
 
     if (response) {
-      // user.value = response as User
-      // authUser.value = response as AuthUser
-      // await SecureStoragePlugin.set({
-      //   key: "authUser",
-      //   value: JSON.stringify(response),
-      // })
-      localStorage.setItem("authUser", JSON.stringify(response))
+      user.value = response as User
+      authUser.value = response as AuthUser
+      await SecureStoragePlugin.set({
+        key: "authUser",
+        value: JSON.stringify(response),
+      })
+      // localStorage.setItem("authUser", JSON.stringify(response))
     }
   }
 

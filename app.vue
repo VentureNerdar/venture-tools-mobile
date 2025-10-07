@@ -15,7 +15,7 @@ import { useThemeStore } from "./stores/useTheme"
 import { App } from "@capacitor/app"
 import { useRouter } from "vue-router"
 import { useBiometricLauncher } from "./composables/useBiometricLauncher"
-useBiometricLauncher()
+// useBiometricLauncher()
 
 onMounted(() => {
   console.log("Ran use Biometric Login")

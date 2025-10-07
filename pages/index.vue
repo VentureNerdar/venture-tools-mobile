@@ -44,6 +44,7 @@ onMounted(async () => {
   await settingStore.loadFromSecureStorage()
   await authStore.loadFromSecureStorage()
 })
+useBiometricLauncher()
 
 function handleTap() {
   const currentTime = Date.now()

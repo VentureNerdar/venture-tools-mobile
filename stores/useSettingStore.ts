@@ -13,6 +13,7 @@ export const useSettingStore = defineStore("setting", () => {
   const statuses = ref<Status[]>([])
   const pinNumber = ref<boolean>(false)
   const pinCode = ref<string>("")
+  const isUsingBiometric = ref<boolean>(false)
   // const applicationMask = ref<boolean>(false)
   // const userPreferredLanguage = ref<LanguageFormModel | null>(null)
 
@@ -88,6 +89,17 @@ export const useSettingStore = defineStore("setting", () => {
       pinCode.value = ""
       pinNumber.value = false
     }
+
+    try {
+      const biometric = await SecureStoragePlugin.get({
+        key: "isUsingBiometric",
+      })
+      isUsingBiometric.value = JSON.parse(biometric.value)
+      console.log("isUsingBiometric from pinia", biometric.value)
+    } catch {
+      isUsingBiometric.value = false
+      console.log("Biometric catch block")
+    }
   }
 
   // const setUserPreferredLanguage = async (lang: LanguageFormModel) => {
@@ -128,6 +140,15 @@ export const useSettingStore = defineStore("setting", () => {
     await SecureStoragePlugin.remove({ key: "PINNumber" })
   }
 
+  const toggleBiometric = async (newValue: boolean) => {
+    isUsingBiometric.value = newValue
+
+    await SecureStoragePlugin.set({
+      key: "isUsingBiometric",
+      value: JSON.stringify(newValue),
+    })
+  }
+
   return {
     statuses,
     contactStatuses,
@@ -138,6 +159,7 @@ export const useSettingStore = defineStore("setting", () => {
     // currentPreferredLanguage,
     pinNumber,
     pinCode,
+    isUsingBiometric,
     // applicationMask,
     /** methods **/
     loadFromSecureStorage,
@@ -145,6 +167,7 @@ export const useSettingStore = defineStore("setting", () => {
     // setApplicationMask,
     setPinNumber,
     setStatuses,
+    toggleBiometric,
     removePinNumber,
   }
 })
