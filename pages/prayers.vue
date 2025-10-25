@@ -100,6 +100,7 @@
 import { RoutePaths, type BrowseConditionAll } from "~/types/index.d"
 import { PrayingHands } from "@vicons/fa"
 import { loadingProps } from "vant"
+import { useAuthStore } from "~/stores/useAuthStore"
 
 definePageMeta({
   layout: "application",
@@ -110,11 +111,19 @@ const helpers = useHelpers()
 const limit = ref(10)
 const loading = reactive({ contacts: false, churches: false })
 const finished = reactive({ contacts: false, churches: false })
+const authStore = useAuthStore()
 
 type Prayers = {
   churchPrayers: any[]
   contactPrayers: any[]
 }
+
+onMounted(async () => {
+  await authStore.loadFromSecureStorage()
+})
+
+console.log("[Auth] Prayer auth user ", authStore.authUser)
+console.log("[Auth] Prayer page token ", authStore.token)
 
 const consume = {
   prayers: await useConsumeApi(RoutePaths.SETTINGS_PRAYERS),

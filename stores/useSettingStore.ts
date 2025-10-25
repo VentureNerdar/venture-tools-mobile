@@ -59,7 +59,7 @@ export const useSettingStore = defineStore("setting", () => {
   const loadFromSecureStorage = async () => {
     try {
       const storedStatuses = await SecureStoragePlugin.get({ key: "statuses" })
-      statuses.value = JSON.parse(storedStatuses.value)
+      statuses.value = JSON.parse(storedStatuses.value || "[]")
     } catch {
       statuses.value = []
     }
@@ -95,7 +95,6 @@ export const useSettingStore = defineStore("setting", () => {
         key: "isUsingBiometric",
       })
       isUsingBiometric.value = JSON.parse(biometric.value)
-      console.log("isUsingBiometric from pinia", biometric.value)
     } catch {
       isUsingBiometric.value = false
       console.log("Biometric catch block")

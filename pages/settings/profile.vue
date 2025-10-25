@@ -188,14 +188,31 @@ const m = {
   handle: {
     click: {
       logout: async () => {
-        await authStore.logout()
-        router.replace("/")
-
-        showNotify({
-          type: "success",
-          message: "See you again!",
-          duration: 2000,
+        const toast = showLoadingToast({
+          message: "Logging out...",
+          forbidClick: false, // allow clicks if needed
+          duration: 0, // keep showing until manually closed
+          overlay: false, // no background overlay
+          position: "middle", // center of the screen
+          loadingType: "spinner", // optional: spinner style
         })
+        try {
+          await authStore.logout()
+          router.replace("/")
+          showNotify({
+            type: "success",
+            message: "See you again!",
+            duration: 2000,
+          })
+        } catch (err) {
+          showNotify({
+            type: "danger",
+            message: "Logout failed. Please try again",
+            duration: 2000,
+          })
+        } finally {
+          closeToast()
+        }
       },
       confirmLanguage: ({ selectedOptions }: { selectedOptions: any }) => {
         showPicker.value = false

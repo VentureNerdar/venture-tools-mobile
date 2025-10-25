@@ -37,14 +37,28 @@ const TAP_TIMEOUT = 3000 // 3 seconds
 const REQUIRED_TAPS = 7
 const initialIndex = ref(Math.floor(Math.random() * 10))
 const settingStore = useSettingStore()
-const authStore = useAuthStore()
-const authUser = authStore.authUser
+const { isAuthenticated } = useBiometric()
 
 onMounted(async () => {
-  await settingStore.loadFromSecureStorage()
-  await authStore.loadFromSecureStorage()
+  try {
+    await settingStore.loadFromSecureStorage()
+    // await authStore.loadFromSecureStorage()
+    console.log("[AuthStore] Auth User from index page ")
+  } catch (e) {
+    console.log("something wrong with setting or auth store", e)
+  }
+
+  if (settingStore.isUsingBiometric && !isAuthenticated.value) {
+    setTimeout(() => {
+      router.replace("/biometric")
+    }, 700)
+  }
+  // try {
+  //   await authStore.loadFromSecureStorage()
+  // } catch (e) {
+  //   console.log("something wrong with auth store", e)
+  // }
 })
-useBiometricLauncher()
 
 function handleTap() {
   const currentTime = Date.now()
@@ -56,18 +70,39 @@ function handleTap() {
     tapCount.value++
   }
   lastTapTime.value = currentTime
-
   if (tapCount.value >= REQUIRED_TAPS) {
-    const pinCode = settingStore.pinCode
-    if (!authUser) {
-      router.push("/welcome")
-    } else if (authUser && pinCode) {
-      router.push("/pin")
-    } else if (authUser && !pinCode) {
-      router.push("/splash")
-    }
+    router.push("/splash")
   }
+
+  // if (tapCount.value >= REQUIRED_TAPS) {
+  //   const pinCode = settingStore.pinCode
+  //   if (!authUser) {
+  //     router.push("/welcome")
+  //   } else if (authUser && pinCode) {
+  //     router.push("/pin")
+  //   } else if (authUser && !pinCode) {
+  //     router.push("/splash")
+  //   }
+  // }
 }
+
+// console.log("auth Store is loading index page", authStore.isLoading)
+// watch(
+//   () => authStore.isLoading,
+//   (newVal, oldVal) => {
+//     console.log("[Watcher] isLoading changed:", oldVal, "→", newVal)
+//     if (newVal === false) {
+//       console.log("[Watcher] Auth loading finished!")
+//       // 🔹 You can safely check authStore.authUser or navigate here
+//       if (authStore.authUser) {
+//         console.log("User authenticated:", authStore.authUser.email)
+//       } else {
+//         console.log("No user found after loading")
+//       }
+//     }
+//   },
+//   { immediate: true } // optional: run once on mount
+// )
 </script>
 
 <style scoped>

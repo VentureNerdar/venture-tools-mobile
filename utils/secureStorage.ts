@@ -9,7 +9,7 @@ export const secureGet = async (key: string): Promise<string | null> => {
     const result = await SecureStoragePlugin.get({ key })
     return result.value
   } catch (error) {
-    console.log(error)
+    console.log("store key missing", key, error)
     return null // if key does not exist
   }
 }

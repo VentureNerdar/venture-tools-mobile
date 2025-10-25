@@ -39,19 +39,50 @@ export const useAuthStore = defineStore("auth", () => {
   const user = ref<User | null>(null)
   const authUser = ref<AuthUser | null>(null)
   const token = ref<string>("")
+  const isLoading = ref<boolean>(true)
   const router = useRouter()
 
   // Load from secure storage on store init
-  const loadFromSecureStorage = async () => {
-    const storedAuthUser = await SecureStoragePlugin.get({ key: "authUser" })
-    // const storedToken = await secureGet("Bearer")
-    const storedToken = await SecureStoragePlugin.get({ key: "Bearer" })
+  // const loadFromSecureStorage = async () => {
+  //   const storedAuthUser = await SecureStoragePlugin.get({ key: "authUser" })
+  //   // const storedToken = await secureGet("Bearer")
+  //   const storedToken = await SecureStoragePlugin.get({ key: "Bearer" })
 
-    if (storedAuthUser.value) {
-      authUser.value = JSON.parse(storedAuthUser.value)
-    }
-    if (storedToken.value) {
-      token.value = storedToken.value
+  //   if (storedAuthUser.value) {
+  //     authUser.value = JSON.parse(storedAuthUser.value)
+  //   }
+  //   if (storedToken.value) {
+  //     token.value = storedToken.value
+  //   }
+  // }
+  const loadFromSecureStorage = async () => {
+    try {
+      console.log("[AuthStore] Checking secure storage...")
+      isLoading.value = true
+      console.log("[AuthStore] Is Loading from auth store", isLoading.value)
+
+      const storedAuthUser = await SecureStoragePlugin.get({
+        key: "authUser",
+      }).catch(() => null)
+      const storedToken = await SecureStoragePlugin.get({
+        key: "Bearer",
+      }).catch(() => null)
+
+      if (storedAuthUser?.value) {
+        authUser.value = JSON.parse(storedAuthUser.value)
+      }
+
+      if (storedToken?.value) {
+        token.value = storedToken.value
+      }
+
+      if (token.value && !authUser.value) {
+        console.log("[AuthStore] Fetching user because token exists...")
+        await fetchUser()
+      }
+      isLoading.value = false
+    } catch (e) {
+      console.error("[AuthStore] loadFromSecureStorage error:", e)
     }
   }
 
@@ -82,98 +113,6 @@ export const useAuthStore = defineStore("auth", () => {
       // localStorage.setItem("authUser", JSON.stringify(response))
     }
   }
-
-  // async function registerDevice(userId: number) {
-  //     try {
-  //       const deviceId = "mobile_" + crypto.randomUUID()
-  //       let currentNotificationToken: string | null = null
-  //       const platform = Capacitor.getPlatform() // 'web' or 'android'
-
-  //       try {
-  //         const vapidKey = (config as unknown as FirebaseConfig).public.firebase.vapidKey
-
-  //         if (platform === "web") {
-  //           // Web-specific FCM
-  //           const { getMessaging, getToken, onMessage } = await import("firebase/messaging")
-  //           const messaging = getMessaging(app)
-
-  //           const permission = await Notification.requestPermission()
-  //           if (permission === "granted") {
-  //             currentNotificationToken = await getToken(messaging, { vapidKey })
-  //             if (currentNotificationToken) {
-  //               await SecureStoragePlugin.set({
-  //                 key: "notificationToken",
-  //                 value: currentNotificationToken,
-  //               })
-  //             }
-
-  //             onMessage(messaging, (payload) => {
-  //               console.log("Message received in foreground:", payload)
-  //               if (payload.notification?.title && payload.notification?.body) {
-  //                 const { title, body } = payload.notification
-  //                 new Notification(title, { body, icon: "/logo-vertical.png" })
-  //               }
-  //             })
-  //           }
-  //         } else {
-  //           // Android (Capacitor)
-  //           const { receive } = await FirebaseMessaging.requestPermissions()
-  //           if (receive !== "granted") {
-  //             console.error("Notification permissions denied")
-  //             return
-  //           }
-
-  //           const options: GetTokenOptions = { vapidKey }
-  //           currentNotificationToken = (await FirebaseMessaging.getToken(options)).token
-  //           if (currentNotificationToken) {
-  //             await SecureStoragePlugin.set({
-  //               key: "notificationToken",
-  //               value: currentNotificationToken,
-  //             })
-  //           }
-
-  //           // Handle foreground notifications
-  //           FirebaseMessaging.addListener("notificationReceived", (event) => {
-  //             console.log("Notification received:", event.notification)
-  //             // Handle notification (e.g., show in-app alert)
-  //           })
-
-  //           // Handle notification taps
-  //           FirebaseMessaging.addListener("notificationActionPerformed", (event) => {
-  //             console.log("Notification action:", event)
-  //             // Navigate or handle click
-  //           })
-  //         }
-  //       } catch (err) {
-  //         console.error("FCM error:", err)
-  //       }
-
-  //       await SecureStoragePlugin.set({
-  //         key: "deviceId",
-  //         value: deviceId,
-  //       })
-
-  //       const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
-  //       const headers: Header = {
-  //         Accept: "application/json",
-  //         "Content-Type": "application/json",
-  //         Authorization: bearer.value || "",
-  //       }
-
-  //       await $fetch(`${config.public.apiURL}users/id/${userId}/devices`, {
-  //         method: "POST",
-  //         body: {
-  //           device_id: deviceId,
-  //           device_type: platform, // 'web' or 'android'
-  //           device_name: platform === "web" ? navigator.userAgent : "Android Device",
-  //           notification_token: currentNotificationToken,
-  //         },
-  //         headers,
-  //       })
-  //     } catch (error) {
-  //       console.error("Error registering device:", error)
-  //     }
-  //   }
 
   async function registerDevice(userId: number) {
     try {
@@ -387,6 +326,7 @@ export const useAuthStore = defineStore("auth", () => {
     user,
     authUser,
     token,
+    isLoading,
     loadFromSecureStorage,
     login,
     fetchUser,

@@ -1,6 +1,6 @@
 <template>
   <div class="wrap">
-    <VanLoading vertical> {{ d.currentTaskText }} </VanLoading>
+    <VanLoading vertical> {{ d.currentTaskText || "Loading..." }} </VanLoading>
   </div>
 </template>
 
@@ -21,6 +21,7 @@ import { useUserStore } from "~/stores/useUserStore"
 import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
 import type { LanguageFormModel } from "../types/models"
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
+import { useAuthStore } from "~/stores/useAuthStore"
 
 type ModuleNameType =
   | "User Roles"
@@ -39,6 +40,7 @@ definePageMeta({
   // layout: "non-app",
 })
 
+const router = useRouter()
 const getSecureData = async <T>(key: string, fallback: T) => {
   try {
     const { value } = await SecureStoragePlugin.get({ key })
@@ -64,6 +66,7 @@ const d = reactive({
   },
 
   logoLoaded: false,
+  isLoading: true,
 })
 
 const query = { all: true } as BrowseCondition
@@ -180,6 +183,47 @@ const s = reactive({
   peopleGroupStore: usePeopleGroupStore(),
   languageStore: useLanguageStore(),
   communicationPlatformStore: useCommunicationPlatformStore(),
+  authStore: useAuthStore(),
+})
+
+// onMounted(async () => {
+//   await s.authStore.loadFromSecureStorage()
+// })
+
+onMounted(async () => {
+  console.log("[Splash] Starting initial load...")
+
+  try {
+    // 1️⃣ Load auth data first
+    await s.authStore.loadFromSecureStorage()
+    await s.settings.loadFromSecureStorage()
+    await waitUntilAuthLoaded()
+
+    // 2️⃣ Auth finished loading
+    console.log("[Splash] Auth loading finished ✅")
+
+    // 3️⃣ Check user
+    const user = s.authStore.authUser
+    const pinCode = s.settings.pinCode
+    if (!user) {
+      console.log("[Splash] No user found → redirecting to /welcome")
+      router.replace("/welcome")
+      return
+    } // 4️⃣ Authenticated → continue preload
+    console.log("[Splash] Authenticated user:", user.email)
+    await downloadSequence()
+    if (user && pinCode) {
+      router.replace("/pin")
+    } else {
+      console.log("[Splash] Finished preload → go to /landing")
+      router.replace("/landing")
+    }
+
+    // 5️⃣ Move into app
+  } catch (err) {
+    console.error("[Splash] Initialization error:", err)
+    router.replace("/welcome")
+  }
 })
 
 const downloadSequence = async () => {
@@ -278,7 +322,49 @@ const consume = async (
   }
 }
 
-downloadSequence()
+const waitUntilAuthLoaded = async () => {
+  return new Promise<void>((resolve) => {
+    if (s.authStore.isLoading === false) {
+      resolve()
+      return
+    }
+    const stop = watch(
+      () => s.authStore.isLoading,
+      (newVal) => {
+        if (newVal === false) {
+          stop()
+          resolve()
+        }
+      },
+      { immediate: true }
+    )
+  })
+}
+
+// downloadSequence()
+// watch(
+//   () => s.authStore.isLoading,
+//   (newVal, oldVal) => {
+//     console.log(
+//       "[Watcher] isLoading changed welcome page:",
+//       oldVal,
+//       "→",
+//       newVal
+//     )
+
+//     d.isLoading = s.authStore.isLoading
+//     if (newVal === false) {
+//       console.log("[Watcher] Auth loading finished welcome page!")
+//       // 🔹 You can safely check authStore.authUser or navigate here
+//       if (!s.authStore.authUser) {
+//         router.push("/welcome")
+//       } else {
+//         console.log("Welcome page No user found after loading")
+//       }
+//     }
+//   },
+//   { immediate: true } // optional: run once on mount
+// )
 </script>
 
 <style scoped lang="scss">

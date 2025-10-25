@@ -11,24 +11,54 @@
 
 <script setup lang="ts">
 import type { ConfigProviderThemeVars } from "vant"
-import { useThemeStore } from "./stores/useTheme"
 import { App } from "@capacitor/app"
-import { useRouter } from "vue-router"
-import { useBiometricLauncher } from "./composables/useBiometricLauncher"
-// useBiometricLauncher()
+import { BiometricAuth } from "@aparajita/capacitor-biometric-auth"
+import { onMounted, onBeforeUnmount } from "vue"
+import { useThemeStore } from "./stores/useTheme"
 
-onMounted(() => {
-  console.log("Ran use Biometric Login")
+onMounted(async () => {
+  // Safely import composables AFTER Nuxt instance is ready
+  // const { useAuthStore } = await import("./stores/useAuthStore")
+  const { useRouter } = await import("vue-router")
+
+  const router = useRouter()
+  // const authStore = useAuthStore()
+
+  // ✅ Warm up biometric plugin (safe now)
+  // try {
+  //   await BiometricAuth.checkBiometry()
+  //   console.log("[App] Biometric plugin ready")
+  // } catch {
+  //   console.log("[App] Biometric warm-up failed (ignored)")
+  // }
+
+  // ✅ Handle back button
+  App.addListener("backButton", () => {
+    if (router.currentRoute.value.path !== "/") {
+      router.back()
+    } else {
+      App.exitApp()
+    }
+  })
+
+  // ✅ Handle app resume
+  // App.addListener("appStateChange", async (state) => {
+  //   if (state.isActive) {
+  //     console.log("[App] became active, reloading auth from secure storage")
+  //     await authStore.loadFromSecureStorage()
+  //   }
+  // })
+
+  // ✅ Initial auth load
+  // setTimeout(async () => {
+  //   console.log("[App] Initial auth load after mount")
+  //   await authStore.loadFromSecureStorage()
+  // }, 1000)
 })
 
-// SETUP BACK BUTTON ON ANDROID
-App.addListener("backButton", () => {
-  const router = useRouter()
-  if (router.currentRoute.value.path !== "/") {
-    router.back()
-  } else {
-    App.exitApp()
-  }
+onBeforeUnmount(() => {
+  // Always clean listeners
+  App.removeAllListeners()
 })
 
 // SETUP THEME STORE

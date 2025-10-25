@@ -80,7 +80,7 @@ async function verifyPin(pin: string) {
     const storedPin = settingStore.pinCode
 
     if (pin === storedPin) {
-      router.push("/splash")
+      router.push("/landing")
     } else {
       d.errorInfo =
         h.translate("incorrect_pin") == ""
