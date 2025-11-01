@@ -862,7 +862,11 @@ const contactList = computed(() => {
 
 const prayerPromptList = computed(() => {
   return d.prayerPrompts.map((pg: any) => ({
-    text: pg.prompt_text,
+    //    text: pg.prompt_text,
+    text:
+      pg.prompt_text.length > 50
+        ? pg.prompt_text.slice(0, 50) + "..."
+        : pg.prompt_text,
     value: pg.id,
   }))
 })

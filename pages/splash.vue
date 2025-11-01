@@ -218,8 +218,6 @@ onMounted(async () => {
       console.log("[Splash] Finished preload → go to /landing")
       router.replace("/landing")
     }
-
-    // 5️⃣ Move into app
   } catch (err) {
     console.error("[Splash] Initialization error:", err)
     router.replace("/welcome")

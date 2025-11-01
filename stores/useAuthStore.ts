@@ -61,12 +61,14 @@ export const useAuthStore = defineStore("auth", () => {
       isLoading.value = true
       console.log("[AuthStore] Is Loading from auth store", isLoading.value)
 
-      const storedAuthUser = await SecureStoragePlugin.get({
-        key: "authUser",
-      }).catch(() => null)
-      const storedToken = await SecureStoragePlugin.get({
-        key: "Bearer",
-      }).catch(() => null)
+      // const storedAuthUser = await SecureStoragePlugin.get({
+      //   key: "authUser",
+      // }).catch(() => null)
+      // const storedToken = await SecureStoragePlugin.get({
+      //   key: "Bearer",
+      // }).catch(() => null)
+      const storedAuthUser = await secureGet("authUser")
+      const storedToken = await secureGet("Bearer")
 
       if (storedAuthUser?.value) {
         authUser.value = JSON.parse(storedAuthUser.value)
@@ -106,10 +108,12 @@ export const useAuthStore = defineStore("auth", () => {
     if (response) {
       user.value = response as User
       authUser.value = response as AuthUser
-      await SecureStoragePlugin.set({
-        key: "authUser",
-        value: JSON.stringify(response),
-      })
+      await secureSet("authUser", JSON.stringify(response))
+      // await SecureStoragePlugin.set({
+      //   key: "authUser",
+      //   value: JSON.stringify(response),
+      // })
+
       // localStorage.setItem("authUser", JSON.stringify(response))
     }
   }

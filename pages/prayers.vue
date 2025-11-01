@@ -27,7 +27,9 @@
                 <div class="flex items-center gap-1 mt-1">
                   <PrayingHands
                     :style="{
-                      color: prayer.user_has_prayed ? '#17badf' : '#fff',
+                      color: prayer.user_has_prayed
+                        ? '#17badf'
+                        : unPrayedHandColor,
                       width: '18px',
                       height: '18px',
                       paddingRight: '10px',
@@ -76,7 +78,9 @@
                 <div class="flex items-center gap-1 mt-1">
                   <PrayingHands
                     :style="{
-                      color: prayer.user_has_prayed ? '#17badf' : '#fff',
+                      color: prayer.user_has_prayed
+                        ? '#17badf'
+                        : unPrayedHandColor,
                       width: '18px',
                       height: '18px',
                       paddingRight: '10px',
@@ -101,6 +105,7 @@ import { RoutePaths, type BrowseConditionAll } from "~/types/index.d"
 import { PrayingHands } from "@vicons/fa"
 import { loadingProps } from "vant"
 import { useAuthStore } from "~/stores/useAuthStore"
+import { useThemeStore } from "~/stores/useTheme"
 
 definePageMeta({
   layout: "application",
@@ -112,6 +117,9 @@ const limit = ref(10)
 const loading = reactive({ contacts: false, churches: false })
 const finished = reactive({ contacts: false, churches: false })
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
+
+console.log("[ThemeStore] current theme is:", themeStore.darkMode)
 
 type Prayers = {
   churchPrayers: any[]
@@ -130,6 +138,11 @@ const consume = {
   contactPrayerCount: await useConsumeApi(RoutePaths.CONTACT_PRAYER_COUNT),
   churchPrayerCount: await useConsumeApi(RoutePaths.CHURCH_PRAYER_COUNT),
 }
+
+const unPrayedHandColor = computed(() => {
+  // this will automatically re-compute when themeStore.darkMode changes
+  return themeStore.darkMode ? "#fff" : "#000"
+})
 
 const m = {
   handle: {
