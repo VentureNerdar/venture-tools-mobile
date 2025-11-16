@@ -10,10 +10,13 @@ export const useCommunicationPlatformStore = defineStore(
     // Load from secure storage
     const loadFromSecureStorage = async () => {
       try {
-        const result = await SecureStoragePlugin.get({
-          key: "communicationPlatforms",
-        })
-        communicationPlatforms.value = JSON.parse(result.value)
+        // const result = await SecureStoragePlugin.get({
+        //   key: "communicationPlatforms",
+        // })
+        const result = await secureGet("communicationPlatforms")
+        if (result.value) {
+          communicationPlatforms.value = JSON.parse(result.value)
+        }
       } catch (error) {
         console.log(error)
         communicationPlatforms.value = {}
@@ -25,10 +28,14 @@ export const useCommunicationPlatformStore = defineStore(
       communicationPlatformValues: any
     ) => {
       communicationPlatforms.value = communicationPlatformValues
-      await SecureStoragePlugin.set({
-        key: "communicationPlatforms",
-        value: JSON.stringify(communicationPlatformValues),
-      })
+      await secureSet(
+        "communicationPlatforms",
+        JSON.stringify(communicationPlatformValues)
+      )
+      // await SecureStoragePlugin.set({
+      //   key: "communicationPlatforms",
+      //   value: JSON.stringify(communicationPlatformValues),
+      // })
     }
 
     return {

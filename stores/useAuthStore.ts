@@ -89,7 +89,8 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function fetchUser() {
-    const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+    // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+    const bearer = await secureGet("Bearer")
 
     const headers: Header = {
       Accept: "application/json",
@@ -141,10 +142,11 @@ export const useAuthStore = defineStore("auth", () => {
             currentNotificationToken = await getToken(messaging, { vapidKey })
             console.log("Web FCM token:", currentNotificationToken)
             if (currentNotificationToken) {
-              await SecureStoragePlugin.set({
-                key: "notificationToken",
-                value: currentNotificationToken,
-              })
+              await secureSet("notificationToken", currentNotificationToken)
+              // await SecureStoragePlugin.set({
+              //   key: "notificationToken",
+              //   value: currentNotificationToken,
+              // })
             }
 
             onMessage(messaging, (payload) => {
@@ -174,10 +176,11 @@ export const useAuthStore = defineStore("auth", () => {
             .token
           console.log("Android FCM token:", currentNotificationToken)
           if (currentNotificationToken) {
-            await SecureStoragePlugin.set({
-              key: "notificationToken",
-              value: currentNotificationToken,
-            })
+            secureSet("notificationToken", currentNotificationToken)
+            // await SecureStoragePlugin.set({
+            //   key: "notificationToken",
+            //   value: currentNotificationToken,
+            // })
           }
 
           // Handle foreground notifications ***
@@ -229,12 +232,14 @@ export const useAuthStore = defineStore("auth", () => {
         console.error("FCM error:", err)
       }
 
-      await SecureStoragePlugin.set({
-        key: "deviceId",
-        value: deviceId,
-      })
+      await secureSet("deviceId", deviceId)
+      // await SecureStoragePlugin.set({
+      //   key: "deviceId",
+      //   value: deviceId,
+      // })
 
-      const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+      // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+      const bearer = await secureGet("Bearer")
       const headers: Header = {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -282,10 +287,11 @@ export const useAuthStore = defineStore("auth", () => {
 
     if (response && "token" in response) {
       token.value = "Bearer " + response.token
-      await SecureStoragePlugin.set({
-        key: "Bearer",
-        value: token.value,
-      })
+      secureSet("Bearer", token.value)
+      // await SecureStoragePlugin.set({
+      //   key: "Bearer",
+      //   value: token.value,
+      // })
       // localStorage.setItem("Barer", JSON.stringify(token.value))
 
       await registerDevice(response.user.id)
@@ -296,8 +302,11 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logout() {
-    const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
-    const deviceId = await SecureStoragePlugin.get({ key: "deviceId" })
+    // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
+    // const deviceId = await SecureStoragePlugin.get({ key: "deviceId" })
+
+    const bearer = await secureGet("Bearer")
+    const deviceId = await secureGet("deviceId")
     const router = useRouter()
 
     const headers: Header = {
@@ -314,15 +323,19 @@ export const useAuthStore = defineStore("auth", () => {
     }).catch((error) => {
       console.log(error)
     })
+    await secureRemove("Bearer")
+    await secureRemove("authUser")
+    await secureRemove("deviceId")
 
     user.value = null
     authUser.value = null
     token.value = ""
 
-    await SecureStoragePlugin.remove({ key: "Bearer" })
-    await SecureStoragePlugin.remove({ key: "authUser" })
-    await SecureStoragePlugin.remove({ key: "deviceId" })
+    // await SecureStoragePlugin.remove({ key: "Bearer" })
+    // await SecureStoragePlugin.remove({ key: "authUser" })
+    // await SecureStoragePlugin.remove({ key: "deviceId" })
     // await SecureStoragePlugin.remove({ key: "notificationToken" })
+
     router.replace({ path: "/" })
   }
 

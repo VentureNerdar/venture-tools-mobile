@@ -8,8 +8,11 @@ export const useContactStore = defineStore("contact", () => {
   // Load contacts from secure storage
   const loadFromSecureStorage = async () => {
     try {
-      const storedContacts = await SecureStoragePlugin.get({ key: "contacts" })
-      contacts.value = JSON.parse(storedContacts.value)
+      // const storedContacts = await SecureStoragePlugin.get({ key: "contacts" })
+      const storedContacts = await secureGet("contacts")
+      if (storedContacts.value) {
+        contacts.value = JSON.parse(storedContacts.value)
+      }
     } catch (error) {
       console.log(error)
       contacts.value = {}
@@ -19,10 +22,11 @@ export const useContactStore = defineStore("contact", () => {
   // Save contacts to secure storage
   const setContacts = async (data: any) => {
     contacts.value = data
-    await SecureStoragePlugin.set({
-      key: "contacts",
-      value: JSON.stringify(data),
-    })
+    await secureSet("contacts", JSON.stringify(data))
+    // await SecureStoragePlugin.set({
+    //   key: "contacts",
+    //   value: JSON.stringify(data),
+    // })
   }
 
   return {

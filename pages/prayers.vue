@@ -185,6 +185,8 @@ const m = {
       const newData = await consume.prayers.browse({
         with: JSON.stringify(limit.value),
       } as BrowseConditionAll)
+      console.log("Contact prayer length error+++", d.prayers.contactPrayers)
+
       if (d.prayers.contactPrayers.length === newData.contactPrayers.length) {
         finished.contacts = true
       } else {

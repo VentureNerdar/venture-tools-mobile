@@ -70,24 +70,7 @@ const d = reactive({
 })
 
 const query = { all: true } as BrowseCondition
-const tasks: Task[] = [
-  [
-    "User Roles",
-    RoutePaths.USERS_ROLES,
-    "userRoles",
-    {
-      ...d.defaultStoreOptions,
-      key: "userRoles",
-      storeState: useUserStore().userRoles,
-    } as StoreOptions,
-    {
-      ...query,
-      whereNotIn: {
-        key: "id",
-        value: [1, 2],
-      },
-    },
-  ],
+const publicTasks: Task[] = [
   [
     "Languages",
     RoutePaths.LANGUAGES,
@@ -114,6 +97,25 @@ const tasks: Task[] = [
       storeState: useLanguageStore().words,
     } as StoreOptions,
     query,
+  ],
+]
+const tasks: Task[] = [
+  [
+    "User Roles",
+    RoutePaths.USERS_ROLES,
+    "userRoles",
+    {
+      ...d.defaultStoreOptions,
+      key: "userRoles",
+      storeState: useUserStore().userRoles,
+    } as StoreOptions,
+    {
+      ...query,
+      whereNotIn: {
+        key: "id",
+        value: [1, 2],
+      },
+    },
   ],
 
   [
@@ -186,30 +188,20 @@ const s = reactive({
   authStore: useAuthStore(),
 })
 
-// onMounted(async () => {
-//   await s.authStore.loadFromSecureStorage()
-// })
-
 onMounted(async () => {
-  console.log("[Splash] Starting initial load...")
-
   try {
-    // 1️⃣ Load auth data first
+    await downloadPublicSequence()
     await s.authStore.loadFromSecureStorage()
     await s.settings.loadFromSecureStorage()
     await waitUntilAuthLoaded()
 
-    // 2️⃣ Auth finished loading
-    console.log("[Splash] Auth loading finished ✅")
-
-    // 3️⃣ Check user
     const user = s.authStore.authUser
     const pinCode = s.settings.pinCode
     if (!user) {
       console.log("[Splash] No user found → redirecting to /welcome")
       router.replace("/welcome")
       return
-    } // 4️⃣ Authenticated → continue preload
+    }
     console.log("[Splash] Authenticated user:", user.email)
     await downloadSequence()
     if (user && pinCode) {
@@ -224,8 +216,8 @@ onMounted(async () => {
   }
 })
 
-const downloadSequence = async () => {
-  for (const [moduleName, model, key, store, query] of tasks) {
+const downloadPublicSequence = async () => {
+  for (const [moduleName, model, key, store, query] of publicTasks) {
     d.currentTaskText = `Fetching ${moduleName}...`
     await consume(moduleName, model, query, {
       ...d.defaultStoreOptions,
@@ -245,6 +237,32 @@ const downloadSequence = async () => {
         console.error("Error reading languages from secure storage", error)
       }
     }
+
+    if (moduleName === "Languages") {
+      const languageValues = JSON.parse(
+        localStorage.getItem("languages") || "[]"
+      )
+      s.languageStore.setLanguages(languageValues)
+    }
+
+    if (moduleName === "Language Words") {
+      const wordValues = JSON.parse(
+        localStorage.getItem("languageWords") || "[]"
+      )
+      s.languageStore.setWords(wordValues)
+    }
+  }
+}
+
+const downloadSequence = async () => {
+  for (const [moduleName, model, key, store, query] of tasks) {
+    d.currentTaskText = `Fetching ${moduleName}...`
+    await consume(moduleName, model, query, {
+      ...d.defaultStoreOptions,
+      key,
+      store,
+    } as StoreOptions)
+
     if (moduleName === "Statuses") {
       const statuses = await getSecureData<any[]>("statuses", [])
       s.settings.setStatuses(statuses)
@@ -260,28 +278,6 @@ const downloadSequence = async () => {
       const peopleGroupValues = await getSecureData<any[]>("peopleGroups", [])
 
       s.peopleGroupStore.setPeopleGroups(peopleGroupValues)
-    }
-    // if (moduleName === "Language Words") {
-    //   const wordValues = await getSecureData<any[]>("languageWords", [])
-
-    //   s.languageStore.setWords(wordValues)
-    // }
-    // if (moduleName === "Languages") {
-    //   const languageValues = await getSecureData<any[]>("languages", [])
-    //   s.languageStore.setLanguages(languageValues)
-    // }
-    if (moduleName === "Languages") {
-      const languageValues = JSON.parse(
-        localStorage.getItem("languages") || "[]"
-      )
-      s.languageStore.setLanguages(languageValues)
-    }
-
-    if (moduleName === "Language Words") {
-      const wordValues = JSON.parse(
-        localStorage.getItem("languageWords") || "[]"
-      )
-      s.languageStore.setWords(wordValues)
     }
 
     if (moduleName === "Communication Platforms") {
@@ -338,31 +334,6 @@ const waitUntilAuthLoaded = async () => {
     )
   })
 }
-
-// downloadSequence()
-// watch(
-//   () => s.authStore.isLoading,
-//   (newVal, oldVal) => {
-//     console.log(
-//       "[Watcher] isLoading changed welcome page:",
-//       oldVal,
-//       "→",
-//       newVal
-//     )
-
-//     d.isLoading = s.authStore.isLoading
-//     if (newVal === false) {
-//       console.log("[Watcher] Auth loading finished welcome page!")
-//       // 🔹 You can safely check authStore.authUser or navigate here
-//       if (!s.authStore.authUser) {
-//         router.push("/welcome")
-//       } else {
-//         console.log("Welcome page No user found after loading")
-//       }
-//     }
-//   },
-//   { immediate: true } // optional: run once on mount
-// )
 </script>
 
 <style scoped lang="scss">

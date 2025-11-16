@@ -22,50 +22,95 @@
       @click="router.push('/register')"
       >REGISTER</VanButton
     >
-  </div>
-  <!-- <div
-    v-else
-    class="spinner-wrapper"
-  >
-    <VanLoading
-      color="#17badf"
-      type="spinner"
-      size="32px"
-      class="spinner"
+
+    <VanField
+      v-model="userPreferredLanguage"
+      :label="helpers.translate('language')"
+      :placeholder="helpers.translate('language')"
+      is-link
+      readonly
+      @click="showPicker = true"
+      style="margin-top: 20px"
     />
-    <p class="mt-4 text-blue-400 text-base">Getting ready...</p>
-  </div> -->
+
+    <VanPopup
+      v-model:show="showPicker"
+      position="bottom"
+      round
+    >
+      <VanPicker
+        :model-value="pickerValue"
+        title="Languages"
+        :columns="languagePicker"
+        @cancel="showPicker = false"
+        @confirm="confirmLanguage"
+      />
+    </VanPopup>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useSettingStore } from "~/stores/useSettingStore"
 import { useAuthStore } from "~/stores/useAuthStore"
+import { useLanguageStore } from "~/stores/useLanguageStore"
+import type { Numeric } from "vant/es/utils"
+import { ForumRound } from "@vicons/material"
+import {
+  type BrowseCondition,
+  type LanguageFormModel,
+  type StoreOptions,
+} from "~/types/index.d"
+import { RoutePaths } from "~/types/index.d"
 
 const authStore = useAuthStore()
 const settingStore = useSettingStore()
+const languageStore = useLanguageStore()
+
+const router = useRouter()
+const helpers = useHelpers()
+
+const authUser = authStore.authUser
 const pinNumber = settingStore.pinNumber
-// const isLoading = authStore.isLoading
-const isLoading = ref(true)
-// const applicationMask = settingStore.applicationMask
+
+const userPreferredLanguage = ref<string>("")
+const showPicker = ref<boolean>(false)
+const pickerValue = ref<Numeric[]>()
+
+const languagePicker = computed(() => {
+  return languageStore.languages.map((language: LanguageFormModel) => ({
+    text: language.name,
+    value: language.id,
+  }))
+})
 
 onMounted(async () => {
   await settingStore.loadFromSecureStorage()
   await authStore.loadFromSecureStorage()
+  const defaultLang = languageStore.languages.find(
+    (l: any) => l.locale === "en"
+  )
+  if (defaultLang) {
+    pickerValue.value = [defaultLang.id]
+    userPreferredLanguage.value = defaultLang.name
+    languageStore.setUserPreferredLanguage(defaultLang)
+  }
 })
 
-const authUser = authStore.authUser
-const router = useRouter()
-console.log("[Auth] welcome page Auth user", authStore.authUser)
-console.log("[Auth] welcome page token", authStore.token)
+const confirmLanguage = ({ selectedOptions }: { selectedOptions: any }) => {
+  showPicker.value = false
+  const selectedLanguage = selectedOptions[0]
+  userPreferredLanguage.value = selectedLanguage.text
+  pickerValue.value = [selectedLanguage.value as Numeric]
+  const languageToStore = languageStore.languages.find(
+    (language: LanguageFormModel) => language.id == selectedLanguage.value
+  )
+
+  languageStore.setUserPreferredLanguage(languageToStore)
+}
 
 // Check if user is logged in
 if (authUser) {
-  // Check if mask option is set
-  // if (applicationMask) {
-  //   navigateTo("/mask")
-  // } else {
-  // No mask option
-  // Check if pin is set
+  // ---------
   if (pinNumber) {
     navigateTo("/pin")
   } else {
@@ -73,35 +118,6 @@ if (authUser) {
     navigateTo("/splash")
   }
 }
-// }
-// watch(
-//   () => authStore.isLoading,
-//   (newVal, oldVal) => {
-//     console.log(
-//       "[Watcher] isLoading changed welcome page:",
-//       oldVal,
-//       "→",
-//       newVal
-//     )
-//     if (!authStore.isLoading && authUser) {
-//     }
-//     isLoading.value = authStore.isLoading
-//     if (newVal === false) {
-//       console.log("[Watcher] Auth loading finished welcome page!")
-//       // 🔹 You can safely check authStore.authUser or navigate here
-//       if (authStore.authUser) {
-//         console.log(
-//           " Welcome page User authenticated:",
-//           authStore.authUser.email
-//         )
-//         router.push("/splash")
-//       } else {
-//         console.log("Welcome page No user found after loading")
-//       }
-//     }
-//   },
-//   { immediate: true } // optional: run once on mount
-// )
 </script>
 
 <style scoped lang="scss">

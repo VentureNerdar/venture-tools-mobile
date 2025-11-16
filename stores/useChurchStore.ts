@@ -7,8 +7,11 @@ export const useChurchStore = defineStore("church", () => {
 
   const loadFromSecureStorage = async () => {
     try {
-      const result = await SecureStoragePlugin.get({ key: "churches" })
-      churches.value = JSON.parse(result.value)
+      // const result = await SecureStoragePlugin.get({ key: "churches" })
+      const result = await secureGet("churches")
+      if (result.value) {
+        churches.value = JSON.parse(result.value)
+      }
     } catch (error) {
       console.log(error)
       churches.value = {}
@@ -17,10 +20,11 @@ export const useChurchStore = defineStore("church", () => {
 
   const setChurches = async (churchData: any) => {
     churches.value = churchData
-    await SecureStoragePlugin.set({
-      key: "churches",
-      value: JSON.stringify(churchData),
-    })
+    await secureSet("churches", JSON.stringify(churchData))
+    // await SecureStoragePlugin.set({
+    //   key: "churches",
+    //   value: JSON.stringify(churchData),
+    // })
   }
 
   return { churches, loadFromSecureStorage, setChurches }

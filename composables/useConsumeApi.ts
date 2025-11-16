@@ -32,7 +32,6 @@ const initialPreparation = async (path: RoutePaths, id?: number) => {
   const authStore = useAuthStore()
   // await authStore.loadFromSecureStorage()
   const token = authStore.token || ""
-  // console.log("Token", token)
 
   if (token) {
     headers["Authorization"] = token as string

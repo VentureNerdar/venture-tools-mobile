@@ -16,8 +16,11 @@ export const usePeopleGroupStore = defineStore("peopleGroup", () => {
   // Load from secure storage
   const loadFromSecureStorage = async () => {
     try {
-      const stored = await SecureStoragePlugin.get({ key: "peopleGroups" })
-      peopleGroups.value = JSON.parse(stored.value)
+      // const stored = await SecureStoragePlugin.get({ key: "peopleGroups" })
+      const stored = await secureGet("peopleGroups")
+      if (stored.value) {
+        peopleGroups.value = JSON.parse(stored.value)
+      }
     } catch (error) {
       console.log(error)
       peopleGroups.value = []
@@ -27,10 +30,12 @@ export const usePeopleGroupStore = defineStore("peopleGroup", () => {
   // Save to secure storage
   const setPeopleGroups = async (peopleGroupValues: any[]) => {
     peopleGroups.value = peopleGroupValues
-    await SecureStoragePlugin.set({
-      key: "peopleGroups",
-      value: JSON.stringify(peopleGroupValues),
-    })
+
+    await secureSet("peopleGroups", JSON.stringify(peopleGroupValues))
+    // await SecureStoragePlugin.set({
+    //   key: "peopleGroups",
+    //   value: JSON.stringify(peopleGroupValues),
+    // })
   }
 
   return {

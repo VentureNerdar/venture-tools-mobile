@@ -16,8 +16,11 @@ export const useFaithMilestoneStore = defineStore("faithMilestone", () => {
   // Load from secure storage
   const loadFromSecureStorage = async () => {
     try {
-      const stored = await SecureStoragePlugin.get({ key: "faithMilestones" })
-      faithMilestones.value = JSON.parse(stored.value)
+      // const stored = await SecureStoragePlugin.get({ key: "faithMilestones" })
+      const stored = await secureGet("faithMilestones")
+      if (stored.value) {
+        faithMilestones.value = JSON.parse(stored.value)
+      }
     } catch (error) {
       console.log(error)
       faithMilestones.value = []
@@ -27,10 +30,11 @@ export const useFaithMilestoneStore = defineStore("faithMilestone", () => {
   // Save to secure storage
   const setFaithMilestones = async (faithMilestoneValues: any[]) => {
     faithMilestones.value = faithMilestoneValues
-    await SecureStoragePlugin.set({
-      key: "faithMilestones",
-      value: JSON.stringify(faithMilestoneValues),
-    })
+    await secureSet("faithMilestones", JSON.stringify(faithMilestoneValues))
+    // await SecureStoragePlugin.set({
+    //   key: "faithMilestones",
+    //   value: JSON.stringify(faithMilestoneValues),
+    // })
   }
 
   return {

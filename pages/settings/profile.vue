@@ -110,6 +110,7 @@ import { useLanguageStore } from "~/stores/useLanguageStore"
 import { useUserStore } from "~/stores/useUserStore"
 import type { Numeric } from "vant/es/utils"
 import { RoutePaths } from "~/types/index.d"
+import { useSettingStore } from "~/stores/useSettingStore"
 
 definePageMeta({
   layout: "application",
@@ -126,6 +127,7 @@ const s = {
   roles: computed(() => useUserStore().userRoles),
   auth: useAuthStore(),
   languageStore: useLanguageStore(),
+  settingStore: useSettingStore(),
 }
 
 const form = ref({
@@ -198,11 +200,13 @@ const m = {
         })
         try {
           await authStore.logout()
+          await s.settingStore.toggleBiometric(false)
+          await s.settingStore.removePinNumber()
           router.replace("/")
           showNotify({
             type: "success",
             message: "See you again!",
-            duration: 2000,
+            duration: 3000,
           })
         } catch (err) {
           showNotify({

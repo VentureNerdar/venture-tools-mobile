@@ -75,6 +75,10 @@ import { PrayingHands } from "@vicons/fa"
 import { useAuthStore } from "~/stores/useAuthStore"
 import { useLanguageStore } from "~/stores/useLanguageStore"
 
+definePageMeta({
+  layout: "application",
+})
+
 const authStore = useAuthStore()
 const languageStore = useLanguageStore()
 const languages = languageStore.languages
@@ -123,8 +127,8 @@ $primaryColor: #17badf;
 
 .wrap-profile {
   position: absolute;
-  right: 20px;
-  bottom: 20px;
+  left: 20px;
+  bottom: 80px;
   width: 30px;
   height: 30px;
   color: white;

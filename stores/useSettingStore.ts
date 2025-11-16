@@ -2,6 +2,7 @@ import { defineStore } from "pinia"
 import { ref, computed } from "vue"
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin"
 import type { LanguageFormModel } from "~/types"
+import { JoinFullSharp } from "@vicons/material"
 
 interface Status {
   id: number
@@ -58,15 +59,19 @@ export const useSettingStore = defineStore("setting", () => {
 
   const loadFromSecureStorage = async () => {
     try {
-      const storedStatuses = await SecureStoragePlugin.get({ key: "statuses" })
+      // const storedStatuses = await SecureStoragePlugin.get({ key: "statuses" })
+      const storedStatuses = await secureGet("statuses")
       statuses.value = JSON.parse(storedStatuses.value || "[]")
     } catch {
       statuses.value = []
     }
 
     try {
-      const storedPin = await SecureStoragePlugin.get({ key: "PINNumber" })
-      pinNumber.value = JSON.parse(storedPin.value)
+      // const storedPin = await SecureStoragePlugin.get({ key: "PINNumber" })
+      const storedPin = await secureGet("PINNumber")
+      if (storedPin.value) {
+        pinNumber.value = JSON.parse(storedPin.value)
+      }
     } catch {
       pinNumber.value = false
     }
@@ -81,20 +86,26 @@ export const useSettingStore = defineStore("setting", () => {
     // }
 
     try {
-      const storedPin = await SecureStoragePlugin.get({ key: "PINNumber" })
-      const parsedPin = JSON.parse(storedPin.value)
-      pinCode.value = parsedPin
-      pinNumber.value = !!parsedPin
+      // const storedPin = await SecureStoragePlugin.get({ key: "PINNumber" })
+      const storedPin = await secureGet("PINNumber")
+      if (storedPin.value) {
+        const parsedPin = JSON.parse(storedPin.value)
+        pinCode.value = parsedPin
+        pinNumber.value = !!parsedPin
+      }
     } catch {
       pinCode.value = ""
       pinNumber.value = false
     }
 
     try {
-      const biometric = await SecureStoragePlugin.get({
-        key: "isUsingBiometric",
-      })
-      isUsingBiometric.value = JSON.parse(biometric.value)
+      // const biometric = await SecureStoragePlugin.get({
+      //   key: "isUsingBiometric",
+      // })
+      const biometric = await secureGet("isUsingBiometric")
+      if (biometric.value) {
+        isUsingBiometric.value = JSON.parse(biometric.value)
+      }
     } catch {
       isUsingBiometric.value = false
       console.log("Biometric catch block")
@@ -111,10 +122,11 @@ export const useSettingStore = defineStore("setting", () => {
 
   const setStatuses = async (status: Status[]) => {
     statuses.value = status
-    await SecureStoragePlugin.set({
-      key: "statuses",
-      value: JSON.stringify(status),
-    })
+    await secureSet("statuses", JSON.stringify(status))
+    // await SecureStoragePlugin.set({
+    //   key: "statuses",
+    //   value: JSON.stringify(status),
+    // })
   }
 
   // const setApplicationMask = async (value: boolean) => {
@@ -127,25 +139,28 @@ export const useSettingStore = defineStore("setting", () => {
 
   const setPinNumber = async (value: string) => {
     pinCode.value = value
-    await SecureStoragePlugin.set({
-      key: "PINNumber",
-      value: JSON.stringify(value),
-    })
+    await secureSet("PINNumber", JSON.stringify(value))
+    // await SecureStoragePlugin.set({
+    //   key: "PINNumber",
+    //   value: JSON.stringify(value),
+    // })
   }
 
   const removePinNumber = async () => {
     pinCode.value = ""
     pinNumber.value = false
-    await SecureStoragePlugin.remove({ key: "PINNumber" })
+    // await SecureStoragePlugin.remove({ key: "PINNumber" })
+    await secureRemove("PINNumber")
   }
 
   const toggleBiometric = async (newValue: boolean) => {
     isUsingBiometric.value = newValue
 
-    await SecureStoragePlugin.set({
-      key: "isUsingBiometric",
-      value: JSON.stringify(newValue),
-    })
+    await secureSet("isUsingBiometric", JSON.stringify(newValue))
+    // await SecureStoragePlugin.set({
+    //   key: "isUsingBiometric",
+    //   value: JSON.stringify(newValue),
+    // })
   }
 
   return {

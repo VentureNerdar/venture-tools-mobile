@@ -8,10 +8,13 @@ export const useDenominationStore = defineStore("denomination", () => {
   // Load denominations from secure storage
   const loadFromSecureStorage = async () => {
     try {
-      const storedDenominations = await SecureStoragePlugin.get({
-        key: "denominations",
-      })
-      denominations.value = JSON.parse(storedDenominations.value)
+      // const storedDenominations = await SecureStoragePlugin.get({
+      //   key: "denominations",
+      // })
+      const storedDenominations = await secureGet("denominations")
+      if (storedDenominations.value) {
+        denominations.value = JSON.parse(storedDenominations.value)
+      }
     } catch (error) {
       console.log(error)
       denominations.value = {}
@@ -21,10 +24,11 @@ export const useDenominationStore = defineStore("denomination", () => {
   // Save denominations to secure storage
   const setDenominations = async (data: any) => {
     denominations.value = data
-    await SecureStoragePlugin.set({
-      key: "denominations",
-      value: JSON.stringify(data),
-    })
+    await secureSet("denominations", JSON.stringify(data))
+    // await SecureStoragePlugin.set({
+    //   key: "denominations",
+    //   value: JSON.stringify(data),
+    // })
   }
 
   return {

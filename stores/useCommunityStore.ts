@@ -9,20 +9,26 @@ export const useCommunityStore = defineStore("communities", () => {
   // Load both communities and checklists from secure storage
   const loadFromSecureStorage = async () => {
     try {
-      const storedCommunities = await SecureStoragePlugin.get({
-        key: "communities",
-      })
-      communities.value = JSON.parse(storedCommunities.value)
+      // const storedCommunities = await SecureStoragePlugin.get({
+      //   key: "communities",
+      // })
+      const storedCommunities = await secureGet("communities")
+      if (storedCommunities.value) {
+        communities.value = JSON.parse(storedCommunities.value)
+      }
     } catch (error) {
       console.log(error)
       communities.value = {}
     }
 
     try {
-      const storedChecklists = await SecureStoragePlugin.get({
-        key: "communityChecklists",
-      })
-      communityChecklists.value = JSON.parse(storedChecklists.value)
+      // const storedChecklists = await SecureStoragePlugin.get({
+      //   key: "communityChecklists",
+      // })
+      const storedChecklists = await secureGet("communityChecklists")
+      if (storedChecklists.value) {
+        communityChecklists.value = JSON.parse(storedChecklists.value)
+      }
     } catch (error) {
       console.log(error)
       communityChecklists.value = {}
@@ -32,19 +38,21 @@ export const useCommunityStore = defineStore("communities", () => {
   // Save communities
   const setCommunities = async (data: any) => {
     communities.value = data
-    await SecureStoragePlugin.set({
-      key: "communities",
-      value: JSON.stringify(data),
-    })
+    await secureSet("communities", JSON.stringify(data))
+    // await SecureStoragePlugin.set({
+    //   key: "communities",
+    //   value: JSON.stringify(data),
+    // })
   }
 
   // Save community checklists
   const setCommunityChecklists = async (data: any) => {
     communityChecklists.value = data
-    await SecureStoragePlugin.set({
-      key: "communityChecklists",
-      value: JSON.stringify(data),
-    })
+    await secureSet("communityChecklists", JSON.stringify(data))
+    // await SecureStoragePlugin.set({
+    //   key: "communityChecklists",
+    //   value: JSON.stringify(data),
+    // })
   }
 
   return {
