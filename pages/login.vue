@@ -14,8 +14,8 @@
     >
       <VanField
         v-model="d.form.identifier"
-        label="Username"
-        placeholder="Username or Email"
+        label="Email or Phone"
+        placeholder="Email or Phone"
       />
       <VanField
         v-model="d.form.password"

@@ -8,136 +8,239 @@
       :border="false"
     />
 
-    <VanCellGroup
-      :inset="true"
-      title="Welcome! Please continue to register"
-    >
-      <!-- Name -->
-      <VanField
-        v-model="d.form.name"
-        label="Name"
-        placeholder="Name"
-      />
-
-      <!-- Username -->
-      <VanField
-        v-model="d.form.username"
-        label="Username"
-        placeholder="Username"
-      />
-
-      <!-- Email -->
-      <VanField
-        v-model="d.form.email"
-        label="Email"
-        placeholder="Email"
-      />
-
-      <!-- Phone Number -->
-      <VanField
-        v-model="d.form.phone_number"
-        label="Phone"
-        placeholder="Phone Number"
-      />
-
-      <!-- Language -->
-      <VanField
-        v-model="preferredLanguageFieldValue"
-        label="Language"
-        placeholder="Language"
-        is-link
-        readonly
-        @click="d.visibility.languagePicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.languagePicker"
-        destroy-on-close
-        round
-        position="bottom"
+    <VanForm @submit="m.handle.click.register">
+      <VanCellGroup
+        :inset="true"
+        title="Welcome! Please continue to register"
       >
-        <VanPicker
-          :model-value="preferredLanguageID"
-          :columns="languageOptions"
-          @cancel="d.visibility.languagePicker = false"
-          @confirm="m.handle.click.confirmLanguagePicker"
+        <!-- Name -->
+        <VanField
+          v-model="d.form.name"
+          label="Name"
+          placeholder="Name"
+          required
+          :rules="[{ required: true, message: 'Name is required' }]"
         />
-      </VanPopup>
 
-      <!-- Movement -->
-      <VanField
-        v-model="movementFieldValue"
-        label="Movement"
-        placeholder="Movement"
-        is-link
-        readonly
-        @click="d.visibility.movementPicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.movementPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
-        <VanPicker
-          :model-value="movementID"
-          :columns="movementOptions"
-          @cancel="d.visibility.movementPicker = false"
-          @confirm="m.handle.click.confirmMovementPicker"
+        <!-- Username -->
+        <!-- <VanField
+          v-model="d.form.username"
+          label="Username"
+          placeholder="Username"
+          :rules="[{ required: true, message: 'Username is required' }]"
+        /> -->
+
+        <!-- Email -->
+        <VanField
+          v-model="d.form.email"
+          label="Email"
+          placeholder="Email"
+          required
+          :rules="[
+            { required: true, message: 'Email is required' },
+            { pattern: /.+@.+\..+/, message: 'Invalid email' },
+          ]"
         />
-      </VanPopup>
 
-      <!-- Biography -->
-      <VanField
-        v-model="d.form.biography"
-        label="Biography"
-        placeholder="Biography"
-      />
+        <VanField
+          v-model="d.confirmPassword"
+          label="Confirm Email"
+          placeholder="Confirm Email"
+          required
+          :rules="[
+            { required: true, message: 'Email is required' },
+            { pattern: /.+@.+\..+/, message: 'Invalid email' },
+            { validator: m.handle.validate.confirmEmailMatch },
+          ]"
+        />
 
-      <!-- Password -->
-      <VanField
-        v-model="d.form.password"
-        label="Password"
-        placeholder="Password"
-        type="password"
-      />
+        <!-- Phone Number -->
+        <VanField
+          label="Phone"
+          required
+        >
+          <template #input>
+            <div class="phone-row">
+              <div
+                class="country-code"
+                @click="d.visibility.countryPicker = true"
+              >
+                {{ countryCode }}
+              </div>
 
-      <VanField
-        v-model="d.form.password_confirmation"
-        label="Password"
-        placeholder="Password"
-        type="password"
-      />
-    </VanCellGroup>
+              <VanField
+                v-model="d.form.phone_number"
+                placeholder="Phone Number"
+                :rules="[{ required: true, message: 'Phone is required' }]"
+              />
+            </div>
+          </template>
+        </VanField>
 
-    <VanSpace
-      direction="vertical"
-      fill
-      style="padding: 16px"
-    >
-      <VanButton
-        type="primary"
-        block
-        @click="m.handle.click.register"
+        <VanPopup
+          v-model:show="d.visibility.countryPicker"
+          round
+          position="bottom"
+        >
+          <VanPicker
+            :columns="countryCodeOptions"
+            @confirm="selectCountryCode"
+            @cancel="d.visibility.countryPicker = false"
+          />
+        </VanPopup>
+
+        <!-- Language -->
+        <VanField
+          v-model="preferredLanguageFieldValue"
+          label="Language"
+          placeholder="Language"
+          is-link
+          readonly
+          required
+          @click="d.visibility.languagePicker = true"
+          :rules="[{ required: true, message: 'Language is required' }]"
+        />
+        <VanPopup
+          v-model:show="d.visibility.languagePicker"
+          destroy-on-close
+          round
+          position="bottom"
+        >
+          <VanPicker
+            :model-value="preferredLanguageID"
+            :columns="languageOptions"
+            @cancel="d.visibility.languagePicker = false"
+            @confirm="m.handle.click.confirmLanguagePicker"
+          />
+        </VanPopup>
+
+        <!-- Movement -->
+        <VanField
+          v-model="movementFieldValue"
+          label="Movement"
+          placeholder="Movement"
+          is-link
+          readonly
+          @click="d.visibility.movementPicker = true"
+          required
+          :rules="[{ required: true, message: 'Movement is required' }]"
+        />
+        <VanPopup
+          v-model:show="d.visibility.movementPicker"
+          destroy-on-close
+          round
+          position="bottom"
+        >
+          <VanPicker
+            :model-value="movementID"
+            :columns="movementOptions"
+            @cancel="d.visibility.movementPicker = false"
+            @confirm="m.handle.click.confirmMovementPicker"
+          />
+        </VanPopup>
+
+        <!-- Biography -->
+        <VanField
+          v-model="d.form.biography"
+          label="Biography"
+          placeholder="Biography"
+          type="textarea"
+          :autosize="{ minHeight: 50, maxHeight: 120 }"
+        />
+
+        <!-- Password -->
+        <VanField
+          v-model="d.form.password"
+          label="Password"
+          placeholder="Password"
+          :type="d.visibility.showPassword ? 'text' : 'password'"
+          required
+          :rules="[
+            { required: true, message: 'Password is required' },
+            { validator: m.handle.validate.confirmPasswordLength },
+          ]"
+        >
+          <template #right-icon>
+            <van-icon
+              :name="d.visibility.showPassword ? 'closed-eye' : 'eye-o'"
+              @click="d.visibility.showPassword = !d.visibility.showPassword"
+            />
+          </template>
+        </VanField>
+
+        <!-- Confirm Password -->
+        <VanField
+          v-model="d.form.password_confirmation"
+          label="Confirm Password"
+          placeholder="Confirm password"
+          :type="d.visibility.showConfirmPassword ? 'text' : 'password'"
+          required
+          :rules="[
+            { required: true, message: 'Please confirm password' },
+            { validator: m.handle.validate.confirmPasswordMatch },
+          ]"
+        >
+          <template #right-icon>
+            <VanIcon
+              :name="d.visibility.showConfirmPassword ? 'closed-eye' : 'eye-o'"
+              @click="
+                d.visibility.showConfirmPassword =
+                  !d.visibility.showConfirmPassword
+              "
+            />
+          </template>
+        </VanField>
+      </VanCellGroup>
+
+      <VanSpace
+        direction="vertical"
+        fill
+        style="padding: 16px"
       >
-        Register
-      </VanButton>
-      <VanButton
-        type="primary"
-        plain
-        block
-        @click="router.push('/login')"
-        >Cancel</VanButton
-      >
-    </VanSpace>
+        <VanButton
+          type="primary"
+          block
+          native-type="submit"
+        >
+          Register
+        </VanButton>
+        <VanButton
+          type="primary"
+          plain
+          block
+          @click="router.push('/login')"
+          >Cancel</VanButton
+        >
+      </VanSpace>
+    </VanForm>
   </VanSpace>
 </template>
 
 <script lang="ts" setup>
 import type { Numeric } from "vant/lib/utils"
+import { useLanguageStore } from "~/stores/useLanguageStore"
+
 const config = useRuntimeConfig()
 const router = useRouter()
+
+const languageStore = useLanguageStore()
 const preferredLanguageFieldValue = ref("")
 const preferredLanguageID = ref<Numeric[]>([])
+const countryCode = ref("+977")
+
+const countryCodeOptions = [
+  { text: "Nepal +977", value: "+977" },
+  { text: "USA +1", value: "+1" },
+  { text: "UK +44", value: "+44" },
+  { text: "Thailand +66", value: "+66" },
+  { text: "Myanmar +95", value: "+95" },
+  { text: "Australia +61", value: "+61" },
+  { text: "Japan +81", value: "+81" },
+]
+const selectCountryCode = ({ selectedOptions }: any) => {
+  countryCode.value = selectedOptions[0].value
+  d.visibility.countryPicker = false
+}
 
 const movementFieldValue = ref("")
 const movementID = ref<Numeric[]>([])
@@ -156,10 +259,13 @@ const d = reactive({
   visibility: {
     languagePicker: false,
     movementPicker: false,
+    countryPicker: false,
+    showPassword: false,
+    showConfirmPassword: false,
   },
+  confirmPassword: "",
   form: {
     name: "",
-    username: "",
     email: "",
     password: "",
     password_confirmation: "",
@@ -168,6 +274,7 @@ const d = reactive({
     phone_number: "",
     biography: "",
     is_active: true,
+    first_time_login: true,
     preferred_language_id: null as number | null,
   },
 })
@@ -187,8 +294,8 @@ const movementOptions = computed(() => {
 })
 
 const getRegistrationOptions = async () => {
-  const registrationOptions = await $fetch<Options>(
-    config.public.apiURL + "registration/options",
+  const registrationOptions = await $fetch(
+    config.public.apiURL + "registration/options"
   )
   options.languages = registrationOptions.languages ?? []
   options.movements = registrationOptions.movements ?? []
@@ -222,12 +329,15 @@ const m = {
       },
 
       register: async () => {
+        d.form.phone_number = countryCode.value + d.form.phone_number
+
+        console.log("Register Form", d.form)
         const response = await $fetch(
           config.public.apiURL + "registration/register",
           {
             method: "POST",
             body: d.form,
-          },
+          }
         )
 
         if (response) {
@@ -247,47 +357,49 @@ const m = {
         }
       },
     },
+    validate: {
+      confirmPasswordMatch: (value: string) => {
+        if (value !== d.form.password) {
+          return "Password do not match"
+        }
+        return true
+      },
+      confirmPasswordLength: (value: string) => {
+        if (value.length < 8) {
+          return "Password must be at least 8 characters"
+        }
+        return true
+      },
+      confirmEmailMatch: (value: string) => {
+        if (value !== d.form.email) {
+          return "Email do not match "
+        }
+        return true
+      },
+    },
   },
 }
 onMounted(async () => {
   await getRegistrationOptions()
 
-  // NOTE: just for testing purposes. need to delete this before production
-  const randomString = "test" + Math.random().toString(36).substring(2, 12)
-
-  d.form.name = randomString
-  d.form.username = randomString
-  d.form.email = randomString + "@test.com"
-  d.form.password = "demodemo"
-  d.form.password_confirmation = "demodemo"
-  d.form.phone_number = generateRandomPhoneNumber()
-  d.form.biography = randomString
-
-  const movid = generateRandomOneOrTwo()
-  d.form.movement_id = movid
-  movementID.value = [movid]
-  movementFieldValue.value =
-    options.movements.find((movement) => movement.id === movid)?.name ?? ""
-
-  const langid = generateRandomOneOrTwo()
-  d.form.preferred_language_id = langid
-  preferredLanguageID.value = [langid]
-  preferredLanguageFieldValue.value =
-    options.languages.find((language) => language.id === langid)?.name ?? ""
+  const userPrefLang = languageStore.userPreferredLanguage
+  if (userPrefLang) {
+    d.form.preferred_language_id = userPrefLang.id as number
+    preferredLanguageID.value = [userPrefLang.id as number]
+    preferredLanguageFieldValue.value = userPrefLang.name
+  }
 })
-
-// NOTE: just for testing purposes. need to delete this before production
-const generateRandomPhoneNumber = () => {
-  const prefixes = ["09", "06", "08"]
-  const randomPrefix = prefixes[Math.floor(Math.random() * prefixes.length)]
-  const remainingDigits = Math.floor(Math.random() * 100000000)
-    .toString()
-    .padStart(8, "0")
-  return randomPrefix + remainingDigits
-}
-
-// NOTE: just for testing purposes. need to delete this before production
-const generateRandomOneOrTwo = () => {
-  return Math.floor(Math.random() * 2) + 1
-}
 </script>
+
+<style>
+.phone-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.phone-row .van-field {
+  flex: 1;
+}
+</style>

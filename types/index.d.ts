@@ -10,6 +10,7 @@ export enum RoutePaths {
 
   USERS = "users",
   USERS_ROLES = "users/roles",
+  USERS_LOGIN_UPDATE = "users/update-login",
 
   PEOPLE_GROUPS = "people-groups",
   DENOMINATIONS = "denominations",
@@ -130,6 +131,7 @@ export type AuthUser = {
   user_role_id: number
   preferred_language_id: number | null
   is_active: boolean
+  first_time_login: boolean
 
   email_verified_at: string | null
   last_login_at: string | null

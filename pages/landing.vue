@@ -8,18 +8,6 @@
         justify="space-between"
       >
         <VanCol span="12">
-          <div>
-            <NuxtLink to="/prayers">
-              <div class="landing-links">
-                <div class="icons">
-                  <PrayingHands style="width: 30px" />
-                </div>
-                <div>{{ h.translate("prayers") }}</div>
-              </div>
-            </NuxtLink>
-          </div>
-        </VanCol>
-        <VanCol span="12">
           <NuxtLink to="/contacts">
             <div class="landing-links">
               <div class="icons">
@@ -48,6 +36,18 @@
               <div>{{ h.translate("communities") }}</div>
             </div>
           </NuxtLink>
+        </VanCol>
+        <VanCol span="12">
+          <div>
+            <NuxtLink to="/prayers">
+              <div class="landing-links">
+                <div class="icons">
+                  <PrayingHands style="width: 30px" />
+                </div>
+                <div>{{ h.translate("prayers") }}</div>
+              </div>
+            </NuxtLink>
+          </div>
         </VanCol>
       </VanRow>
     </div>

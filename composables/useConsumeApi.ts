@@ -18,6 +18,7 @@ type ConsumptionType =
   | "view"
   | "restore"
   | "list"
+  | "update"
 
 // Initial prep
 const initialPreparation = async (path: RoutePaths, id?: number) => {
@@ -224,6 +225,18 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
         permanent
       )
     }, // e.o DELETE
+
+    update: async (storeOptions: StoreOptions = false) => {
+      return await request(
+        routePath,
+        "update",
+        {
+          method: "PUT",
+          ...fetchOptions,
+        },
+        storeOptions
+      )
+    },
 
     // RESTORE
     restore: async () => {

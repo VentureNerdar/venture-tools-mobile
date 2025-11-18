@@ -13,13 +13,6 @@
       </VanCell>
 
       <VanField
-        v-model="form.username"
-        :label="helpers.translate('username')"
-        :placeholder="helpers.translate('username')"
-        readonly
-      />
-
-      <VanField
         v-model="form.email"
         :label="helpers.translate('email')"
         :placeholder="helpers.translate('email')"
@@ -133,7 +126,6 @@ const s = {
 const form = ref({
   id: null,
   name: "",
-  username: "",
   email: "",
   phone_number: "",
   biography: "",

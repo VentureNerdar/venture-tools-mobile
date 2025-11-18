@@ -206,6 +206,8 @@ onMounted(async () => {
     await downloadSequence()
     if (user && pinCode) {
       router.replace("/pin")
+    } else if (user && user.first_time_login) {
+      router.push("/settings/security")
     } else {
       console.log("[Splash] Finished preload → go to /landing")
       router.replace("/landing")

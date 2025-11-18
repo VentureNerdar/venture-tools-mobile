@@ -1,1 +1,0 @@
-import{W as r,I as s,H as i,J as n}from"./D0oBYrK6.js";class h extends r{async authenticate(t){try{await this.internalAuthenticate(t)}catch(e){throw e instanceof s?new i(e.message,e.code):e}}async addResumeListener(t){return n.addListener("appStateChange",({isActive:e})=>{e&&this.checkBiometry().then(a=>{t(a)}).catch(console.error)})}}export{h as B};

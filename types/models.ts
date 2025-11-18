@@ -7,6 +7,7 @@ export interface UserFormModel {
   email: string | null
   user_role_id: string | null
   is_active: boolean
+  first_time_login: boolean
   phone_number: string | null
   biography: string | null
   preferred_language_id: number | null
