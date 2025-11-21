@@ -26,17 +26,6 @@
     >
       <VanTabbarItem
         replace
-        to="/prayers"
-      >
-        <template #icon>
-          <PrayingHands style="width: 18px; height: 18px" />
-        </template>
-
-        {{ h.translate("prayers") }}
-      </VanTabbarItem>
-
-      <VanTabbarItem
-        replace
         to="/contacts"
       >
         <template #icon>
@@ -66,6 +55,17 @@
         </template>
 
         {{ h.translate("communities") }}
+      </VanTabbarItem>
+
+      <VanTabbarItem
+        replace
+        to="/prayers"
+      >
+        <template #icon>
+          <PrayingHands style="width: 18px; height: 18px" />
+        </template>
+
+        {{ h.translate("prayers") }}
       </VanTabbarItem>
 
       <VanTabbarItem

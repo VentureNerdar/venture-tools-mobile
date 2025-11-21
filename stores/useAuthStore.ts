@@ -40,33 +40,13 @@ export const useAuthStore = defineStore("auth", () => {
   const authUser = ref<AuthUser | null>(null)
   const token = ref<string>("")
   const isLoading = ref<boolean>(true)
-  const router = useRouter()
+  const loginTime = ref<number | null>(null)
 
   // Load from secure storage on store init
-  // const loadFromSecureStorage = async () => {
-  //   const storedAuthUser = await SecureStoragePlugin.get({ key: "authUser" })
-  //   // const storedToken = await secureGet("Bearer")
-  //   const storedToken = await SecureStoragePlugin.get({ key: "Bearer" })
-
-  //   if (storedAuthUser.value) {
-  //     authUser.value = JSON.parse(storedAuthUser.value)
-  //   }
-  //   if (storedToken.value) {
-  //     token.value = storedToken.value
-  //   }
-  // }
   const loadFromSecureStorage = async () => {
     try {
-      console.log("[AuthStore] Checking secure storage...")
       isLoading.value = true
-      console.log("[AuthStore] Is Loading from auth store", isLoading.value)
 
-      // const storedAuthUser = await SecureStoragePlugin.get({
-      //   key: "authUser",
-      // }).catch(() => null)
-      // const storedToken = await SecureStoragePlugin.get({
-      //   key: "Bearer",
-      // }).catch(() => null)
       const storedAuthUser = await secureGet("authUser")
       const storedToken = await secureGet("Bearer")
 
@@ -79,9 +59,14 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       if (token.value && !authUser.value) {
-        console.log("[AuthStore] Fetching user because token exists...")
         await fetchUser()
       }
+
+      const storedLoginTime = await secureGet("loginTime")
+      if (storedLoginTime?.value) {
+        loginTime.value = Number(storedLoginTime.value)
+      }
+
       isLoading.value = false
     } catch (e) {
       console.error("[AuthStore] loadFromSecureStorage error:", e)
@@ -89,7 +74,6 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function fetchUser() {
-    // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
     const bearer = await secureGet("Bearer")
 
     const headers: Header = {
@@ -110,12 +94,6 @@ export const useAuthStore = defineStore("auth", () => {
       user.value = response as User
       authUser.value = response as AuthUser
       await secureSet("authUser", JSON.stringify(response))
-      // await SecureStoragePlugin.set({
-      //   key: "authUser",
-      //   value: JSON.stringify(response),
-      // })
-
-      // localStorage.setItem("authUser", JSON.stringify(response))
     }
   }
 
@@ -140,20 +118,11 @@ export const useAuthStore = defineStore("auth", () => {
           console.log("Web notification permission:", permission)
           if (permission === "granted") {
             currentNotificationToken = await getToken(messaging, { vapidKey })
-            console.log("Web FCM token:", currentNotificationToken)
             if (currentNotificationToken) {
               await secureSet("notificationToken", currentNotificationToken)
-              // await SecureStoragePlugin.set({
-              //   key: "notificationToken",
-              //   value: currentNotificationToken,
-              // })
             }
 
             onMessage(messaging, (payload) => {
-              console.log(
-                "Web foreground message received:",
-                JSON.stringify(payload, null, 2)
-              )
               if (payload.notification?.title && payload.notification?.body) {
                 const { title, body } = payload.notification
                 new Notification(title, { body, icon: "/logo-vertical.png" })
@@ -177,10 +146,6 @@ export const useAuthStore = defineStore("auth", () => {
           console.log("Android FCM token:", currentNotificationToken)
           if (currentNotificationToken) {
             secureSet("notificationToken", currentNotificationToken)
-            // await SecureStoragePlugin.set({
-            //   key: "notificationToken",
-            //   value: currentNotificationToken,
-            // })
           }
 
           // Handle foreground notifications ***
@@ -233,12 +198,7 @@ export const useAuthStore = defineStore("auth", () => {
       }
 
       await secureSet("deviceId", deviceId)
-      // await SecureStoragePlugin.set({
-      //   key: "deviceId",
-      //   value: deviceId,
-      // })
 
-      // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
       const bearer = await secureGet("Bearer")
       const headers: Header = {
         Accept: "application/json",
@@ -288,11 +248,9 @@ export const useAuthStore = defineStore("auth", () => {
     if (response && "token" in response) {
       token.value = "Bearer " + response.token
       secureSet("Bearer", token.value)
-      // await SecureStoragePlugin.set({
-      //   key: "Bearer",
-      //   value: token.value,
-      // })
-      // localStorage.setItem("Barer", JSON.stringify(token.value))
+      const now = Date.now()
+      loginTime.value = now
+      await secureSet("loginTime", String(now))
 
       await registerDevice(response.user.id)
       await fetchUser()
@@ -302,9 +260,6 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function logout() {
-    // const bearer = await SecureStoragePlugin.get({ key: "Bearer" })
-    // const deviceId = await SecureStoragePlugin.get({ key: "deviceId" })
-
     const bearer = await secureGet("Bearer")
     const deviceId = await secureGet("deviceId")
     const router = useRouter()
@@ -326,17 +281,27 @@ export const useAuthStore = defineStore("auth", () => {
     await secureRemove("Bearer")
     await secureRemove("authUser")
     await secureRemove("deviceId")
+    await secureRemove("loginTime")
 
     user.value = null
     authUser.value = null
     token.value = ""
-
-    // await SecureStoragePlugin.remove({ key: "Bearer" })
-    // await SecureStoragePlugin.remove({ key: "authUser" })
-    // await SecureStoragePlugin.remove({ key: "deviceId" })
-    // await SecureStoragePlugin.remove({ key: "notificationToken" })
+    loginTime.value = null
 
     router.replace({ path: "/" })
+  }
+
+  function isLoginExpired(): boolean {
+    if (!loginTime.value) return true
+
+    const now = Date.now()
+    // 24 hours
+    const hoursPassed = (now - loginTime.value) / (1000 * 60 * 60)
+    return hoursPassed >= 24
+
+    // Testing 3 min
+    // const minutesPassed = (now - loginTime.value) / (1000 * 60)
+    // return minutesPassed >= 3
   }
 
   return {
@@ -344,9 +309,11 @@ export const useAuthStore = defineStore("auth", () => {
     authUser,
     token,
     isLoading,
+    loginTime,
     loadFromSecureStorage,
     login,
     fetchUser,
     logout,
+    isLoginExpired,
   }
 })

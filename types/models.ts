@@ -25,7 +25,7 @@ export interface ContactFormModel {
   id?: number
   // contact_status_id: Numeric[]
   is_active: boolean
-  faith_status_id?: Numeric | null
+  position_id?: Numeric | null
   assigned_to?: number | null
 
   name: string

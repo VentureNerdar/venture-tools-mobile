@@ -130,9 +130,6 @@ onMounted(async () => {
   await authStore.loadFromSecureStorage()
 })
 
-console.log("[Auth] Prayer auth user ", authStore.authUser)
-console.log("[Auth] Prayer page token ", authStore.token)
-
 const consume = {
   prayers: await useConsumeApi(RoutePaths.SETTINGS_PRAYERS),
   contactPrayerCount: await useConsumeApi(RoutePaths.CONTACT_PRAYER_COUNT),
@@ -140,7 +137,6 @@ const consume = {
 }
 
 const unPrayedHandColor = computed(() => {
-  // this will automatically re-compute when themeStore.darkMode changes
   return themeStore.darkMode ? "#fff" : "#000"
 })
 

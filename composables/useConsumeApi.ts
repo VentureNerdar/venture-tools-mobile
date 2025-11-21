@@ -4,10 +4,10 @@ import type { UseFetchOptions } from "nuxt/app"
 import { showNotify } from "vant"
 import { useAuthStore } from "~/stores/useAuthStore"
 
-import type {
-  BrowseCondition,
-  ListCondition,
-  StoreOptions,
+import {
+  type BrowseCondition,
+  type ListCondition,
+  type StoreOptions,
   RoutePaths,
 } from "~/types/index.d"
 
@@ -46,6 +46,7 @@ const initialPreparation = async (path: RoutePaths, id?: number) => {
 } // e.o Initial prep
 
 const request = async (
+  endPoint: string,
   routePath: string,
   consumptionType: ConsumptionType,
   requestOptions: any,
@@ -59,6 +60,17 @@ const request = async (
 
   if (consumptionType === "list") {
     routePath = routePath + "/list"
+  }
+  const authStore = useAuthStore()
+
+  if (
+    endPoint != "languages" &&
+    endPoint != "languages/words" &&
+    authStore.isLoginExpired()
+  ) {
+    console.log("End point inside block", endPoint)
+    await authStore.logout()
+    return navigateTo("/login")
   }
 
   const response = await $fetch(routePath, requestOptions).catch((error) => {
@@ -164,8 +176,11 @@ const respond = async (
 }
 
 export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
+  console.log("Original route path", path)
   // Initial prep
   const { routePath, fetchOptions } = await initialPreparation(path, id)
+
+  console.log("Route Path after preparation", routePath)
 
   const api = {
     // BROWSE
@@ -174,6 +189,7 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
       storeOptions: StoreOptions = false
     ) => {
       return await request(
+        path,
         routePath,
         "browse",
         {
@@ -188,6 +204,7 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
     // LIST
     list: async (query: ListCondition) => {
       return await request(
+        path,
         routePath,
         "list",
         {
@@ -207,12 +224,20 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
         ...fetchOptions,
       }
 
-      return await request(routePath, "save", requestOptions, storeOptions, id)
+      return await request(
+        path,
+        routePath,
+        "save",
+        requestOptions,
+        storeOptions,
+        id
+      )
     }, // e.o SAVE
 
     // DELETE
     delete: async (permanent: boolean = false) => {
       return await request(
+        path,
         routePath,
         "delete",
         {
@@ -228,6 +253,7 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
 
     update: async (storeOptions: StoreOptions = false) => {
       return await request(
+        path,
         routePath,
         "update",
         {
@@ -241,6 +267,7 @@ export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
     // RESTORE
     restore: async () => {
       return await request(
+        path,
         routePath,
         "restore",
         {

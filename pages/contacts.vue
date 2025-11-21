@@ -59,6 +59,30 @@
         v-for="(contact, index) in d.contacts"
         :key="index"
       >
+        <template #left>
+          <template v-if="getSelectedPlatforms(contact).length">
+            <VanButton
+              v-for="(item, i) in getSelectedPlatforms(contact)"
+              :key="i"
+              :type="getButtonType(item.platformName)"
+              square
+              size="small"
+              @click="handlePlatformClick(item)"
+            >
+              {{ item.platformName }}
+            </VanButton>
+          </template>
+
+          <template v-else>
+            <VanButton
+              disabled
+              square
+              size="small"
+            >
+              No Platform
+            </VanButton>
+          </template>
+        </template>
         <template
           v-if="toggleTrash"
           #right
@@ -98,27 +122,100 @@
 
 <script lang="ts" setup>
 import { ArchiveRound } from "@vicons/material"
-import { RoutePaths, type BrowseCondition } from "../types/index.d"
-import type { ContactFormModel } from "../types/models.ts"
+import {
+  RoutePaths,
+  type BrowseCondition,
+  type CommonBrowseCondition,
+} from "../types/index.d"
+import type {
+  CommunicationPlatformFormModel,
+  ContactFormModel,
+} from "../types/models.ts"
+import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
 
 definePageMeta({
   layout: "application",
   name: "Contacts",
 })
 
+interface PlatformItem {
+  platformName: string
+  value: string
+}
+
 const searchWord = ref("")
 const toggleTrash = ref(false)
 const h = useHelpers()
+const communicationStore = useCommunicationPlatformStore()
 const d = reactive({
   contacts: [] as ContactFormModel[],
-  browseOption: { all: true } as BrowseCondition,
+  browseOption: {
+    all: true,
+    with: `[ "contactCommunicationPlatforms"]`,
+  } as BrowseCondition,
 })
 const consume = {
   contacts: await useConsumeApi(RoutePaths.CONTACTS),
 }
 
+onMounted(async () => {
+  await getContacts()
+})
+
 const getContacts = async () => {
   d.contacts = await consume.contacts.browse(d.browseOption)
+  console.log("contacts inside getContact func", d.contacts)
+}
+
+const getSelectedPlatforms = (contact: ContactFormModel): PlatformItem[] => {
+  const platforms = contact.contact_communication_platforms
+  const list = Array.isArray(platforms) ? platforms : []
+
+  return list.map((item: any) => {
+    const matched = communicationStore.communicationPlatforms.find(
+      (cp: CommunicationPlatformFormModel) =>
+        cp.id === item.communication_platform_id
+    )
+
+    return {
+      platformName: matched?.name ?? "Unknown",
+      value: item.value,
+    }
+  })
+}
+
+const getButtonType = (platformName: string) => {
+  switch (platformName.toLowerCase()) {
+    case "phone":
+      return "primary"
+    case "email":
+      return "success"
+    case "whatsapp":
+      return "warning"
+    default:
+      return "default"
+  }
+}
+
+const handlePlatformClick = (item: PlatformItem) => {
+  const v = item.value
+
+  switch (item.platformName.toLowerCase()) {
+    case "phone":
+      window.open(`tel:${v}`)
+      break
+
+    case "email":
+      window.open(`mailto:${v}`)
+      break
+
+    case "whatsapp":
+      window.open(`https://wa.me/${v.replace(/[^0-9]/g, "")}`)
+      break
+
+    default:
+      console.warn("Unknown platform:", item.platformName)
+  }
 }
 
 const handleSearch = async () => {
@@ -198,5 +295,5 @@ const handleDestroy = async (contactID: number | undefined) => {
   }
 }
 
-getContacts()
+console.log("Contact communication platforms outside the function", d.contacts)
 </script>

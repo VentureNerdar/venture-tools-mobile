@@ -465,7 +465,7 @@ const d = reactive({
   form: {
     name: "",
     is_active: true,
-    faith_status_id: null,
+    position_id: null,
     gender: null,
     age: null,
     people_group: [] as number[],
@@ -501,7 +501,7 @@ const m = {
       }: {
         selectedOptions: SelectedOptionsType[]
       }) => {
-        d.form.faith_status_id = selectedOptions[0].value as number
+        d.form.position_id = selectedOptions[0].value as number
         faithStatusFieldValue.value = selectedOptions[0].text
         d.visibility.faithStatusPicker = false
       },
@@ -762,7 +762,7 @@ onMounted(async () => {
           value: contactID,
         },
       ]),
-      with: `["faithMilestones", "status", "faithStatus", "assignedTo", "coachedBy", "peopleGroup", "baptizedBy", "contactCommunicationPlatforms"]`,
+      with: `["faithMilestones", "status", "position", "assignedTo", "coachedBy", "peopleGroup", "baptizedBy", "contactCommunicationPlatforms"]`,
     } as BrowseCondition
 
     const res = await consume.contacts.browse(bc)
@@ -772,10 +772,10 @@ onMounted(async () => {
       if (!d.form.baptized_by && d.form.baptized_by_name) {
         d.visibility.baptizedByRadio = "name"
       }
-      if (d.form.faith_status_id) {
+      if (d.form.position_id) {
         helpers.setFromOptions({
           options: s.settings.options.faith,
-          selectedValue: d.form.faith_status_id,
+          selectedValue: d.form.position_id,
           textField: faithStatusFieldValue,
           idField: faithStatusID,
         })
@@ -874,7 +874,7 @@ const prayerPromptList = computed(() => {
 const defaultOption = s.settings.options.faith.find((o) => o.value === 8)
 if (defaultOption) {
   faithStatusFieldValue.value = defaultOption.text
-  d.form.faith_status_id = 8
+  d.form.position_id = 8
 }
 
 m.consume.contacts()

@@ -191,6 +191,7 @@ const s = reactive({
 onMounted(async () => {
   try {
     await downloadPublicSequence()
+
     await s.authStore.loadFromSecureStorage()
     await s.settings.loadFromSecureStorage()
     await waitUntilAuthLoaded()
@@ -202,8 +203,15 @@ onMounted(async () => {
       router.replace("/welcome")
       return
     }
+    // checking within 24 hours
+    if (user && s.authStore.isLoginExpired()) {
+      await s.authStore.logout()
+      return router.replace("/login")
+    }
     console.log("[Splash] Authenticated user:", user.email)
     await downloadSequence()
+
+    // check pin code, first time login
     if (user && pinCode) {
       router.replace("/pin")
     } else if (user && user.first_time_login) {
