@@ -20,7 +20,13 @@
         />
       </van-swipe-item>
     </van-swipe>
-    <div class="title">Venture Tools</div>
+    <div class="title">
+      <van-image
+        width="100"
+        height="100"
+        :src="icon"
+      />
+    </div>
   </div>
 </template>
 
@@ -29,6 +35,7 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useSettingStore } from "~/stores/useSettingStore"
 import { useAuthStore } from "~/stores/useAuthStore"
+import icon from "~/assets/icon.png"
 
 const router = useRouter()
 const tapCount = ref(0)
@@ -129,13 +136,13 @@ function handleTap() {
   line-height: 40px;
   position: absolute;
   color: #fff;
-  background-color: #17badf;
+  /* background-color: #17badf; */
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -100%);
   font-size: 30px;
   font-weight: bold;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 2px 4px rgba(5, 4, 4, 0.2);
   z-index: 10;
   text-align: center;
   border-radius: 4px;
