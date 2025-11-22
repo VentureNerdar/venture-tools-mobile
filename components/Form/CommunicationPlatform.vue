@@ -1,7 +1,14 @@
 <template>
-  <VanActionSheet v-model:show="d.show" :title="p.platform.name ?? ''" @close="m.handle.beforeClose">
+  <VanActionSheet
+    v-model:show="d.show"
+    :title="p.platform.name ?? ''"
+    @close="m.handle.beforeClose"
+  >
     <VanCellGroup>
-      <VanSwipeCell v-for="(pf, i) in platformForm" :key="pf">
+      <VanSwipeCell
+        v-for="(pf, i) in platformForm"
+        :key="pf"
+      >
         <template #left>
           <!-- <VanButton square type="primary" text="Select" /> -->
         </template>
@@ -9,20 +16,45 @@
         <VanCell :title="pf" />
 
         <template #right>
-          <VanButton square type="primary" :text="h.translate('edit')" @click="m.handle.click.btn.editPlatform(pf, i)" />
-          <VanButton square type="danger" :text="h.translate('delete')" @click="m.handle.click.btn.deletePlatform(pf, i)" />
+          <VanButton
+            square
+            type="primary"
+            :text="h.translate('edit')"
+            @click="m.handle.click.btn.editPlatform(pf, i)"
+          />
+          <VanButton
+            square
+            type="danger"
+            :text="h.translate('delete')"
+            @click="m.handle.click.btn.deletePlatform(pf, i)"
+          />
         </template>
       </VanSwipeCell>
 
-      <VanPopup v-model:show="d.visibility.editPopup" position="bottom" style="height: 30%" closeable round>
+      <VanPopup
+        v-model:show="d.visibility.editPopup"
+        position="bottom"
+        style="height: 30%"
+        closeable
+        round
+      >
         <VanCellGroup :title="h.translate('edit')">
           <VanCell>
-            <VanField v-model="d.editingValue.value" :placeholder="h.translate('enter_new_value')" :label="h.translate('value')" />
+            <VanField
+              v-model="d.editingValue.value"
+              :placeholder="h.translate('enter_new_value')"
+              :label="h.translate('value')"
+            />
           </VanCell>
 
           <VanCell>
-            <VanButton block type="warning" size="small" @click="m.handle.click.btn.edit">
-              {{ h.translate('edit') }}
+            <VanButton
+              block
+              type="warning"
+              size="small"
+              @click="m.handle.click.btn.edit"
+            >
+              {{ h.translate("edit") }}
             </VanButton>
           </VanCell>
         </VanCellGroup>
@@ -30,34 +62,60 @@
     </VanCellGroup>
 
     <VanCell>
-      <VanField v-if="d.visibility.addNew" v-model="d.newValue" :placeholder="h.translate('enter_new_value')" />
+      <VanField
+        v-if="d.visibility.addNew"
+        v-model="d.newValue"
+        :placeholder="h.translate('enter_new_value')"
+      />
     </VanCell>
 
     <VanCell>
       <div v-if="!d.visibility.addNew">
         <VanCell>
-          <VanButton type="success" block size="small" @click="d.visibility.addNew = true">
-            {{ h.translate('add') }} {{ p.platform.name }}
+          <VanButton
+            type="success"
+            block
+            size="small"
+            @click="d.visibility.addNew = true"
+          >
+            {{ h.translate("add") }} {{ p.platform.name }}
           </VanButton>
         </VanCell>
 
         <VanCell>
-          <VanButton type="primary" block plain size="small" @click="d.show = false">
-            {{ h.translate('close') }}
+          <VanButton
+            type="primary"
+            block
+            plain
+            size="small"
+            @click="d.show = false"
+          >
+            {{ h.translate("close") }}
           </VanButton>
         </VanCell>
       </div>
 
       <div v-else>
         <VanCell>
-          <VanButton type="success" block size="small" @click="m.handle.click.btn.addNew">
-            {{ h.translate('add') }}
+          <VanButton
+            type="success"
+            block
+            size="small"
+            @click="m.handle.click.btn.addNew"
+          >
+            {{ h.translate("add") }}
           </VanButton>
         </VanCell>
 
         <VanCell>
-          <VanButton type="primary" block size="small" plain @click="m.handle.click.btn.cancelAddNew">
-            {{ h.translate('cancel') }}
+          <VanButton
+            type="primary"
+            block
+            size="small"
+            plain
+            @click="m.handle.click.btn.cancelAddNew"
+          >
+            {{ h.translate("cancel") }}
           </VanButton>
         </VanCell>
       </div>
@@ -78,9 +136,8 @@ const p = withDefaults(
   }>(),
   {
     show: false,
-  },
+  }
 )
-
 
 const platformForm = ref({})
 
@@ -132,7 +189,6 @@ const m = {
           }
           emit("deleted", d.editingValue)
           console.log("editingValue ", d.editingValue)
-
         },
 
         edit: () => {
@@ -154,8 +210,11 @@ watch(
   () => p.show,
   (newValue) => {
     d.show = newValue ? newValue : d.show
-  },
+  }
 )
+
+console.log("Props Form", p.form)
+console.log("Props Platform", p.platform)
 
 watch(
   () => p.form,
@@ -164,6 +223,6 @@ watch(
     platformForm.value = newValue
     console.log("D form", d.form)
   },
-  { immediate: true },
+  { immediate: true }
 )
 </script>
