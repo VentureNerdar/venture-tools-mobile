@@ -1,42 +1,5 @@
 <template>
   <div>
-    <VanCellGroup :title="h.translate('statuses')">
-      <!-- IS ACTIVE -->
-      <VanField
-        name="isActive"
-        :label="h.translate('is_active')"
-      >
-        <template #input>
-          <VanSwitch v-model="d.form.is_active" />
-        </template>
-      </VanField>
-      <!-- e.o IS ACTIVE -->
-
-      <!-- FAITH STATUS -->
-      <VanField
-        v-model="faithStatusFieldValue"
-        readonly
-        :label="h.translate('faith_status')"
-        :placeholder="h.translate('choose_faith_status')"
-        @click="d.visibility.faithStatusPicker = true"
-      />
-      <VanPopup
-        v-model:show="d.visibility.faithStatusPicker"
-        destroy-on-close
-        round
-        position="bottom"
-      >
-        <VanPicker
-          :model-value="faithStatusID"
-          :title="h.translate('title')"
-          :columns="s.settings.options.faith"
-          @cancel="d.visibility.faithStatusPicker = false"
-          @confirm="m.handle.click.confirmFaithStatusPicker"
-        />
-      </VanPopup>
-      <!-- e.o FAITH STATUS -->
-    </VanCellGroup>
-
     <VanCellGroup :title="h.translate('general_information')">
       <!-- NAME -->
       <VanField
@@ -53,6 +16,14 @@
         v-model="d.form.nickname"
         :label="h.translate('nickname')"
         :placeholder="h.translate('enter_nickname')"
+      />
+      <!-- e.o NICKNAME -->
+
+      <!-- e.o Note-->
+      <VanField
+        v-model="d.form.note"
+        :label="h.translate('note')"
+        :placeholder="h.translate('enter_note')"
       />
       <!-- e.o NICKNAME -->
 
@@ -161,6 +132,30 @@
         </VanCheckboxGroup>
       </VanPopup>
       <!-- e.o PEOPLE GROUP -->
+
+      <!-- FAITH STATUS -->
+      <VanField
+        v-model="faithStatusFieldValue"
+        readonly
+        :label="h.translate('position')"
+        :placeholder="h.translate('choose_position')"
+        @click="d.visibility.faithStatusPicker = true"
+      />
+      <VanPopup
+        v-model:show="d.visibility.faithStatusPicker"
+        destroy-on-close
+        round
+        position="bottom"
+      >
+        <VanPicker
+          :model-value="faithStatusID"
+          :title="h.translate('title')"
+          :columns="s.settings.options.faith"
+          @cancel="d.visibility.faithStatusPicker = false"
+          @confirm="m.handle.click.confirmFaithStatusPicker"
+        />
+      </VanPopup>
+      <!-- e.o FAITH STATUS -->
     </VanCellGroup>
 
     <!-- CONTACT PLATFORMS -->
@@ -367,6 +362,17 @@
       :placeholder="h.translate('please_input')"
     />
     <!-- e.o CURRENT PRAYERS -->
+
+    <!-- IS ACTIVE -->
+    <VanField
+      name="isActive"
+      :label="h.translate('is_active')"
+    >
+      <template #input>
+        <VanSwitch v-model="d.form.is_active" />
+      </template>
+    </VanField>
+    <!-- e.o IS ACTIVE -->
     <div style="margin: 16px; display: flex; gap: 16px">
       <VanButton
         round
@@ -476,6 +482,7 @@ const d = reactive({
     baptism_date: null,
     assigned_to: null,
     current_prayers: "",
+    note: "",
     user_profile_id: null,
   } as ContactFormModel,
   prayer_prompt_id: null as number | null,

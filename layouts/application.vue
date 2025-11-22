@@ -79,9 +79,21 @@
         {{ h.translate("settings") }}
       </VanTabbarItem>
     </VanTabbar>
+
+    <VanFloatingBubble
+      v-if="showHomeBubble"
+      :offset="homeOffset"
+      axis="lock"
+      icon="wap-home-o"
+      :gap="{ x: 20, y: 80 }"
+      class="fab-main"
+      @click="$router.push('/landing')"
+    />
+
     <div class="fab-wrapper">
       <VanFloatingBubble
-        v-if="showBubble"
+        v-if="showAddBubble"
+        :offset="addOffset"
         axis="lock"
         icon="plus"
         :gap="{ x: 20, y: 80 }"
@@ -138,13 +150,14 @@ import {
   PersonRound,
   SettingsRound,
   PlusRound,
+  HomeRound,
 } from "@vicons/material"
 import { PrayingHands } from "@vicons/fa"
 
 const route = useRoute()
 const h = useHelpers()
 
-const showBubble = computed(() =>
+const showAddBubble = computed(() =>
   [
     "/landing",
     "/prayers",
@@ -154,6 +167,22 @@ const showBubble = computed(() =>
     "/settings",
   ].includes(route.path)
 )
+
+const showHomeBubble = computed(() =>
+  ["/prayers", "/churches", "/contacts", "/communities", "/settings"].includes(
+    route.path
+  )
+)
+
+const homeOffset = ref({
+  x: 20, // left side
+  y: window.innerHeight - 125, // bottom alignment
+})
+
+const addOffset = ref({
+  x: window.innerWidth - 80, // right side
+  y: window.innerHeight - 125, // bottom alignment
+})
 
 const fabOpen = ref(false)
 const toggleFab = () => (fabOpen.value = !fabOpen.value)
@@ -219,6 +248,11 @@ const showBackButton = computed(() => {
     : route.path.split("/").length > 2
     ? true
     : false
+})
+window.addEventListener("resize", () => {
+  homeOffset.value.y = window.innerHeight - 160
+  addOffset.value.x = window.innerWidth - 80
+  addOffset.value.y = window.innerHeight - 160
 })
 </script>
 

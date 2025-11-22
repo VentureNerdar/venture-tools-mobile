@@ -36,6 +36,7 @@ export interface ContactFormModel {
   baptized_by?: Numeric | null
   baptized_by_name?: string | null
   current_prayers?: string
+  note?: string
   faith_milestones?: number[] | null
   people_group?: Numeric[] | null
   // contact_communication_platforms?: { [key: number]: any[] }

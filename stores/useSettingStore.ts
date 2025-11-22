@@ -7,7 +7,7 @@ import { JoinFullSharp } from "@vicons/material"
 interface Status {
   id: number
   name: string
-  type: "contact" | "group" | "faith_status"
+  type: "contact" | "group" | "position"
 }
 
 export const useSettingStore = defineStore("setting", () => {
@@ -29,7 +29,7 @@ export const useSettingStore = defineStore("setting", () => {
   )
 
   const faithStatuses = computed(() =>
-    statuses.value.filter((s: Status) => s.type === "faith_status")
+    statuses.value.filter((s: Status) => s.type === "position")
   )
 
   const options = computed(() => ({
