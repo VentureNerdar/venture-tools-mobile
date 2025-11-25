@@ -66,7 +66,6 @@
               :key="i"
               :type="getButtonType(item.platformName)"
               square
-              size="small"
               @click="handlePlatformClick(item)"
             >
               {{ item.platformName }}
@@ -77,7 +76,6 @@
             <VanButton
               disabled
               square
-              size="small"
             >
               No Platform
             </VanButton>
@@ -164,7 +162,6 @@ onMounted(async () => {
 
 const getContacts = async () => {
   d.contacts = await consume.contacts.browse(d.browseOption)
-  console.log("contacts inside getContact func", d.contacts)
 }
 
 const getSelectedPlatforms = (contact: ContactFormModel): PlatformItem[] => {
@@ -294,6 +291,4 @@ const handleDestroy = async (contactID: number | undefined) => {
     console.log("error")
   }
 }
-
-console.log("Contact communication platforms outside the function", d.contacts)
 </script>

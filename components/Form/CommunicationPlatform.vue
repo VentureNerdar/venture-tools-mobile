@@ -213,15 +213,11 @@ watch(
   }
 )
 
-console.log("Props Form", p.form)
-console.log("Props Platform", p.platform)
-
 watch(
   () => p.form,
   (newValue) => {
     d.form = newValue ? newValue : d.form
     platformForm.value = newValue
-    console.log("D form", d.form)
   },
   { immediate: true }
 )

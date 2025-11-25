@@ -250,8 +250,8 @@
           >
             <VanRadio
               style="margin-right: 10px"
-              name="contact"
-              >{{ h.translate("contact") }}</VanRadio
+              name="church_planter"
+              >{{ h.translate("church_planter") }}</VanRadio
             >
             <VanRadio name="name">{{ h.translate("name") }}</VanRadio>
           </VanRadioGroup>
@@ -260,12 +260,12 @@
       <!-- e.o BAPTIZED BY SELECT -->
 
       <!-- BAPTIZED BY CONTACT -->
-      <div v-if="d.visibility.baptizedByRadio === 'contact'">
+      <div v-if="d.visibility.baptizedByRadio === 'church_planter'">
         <VanField
           v-model="baptizedByFieldValue"
           readonly
-          :label="h.translate('contact')"
-          :placeholder="h.translate('choose_contact')"
+          :label="h.translate('church_planter')"
+          :placeholder="h.translate('choose_church_planter')"
           @click="d.visibility.baptizedByPicker = true"
         />
 
@@ -278,7 +278,7 @@
           <VanPicker
             :model-value="baptizedByID"
             :title="h.translate('baptized_by')"
-            :columns="contactList"
+            :columns="churchPlanterList"
             @cancel="d.visibility.baptizedByPicker = false"
             @confirm="m.handle.click.confirmBaptizedByPicker"
           />
@@ -418,6 +418,7 @@ import { useAuthStore } from "~/stores/useAuthStore"
 const consume = {
   contacts: await useConsumeApi(RoutePaths.CONTACTS),
   prayerPrompt: await useConsumeApi(RoutePaths.PRAYER_PROMPTS),
+  users: await useConsumeApi(RoutePaths.USERS),
 }
 
 const s = {
@@ -466,7 +467,7 @@ const d = reactive({
     baptizedByPicker: false,
     baptismDatePicker: false,
     prayerPromptPicker: false,
-    baptizedByRadio: "contact",
+    baptizedByRadio: "church_planter",
   },
   form: {
     name: "",
@@ -491,7 +492,7 @@ const d = reactive({
     name: "",
   } as CommunicationPlatformFormModel,
 
-  contacts: [],
+  churchPlanters: [],
   prayerPrompts: [],
 })
 
@@ -629,6 +630,7 @@ const m = {
         baptizedByFieldValue.value = selectedOptions[0].text
         d.visibility.baptizedByPicker = false
       },
+
       confirmBaptizedDatePicker: ({
         selectedOptions,
       }: {
@@ -684,16 +686,16 @@ const m = {
   },
 
   consume: {
-    contacts: async () => {
-      d.contacts = await consume.contacts.browse(
-        {
-          all: true,
-          with: JSON.stringify(["assignedTo", "assignedTo.movement"]),
+    churchPlanters: async () => {
+      d.churchPlanters = await consume.users.browse({
+        all: true,
+        whereIn: {
+          key: "user_role_id",
+          value: [4],
         },
-        false
-      )
-      console.log("Contacts Data", d.contacts)
+      })
     },
+
     prayerPrompt: async () => {
       d.prayerPrompts = await consume.prayerPrompt.browse(
         {
@@ -760,6 +762,7 @@ onMounted(async () => {
   await s.faithMilestone.loadFromSecureStorage()
   await s.peopleGroup.loadFromSecureStorage()
   await s.settings.loadFromSecureStorage()
+  await m.consume.churchPlanters()
 
   if (contactID) {
     const bc = {
@@ -810,10 +813,12 @@ onMounted(async () => {
       }
       if (res.data && res.data[0].baptized_by) {
         const baptizedBy = res.data[0].baptized_by
+        baptizedByFieldValue.value = baptizedBy.name
+        baptizedByID.value = baptizedBy.id
         d.form.baptized_by = baptizedBy.id
         if (d.form.baptized_by) {
           helpers.setFromOptions({
-            options: contactList.value,
+            options: churchPlanterList.value,
             selectedValue: d.form.baptized_by,
             textField: baptizedByFieldValue,
             idField: baptizedByID,
@@ -858,12 +863,10 @@ onMounted(async () => {
   }
 })
 
-const contactList = computed(() => {
-  return d.contacts.map((pg: any) => ({
-    text: `${pg.name}\n | ${pg.assigned_to?.name ?? ""} | (${
-      pg.assigned_to?.movement?.name ?? ""
-    }) `,
-    value: pg.id,
+const churchPlanterList = computed(() => {
+  return d.churchPlanters.map((cp: any) => ({
+    text: cp.name ?? "",
+    value: cp.id,
   }))
 })
 
@@ -884,7 +887,6 @@ if (defaultOption) {
   d.form.position_id = 8
 }
 
-m.consume.contacts()
 m.consume.prayerPrompt()
 
 const onSubmit = async () => {

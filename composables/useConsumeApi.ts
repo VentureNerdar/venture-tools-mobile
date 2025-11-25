@@ -176,11 +176,8 @@ const respond = async (
 }
 
 export async function useConsumeApi<T>(path: RoutePaths, id?: number) {
-  console.log("Original route path", path)
   // Initial prep
   const { routePath, fetchOptions } = await initialPreparation(path, id)
-
-  console.log("Route Path after preparation", routePath)
 
   const api = {
     // BROWSE
