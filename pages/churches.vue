@@ -1,4 +1,5 @@
 <template>
+  <GenericsPageTip :text="d.pageTipText" />
   <div>
     <VanCellGroup>
       <VanSearch
@@ -96,104 +97,111 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import { ArchiveRound } from "@vicons/material"
+<script
+  lang="ts"
+  setup
+>
+  import { ArchiveRound } from "@vicons/material"
 
-import { RoutePaths, type BrowseCondition } from "../types/index.d"
-import type { ChurchFormModel } from "../types/models"
+  import { RoutePaths, type BrowseCondition } from "../types/index.d"
+  import type { ChurchFormModel } from "../types/models"
 
-definePageMeta({
-  layout: "application",
-  name: "Churches",
-})
-
-const h = useHelpers()
-
-const searchWord = ref("")
-const toggleTrash = ref(false)
-
-const d = reactive({
-  churches: [] as ChurchFormModel[],
-  browseOption: { all: true } as BrowseCondition,
-})
-const consume = {
-  churches: await useConsumeApi(RoutePaths.CHURCHES),
-}
-
-const getChurches = async () => {
-  d.churches = await consume.churches.browse(d.browseOption)
-}
-
-const handleSearch = async () => {
-  d.browseOption = { all: true, search: searchWord.value, search_by: "name" }
-  getChurches()
-}
-
-const handleEdit = (churchID: number | undefined) => {
-  navigateTo({
-    path: "/createForm",
-    query: {
-      moduleName: "Churches",
-      id: churchID,
-    },
+  definePageMeta({
+    layout: "application",
+    name: "Churches",
   })
-}
 
-const handleDelete = async (churchID: number | undefined) => {
-  if (!churchID) return
-  try {
-    await showConfirmDialog({
-      title: "Confirm Deletion",
-      message: "Are you sure? You cannot undo this action afterwards.",
+  const h = useHelpers()
+
+  const searchWord = ref("")
+  const toggleTrash = ref(false)
+
+  const d = reactive({
+    churches: [] as ChurchFormModel[],
+    browseOption: { all: true } as BrowseCondition,
+    pageTipText: [
+      'Tap to add note or edit church',
+      'Swipe Left to archive church'
+    ]
+  })
+  const consume = {
+    churches: await useConsumeApi(RoutePaths.CHURCHES),
+  }
+
+  const getChurches = async () => {
+    d.churches = await consume.churches.browse(d.browseOption)
+  }
+
+  const handleSearch = async () => {
+    d.browseOption = { all: true, search: searchWord.value, search_by: "name" }
+    getChurches()
+  }
+
+  const handleEdit = (churchID: number | undefined) => {
+    navigateTo({
+      path: "/createForm",
+      query: {
+        moduleName: "Churches",
+        id: churchID,
+      },
     })
+  }
 
+  const handleDelete = async (churchID: number | undefined) => {
+    if (!churchID) return
+    try {
+      await showConfirmDialog({
+        title: "Confirm Deletion",
+        message: "Are you sure? You cannot undo this action afterwards.",
+      })
+
+      const consume = await useConsumeApi(RoutePaths.CHURCHES, churchID)
+      const res = await consume.delete(false)
+      if (res) {
+        d.churches = d.churches.filter((church) => church.id !== churchID)
+      }
+    } catch {
+      // Handle error silently
+    }
+  }
+
+  const handleToggleTrash = () => {
+    toggleTrash.value = !toggleTrash.value
+    if (toggleTrash.value) {
+      d.browseOption = { all: true, onlyTrashed: true }
+      getChurches()
+    } else {
+      d.browseOption = { all: true }
+      getChurches()
+    }
+  }
+
+  const handleRestore = async (churchID: number | undefined) => {
     const consume = await useConsumeApi(RoutePaths.CHURCHES, churchID)
-    const res = await consume.delete(false)
+    const res = await consume.restore()
     if (res) {
       d.churches = d.churches.filter((church) => church.id !== churchID)
     }
-  } catch {
-    // Handle error silently
   }
-}
 
-const handleToggleTrash = () => {
-  toggleTrash.value = !toggleTrash.value
-  if (toggleTrash.value) {
-    d.browseOption = { all: true, onlyTrashed: true }
-    getChurches()
-  } else {
-    d.browseOption = { all: true }
-    getChurches()
-  }
-}
+  const handleDestroy = async (churchID: number | undefined) => {
+    if (!churchID) return
 
-const handleRestore = async (churchID: number | undefined) => {
-  const consume = await useConsumeApi(RoutePaths.CHURCHES, churchID)
-  const res = await consume.restore()
-  if (res) {
-    d.churches = d.churches.filter((church) => church.id !== churchID)
-  }
-}
+    try {
+      await showConfirmDialog({
+        title: "Confirm Deletion",
+        message: "Are you sure? You cannot undo this action afterwards.",
+      })
 
-const handleDestroy = async (churchID: number | undefined) => {
-  if (!churchID) return
-
-  try {
-    await showConfirmDialog({
-      title: "Confirm Deletion",
-      message: "Are you sure? You cannot undo this action afterwards.",
-    })
-
-    const consume = await useConsumeApi(RoutePaths.CHURCHES, churchID)
-    const res = await consume.delete(true)
-    if (res) {
-      d.churches = d.churches.filter((church) => church.id !== churchID)
+      const consume = await useConsumeApi(RoutePaths.CHURCHES, churchID)
+      const res = await consume.delete(true)
+      if (res) {
+        d.churches = d.churches.filter((church) => church.id !== churchID)
+      }
+    } catch {
+      // Handle error silently
     }
-  } catch {
-    // Handle error silently
   }
-}
 
-getChurches()
+  getChurches()
 </script>

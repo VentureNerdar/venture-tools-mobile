@@ -5,31 +5,33 @@
     @close="m.handle.beforeClose"
   >
     <VanCellGroup>
-      <VanSwipeCell
+      <template
         v-for="(pf, i) in platformForm"
         :key="pf"
       >
-        <template #left>
-          <!-- <VanButton square type="primary" text="Select" /> -->
-        </template>
+        <VanSwipeCell v-if="m.checkIfCurrentPlatform(pf)">
+          <template #left>
+            <!-- <VanButton square type="primary" text="Select" /> -->
+          </template>
 
-        <VanCell :title="pf" />
+          <VanCell :title="pf" />
 
-        <template #right>
-          <VanButton
-            square
-            type="primary"
-            :text="h.translate('edit')"
-            @click="m.handle.click.btn.editPlatform(pf, i)"
-          />
-          <VanButton
-            square
-            type="danger"
-            :text="h.translate('delete')"
-            @click="m.handle.click.btn.deletePlatform(pf, i)"
-          />
-        </template>
-      </VanSwipeCell>
+          <template #right>
+            <VanButton
+              square
+              type="primary"
+              :text="h.translate('edit')"
+              @click="m.handle.click.btn.editPlatform(pf, i)"
+            />
+            <VanButton
+              square
+              type="danger"
+              :text="h.translate('delete')"
+              @click="m.handle.click.btn.deletePlatform(pf, i)"
+            />
+          </template>
+        </VanSwipeCell>
+      </template>
 
       <VanPopup
         v-model:show="d.visibility.editPopup"
@@ -123,102 +125,118 @@
   </VanActionSheet>
 </template>
 
-<script lang="ts" setup>
-import type { CommunicationPlatformFormModel } from "~/types"
+<script
+  lang="ts"
+  setup
+>
+  import type { CommunicationPlatformFormModel } from "~/types"
 
-const emit = defineEmits(["close", "added", "updated", "deleted"])
-const h = useHelpers()
-const p = withDefaults(
-  defineProps<{
-    platform: CommunicationPlatformFormModel
-    show?: boolean
-    form: any[]
-  }>(),
-  {
+  const emit = defineEmits(["close", "added", "updated", "deleted"])
+  const h = useHelpers()
+  const p = withDefaults(
+    defineProps<{
+      platform: CommunicationPlatformFormModel
+      platformValues: any[]
+      show?: boolean
+      form: any[]
+    }>(),
+    {
+      show: false,
+    }
+  )
+
+  const platformForm = ref({})
+
+  const d = reactive({
     show: false,
-  }
-)
-
-const platformForm = ref({})
-
-const d = reactive({
-  show: false,
-  newValue: "",
-  editingValue: {} as { value: string; originalValue: string; index: number },
-  visibility: {
-    addNew: false,
-    editPopup: false,
-  },
-  form: [] as any[],
-})
-
-const m = {
-  handle: {
-    beforeClose: () => {
-      emit("close")
+    newValue: "",
+    editingValue: {} as { value: string; originalValue: string; index: number },
+    visibility: {
+      addNew: false,
+      editPopup: false,
     },
+    form: [] as any[],
+  })
 
-    click: {
-      btn: {
-        cancelAddNew: () => {
-          d.visibility.addNew = false
-          d.newValue = ""
+  const m = {
+    handle: {
+      beforeClose: () => {
+        emit("close")
+      },
+
+      click: {
+        btn: {
+          cancelAddNew: () => {
+            d.visibility.addNew = false
+            d.newValue = ""
+          },
+
+          addNew: () => {
+            emit("added", d.newValue)
+            d.visibility.addNew = false
+            d.newValue = ""
+          },
+
+          editPlatform: (platform: string, index: number) => {
+            d.visibility.editPopup = true
+
+            d.editingValue = {
+              value: platform,
+              originalValue: platform,
+              index: index,
+            }
+          },
+          deletePlatform: (platform: string, index: number) => {
+            d.form.splice(index, 1)
+            d.editingValue = {
+              value: platform,
+              originalValue: platform,
+              index: index,
+            }
+            emit("deleted", d.editingValue)
+            console.log("editingValue ", d.editingValue)
+          },
+
+          edit: () => {
+            d.form[d.editingValue.index] = d.editingValue.value
+            emit("updated", d.form, d.editingValue)
+
+            d.visibility.editPopup = false
+          },
         },
+      },
 
-        addNew: () => {
-          emit("added", d.newValue)
-          d.visibility.addNew = false
-          d.newValue = ""
-        },
-
-        editPlatform: (platform: string, index: number) => {
-          d.visibility.editPopup = true
-
-          d.editingValue = {
-            value: platform,
-            originalValue: platform,
-            index: index,
-          }
-        },
-        deletePlatform: (platform: string, index: number) => {
-          d.form.splice(index, 1)
-          d.editingValue = {
-            value: platform,
-            originalValue: platform,
-            index: index,
-          }
-          emit("deleted", d.editingValue)
-          console.log("editingValue ", d.editingValue)
-        },
-
-        edit: () => {
-          d.form[d.editingValue.index] = d.editingValue.value
-          emit("updated", d.form, d.editingValue)
-
-          d.visibility.editPopup = false
-        },
+      updateModelValue: () => {
+        emit("updated", d.form, p.form)
       },
     },
 
-    updateModelValue: () => {
-      emit("updated", d.form, p.form)
-    },
-  },
-}
-
-watch(
-  () => p.show,
-  (newValue) => {
-    d.show = newValue ? newValue : d.show
+    checkIfCurrentPlatform: (valuex: string) => {
+      return p.platformValues.some(v =>
+        v.communication_platform_id === p.platform.id && v.value === valuex
+      )
+    }
   }
-)
 
-watch(
-  () => p.form,
-  (newValue) => {
-    d.form = newValue ? newValue : d.form
-    platformForm.value = newValue
-  },
-  { immediate: true }
-)
+  watch(
+    () => p.show,
+    (newValue) => {
+      d.show = newValue ? newValue : d.show
+
+      if (newValue) {
+        console.log(p.form)
+        console.log(p.platform)
+      }
+
+    }, { immediate: true }
+  )
+
+  watch(
+    () => p.form,
+    (newValue) => {
+      d.form = newValue ? newValue : d.form
+      platformForm.value = newValue
+    },
+    { immediate: true }
+  )
 </script>

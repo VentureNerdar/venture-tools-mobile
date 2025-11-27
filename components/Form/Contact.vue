@@ -171,6 +171,9 @@
         :platform="d.currentCommunicationPlatform"
         :show="d.visibility.communicationPlatformActionSheet"
         :form="communicationForm ? (communicationForm as string[]) : []"
+        :platform-values="d.form.contact_communication_platforms
+          ? (d.form.contact_communication_platforms as any[])
+          : []"
         @close="d.visibility.communicationPlatformActionSheet = false"
         @added="m.handle.click.confirmCommunicationPlatformPicker"
         @updated="m.handle.emits.updatedCommunicationPlatformPicker"
@@ -210,8 +213,7 @@
             :key="index"
           >
             <VanCheckbox :name="item.id">
-              <div
-                style="
+              <div style="
                   display: flex;
                   align-items: center;
                   padding: 10px;
@@ -220,8 +222,7 @@
                   margin-left: 10px;
                   margin-right: 10px;
                   width: calc(100vw - 100px);
-                "
-              >
+                ">
                 <VanImage
                   width="26"
                   height="26"
@@ -251,8 +252,7 @@
             <VanRadio
               style="margin-right: 10px"
               name="church_planter"
-              >{{ h.translate("church_planter") }}</VanRadio
-            >
+            >{{ h.translate("church_planter") }}</VanRadio>
             <VanRadio name="name">{{ h.translate("name") }}</VanRadio>
           </VanRadioGroup>
         </template>
@@ -396,521 +396,525 @@
   </div>
 </template>
 
-<script lang="ts" setup>
-import type {
-  ContactFormModel,
-  CommunicationPlatformFormModel,
-} from "~/types/models"
+<script
+  lang="ts"
+  setup
+>
+  import type {
+    ContactFormModel,
+    CommunicationPlatformFormModel,
+  } from "~/types/models"
 
-import { useSettingStore } from "~/stores/useSettingStore"
-import { usePeopleGroupStore } from "~/stores/usePeopleGroupStore"
-import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
-import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
-import { useContactStore } from "~/stores/useContactStore"
+  import { useSettingStore } from "~/stores/useSettingStore"
+  import { usePeopleGroupStore } from "~/stores/usePeopleGroupStore"
+  import { useCommunicationPlatformStore } from "~/stores/useCommunicationPlatformStore"
+  import { useFaithMilestoneStore } from "~/stores/useFaithMilestoneStore"
+  import { useContactStore } from "~/stores/useContactStore"
 
-import type { Numeric } from "vant/es/utils"
-import type { GenderTypes, AgeGroups } from "~/types"
+  import type { Numeric } from "vant/es/utils"
+  import type { GenderTypes, AgeGroups } from "~/types"
 
-import { RoutePaths, type BrowseCondition } from "~/types/index.d"
-import { useConsumeApi } from "~/composables/useConsumeApi"
-import { useAuthStore } from "~/stores/useAuthStore"
+  import { RoutePaths, type BrowseCondition } from "~/types/index.d"
+  import { useConsumeApi } from "~/composables/useConsumeApi"
+  import { useAuthStore } from "~/stores/useAuthStore"
 
-const consume = {
-  contacts: await useConsumeApi(RoutePaths.CONTACTS),
-  prayerPrompt: await useConsumeApi(RoutePaths.PRAYER_PROMPTS),
-  users: await useConsumeApi(RoutePaths.USERS),
-}
+  const consume = {
+    contacts: await useConsumeApi(RoutePaths.CONTACTS),
+    prayerPrompt: await useConsumeApi(RoutePaths.PRAYER_PROMPTS),
+    users: await useConsumeApi(RoutePaths.USERS),
+  }
 
-const s = {
-  settings: useSettingStore(),
-  peopleGroup: usePeopleGroupStore(),
-  communicationPlatform: useCommunicationPlatformStore(),
-  faithMilestone: useFaithMilestoneStore(),
-  contact: useContactStore(),
-}
+  const s = {
+    settings: useSettingStore(),
+    peopleGroup: usePeopleGroupStore(),
+    communicationPlatform: useCommunicationPlatformStore(),
+    faithMilestone: useFaithMilestoneStore(),
+    contact: useContactStore(),
+  }
 
-const route = useRoute()
-const router = useRouter()
-const config = useRuntimeConfig()
-const h = useHelpers()
-const contactID = route.query.id ? Number(route.query.id) : undefined
-const helpers = useHelpers()
-const authStore = useAuthStore()
-const authUser = authStore.authUser
-const faithStatusFieldValue = ref("")
-const prayerPromptFieldValue = ref("")
-const ageGroupFieldValue = ref("")
-const peopleGroupFieldValue = ref("")
-const faithMilestoneFieldValue = ref("")
-const baptizedByFieldValue = ref("")
-const baptismDateFieldValue = ref("")
+  const route = useRoute()
+  const router = useRouter()
+  const config = useRuntimeConfig()
+  const h = useHelpers()
+  const contactID = route.query.id ? Number(route.query.id) : undefined
+  const helpers = useHelpers()
+  const authStore = useAuthStore()
+  const authUser = authStore.authUser
+  const faithStatusFieldValue = ref("")
+  const prayerPromptFieldValue = ref("")
+  const ageGroupFieldValue = ref("")
+  const peopleGroupFieldValue = ref("")
+  const faithMilestoneFieldValue = ref("")
+  const baptizedByFieldValue = ref("")
+  const baptismDateFieldValue = ref("")
 
-const faithStatusID = ref<Numeric[]>([3])
-const prayerPromptID = ref<Numeric[]>([])
-const ageGroupID = ref<AgeGroups[]>([])
-const peopleGroupID = ref<Numeric[]>([])
-const faithMilestoneID = ref<Numeric[]>([])
-const baptizedByID = ref<Numeric[]>([])
-const baptizedDatePicker = ref<any[]>([])
+  const faithStatusID = ref<Numeric[]>([3])
+  const prayerPromptID = ref<Numeric[]>([])
+  const ageGroupID = ref<AgeGroups[]>([])
+  const peopleGroupID = ref<Numeric[]>([])
+  const faithMilestoneID = ref<Numeric[]>([])
+  const baptizedByID = ref<Numeric[]>([])
+  const baptizedDatePicker = ref<any[]>([])
 
-const faithMilestones = ref<number[]>([])
-const communicationForm = ref<string[]>([])
+  const faithMilestones = ref<number[]>([])
+  const communicationForm = ref<string[]>([])
 
-const d = reactive({
-  visibility: {
-    contactPicker: false,
-    faithStatusPicker: false,
-    ageGroupPicker: false,
-    peopleGroupPicker: false,
-    communicationPlatformActionSheet: false,
-    faithMielstonePicker: false,
-    baptizedByPicker: false,
-    baptismDatePicker: false,
-    prayerPromptPicker: false,
-    baptizedByRadio: "church_planter",
-  },
-  form: {
-    name: "",
-    is_active: true,
-    position_id: null,
-    gender: null,
-    age: null,
-    people_group: [] as number[],
-    faith_milestones: [] as number[],
-    contact_communication_platforms: [] as any[],
-    baptized_by: null,
-    baptized_by_name: "",
-    baptism_date: null,
-    assigned_to: null,
-    current_prayers: "",
-    note: "",
-    user_profile_id: null,
-  } as ContactFormModel,
-  prayer_prompt_id: null as number | null,
+  const d = reactive({
+    visibility: {
+      contactPicker: false,
+      faithStatusPicker: false,
+      ageGroupPicker: false,
+      peopleGroupPicker: false,
+      communicationPlatformActionSheet: false,
+      faithMielstonePicker: false,
+      baptizedByPicker: false,
+      baptismDatePicker: false,
+      prayerPromptPicker: false,
+      baptizedByRadio: "church_planter",
+    },
+    form: {
+      name: "",
+      is_active: true,
+      position_id: null,
+      gender: null,
+      age: null,
+      people_group: [] as number[],
+      faith_milestones: [] as number[],
+      contact_communication_platforms: [] as any[],
+      baptized_by: null,
+      baptized_by_name: "",
+      baptism_date: null,
+      assigned_to: null,
+      current_prayers: "",
+      note: "",
+      user_profile_id: null,
+    } as ContactFormModel,
+    prayer_prompt_id: null as number | null,
 
-  currentCommunicationPlatform: {
-    name: "",
-  } as CommunicationPlatformFormModel,
+    currentCommunicationPlatform: {
+      name: "",
+    } as CommunicationPlatformFormModel,
 
-  churchPlanters: [],
-  prayerPrompts: [],
-})
+    churchPlanters: [],
+    prayerPrompts: [],
+  })
 
-type SelectedOptionsType = {
-  text: string
-  value: Numeric
-}
+  type SelectedOptionsType = {
+    text: string
+    value: Numeric
+  }
 
-const m = {
-  handle: {
-    click: {
-      confirmFaithStatusPicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        d.form.position_id = selectedOptions[0].value as number
-        faithStatusFieldValue.value = selectedOptions[0].text
-        d.visibility.faithStatusPicker = false
-      },
+  const m = {
+    handle: {
+      click: {
+        confirmFaithStatusPicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          d.form.position_id = selectedOptions[0].value as number
+          faithStatusFieldValue.value = selectedOptions[0].text
+          d.visibility.faithStatusPicker = false
+        },
 
-      confirmPrayerPromptPicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        d.prayer_prompt_id = selectedOptions[0].value as number
-        prayerPromptFieldValue.value = selectedOptions[0].text
-        prayerPromptID.value = [selectedOptions[0].value as Numeric]
-        d.form.current_prayers = selectedOptions[0].text
-        d.visibility.prayerPromptPicker = false
-      },
+        confirmPrayerPromptPicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          d.prayer_prompt_id = selectedOptions[0].value as number
+          prayerPromptFieldValue.value = selectedOptions[0].text
+          prayerPromptID.value = [selectedOptions[0].value as Numeric]
+          d.form.current_prayers = selectedOptions[0].text
+          d.visibility.prayerPromptPicker = false
+        },
 
-      confirmAgeGroupPicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        d.form.age = selectedOptions[0].value as AgeGroups
-        ageGroupFieldValue.value = selectedOptions[0].text
-        d.visibility.ageGroupPicker = false
-      },
+        confirmAgeGroupPicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          d.form.age = selectedOptions[0].value as AgeGroups
+          ageGroupFieldValue.value = selectedOptions[0].text
+          d.visibility.ageGroupPicker = false
+        },
 
-      confirmPeopleGroupPicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        peopleGroupFieldValue.value = selectedOptions[0].text
+        confirmPeopleGroupPicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          peopleGroupFieldValue.value = selectedOptions[0].text
 
-        d.visibility.peopleGroupPicker = false
-      },
+          d.visibility.peopleGroupPicker = false
+        },
 
-      confirmFaithMilestonePicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        faithMilestoneFieldValue.value = selectedOptions[0].text
-        d.form.faith_milestones = faithMilestoneID.value as number[]
-        d.visibility.faithMielstonePicker = false
-      },
+        confirmFaithMilestonePicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          faithMilestoneFieldValue.value = selectedOptions[0].text
+          d.form.faith_milestones = faithMilestoneID.value as number[]
+          d.visibility.faithMielstonePicker = false
+        },
 
-      checkbox: () => {
-        const options = s.peopleGroup.options as {
-          text: string
-          value: number
-        }[]
+        checkbox: () => {
+          const options = s.peopleGroup.options as {
+            text: string
+            value: number
+          }[]
 
-        const matched = options
-          .filter(function (pgo) {
-            if ((peopleGroupID.value as number[]).includes(pgo.value)) {
-              return true
-            } else {
-              return false
-            }
+          const matched = options
+            .filter(function (pgo) {
+              if ((peopleGroupID.value as number[]).includes(pgo.value)) {
+                return true
+              } else {
+                return false
+              }
+            })
+            .map((pgo: any) => {
+              return pgo.text
+            })
+
+          peopleGroupFieldValue.value = matched.join(", ")
+          if (!d.form.people_group) {
+            d.form.people_group = []
+          }
+          d.form.people_group = peopleGroupID.value as number[]
+        },
+
+        faithMilestoneCheckbox: () => {
+          const options = s.faithMilestone.options as {
+            text: string
+            value: number
+          }[]
+
+          const matched = options
+            .filter(function (fmo) {
+              if ((faithMilestoneID.value as number[]).includes(fmo.value)) {
+                return true
+              } else {
+                return false
+              }
+            })
+            .map((fmo: any) => {
+              return fmo.text
+            })
+          // d.form.faith_milestones = faithMilestoneID.value as number[]
+          faithMilestones.value = faithMilestoneID.value as number[]
+          d.form.faith_milestones = faithMilestones.value
+
+          faithMilestoneFieldValue.value = matched.join(", ")
+        },
+
+        communicationPlatform: (cp: any) => {
+          d.visibility.communicationPlatformActionSheet = true
+          d.currentCommunicationPlatform = cp
+        },
+
+        confirmCommunicationPlatformPicker: (asdf: any) => {
+          communicationForm.value.push(asdf)
+          if (!d.form.contact_communication_platforms) {
+            d.form.contact_communication_platforms = []
+          }
+          d.form.contact_communication_platforms.push({
+            communication_platform_id: d.currentCommunicationPlatform.id,
+            value: asdf,
           })
-          .map((pgo: any) => {
-            return pgo.text
-          })
+        },
 
-        peopleGroupFieldValue.value = matched.join(", ")
-        if (!d.form.people_group) {
-          d.form.people_group = []
-        }
-        d.form.people_group = peopleGroupID.value as number[]
+        confirmBaptizedByPicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          d.form.baptized_by = selectedOptions[0].value as number
+          baptizedByFieldValue.value = selectedOptions[0].text
+          d.visibility.baptizedByPicker = false
+        },
+
+        confirmBaptizedDatePicker: ({
+          selectedOptions,
+        }: {
+          selectedOptions: SelectedOptionsType[]
+        }) => {
+          const day = selectedOptions[0]
+          const month = selectedOptions[1]
+          const year = selectedOptions[2]
+          //      d.form.baptism_date = selectedOptions[0].value as string
+          d.form.baptism_date = `${year.value}-${month.value}-${day.value}`
+
+          baptismDateFieldValue.value = `${day.text} ${month.text} ${year.text}`
+          baptizedDatePicker.value = [day.value, month.value, year.value]
+          d.visibility.baptismDatePicker = false
+        },
+        baptizedBySelect: (e: any) => {
+          console.log("Selected Baptized By", e)
+        },
       },
 
-      faithMilestoneCheckbox: () => {
-        const options = s.faithMilestone.options as {
-          text: string
-          value: number
-        }[]
-
-        const matched = options
-          .filter(function (fmo) {
-            if ((faithMilestoneID.value as number[]).includes(fmo.value)) {
-              return true
-            } else {
-              return false
-            }
-          })
-          .map((fmo: any) => {
-            return fmo.text
-          })
-        // d.form.faith_milestones = faithMilestoneID.value as number[]
-        faithMilestones.value = faithMilestoneID.value as number[]
-        d.form.faith_milestones = faithMilestones.value
-
-        faithMilestoneFieldValue.value = matched.join(", ")
+      emits: {
+        updatedCommunicationPlatformPicker: (e: any, editingValue: any) => {
+          communicationForm.value = e
+          if (!d.form.contact_communication_platforms) {
+            d.form.contact_communication_platforms = []
+          }
+          const index = d.form.contact_communication_platforms.findIndex(
+            (p) => p.value === editingValue.originalValue
+          )
+          if (index !== -1) {
+            d.form.contact_communication_platforms[index].value =
+              editingValue.value
+          }
+        },
+        deletedCommunicationPlatformPicker: (editingValue: any) => {
+          if (!d.form.contact_communication_platforms) {
+            d.form.contact_communication_platforms = []
+          }
+          const index = d.form.contact_communication_platforms.findIndex(
+            (p) => p.value === editingValue.originalValue
+          )
+          if (index !== -1) {
+            d.form.contact_communication_platforms.splice(index, 1)
+          }
+        },
+        updateUserProfile: (value: number) => {
+          d.form.user_profile_id = value
+        },
+        clearUserProfile: () => {
+          d.form.user_profile_id = null
+        },
       },
+    },
 
-      communicationPlatform: (cp: any) => {
-        d.visibility.communicationPlatformActionSheet = true
-        d.currentCommunicationPlatform = cp
-      },
-
-      confirmCommunicationPlatformPicker: (asdf: any) => {
-        communicationForm.value.push(asdf)
-        if (!d.form.contact_communication_platforms) {
-          d.form.contact_communication_platforms = []
-        }
-        d.form.contact_communication_platforms.push({
-          communication_platform_id: d.currentCommunicationPlatform.id,
-          value: asdf,
+    consume: {
+      churchPlanters: async () => {
+        d.churchPlanters = await consume.users.browse({
+          all: true,
+          whereIn: {
+            key: "user_role_id",
+            value: [4],
+          },
         })
       },
 
-      confirmBaptizedByPicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        d.form.baptized_by = selectedOptions[0].value as number
-        baptizedByFieldValue.value = selectedOptions[0].text
-        d.visibility.baptizedByPicker = false
-      },
-
-      confirmBaptizedDatePicker: ({
-        selectedOptions,
-      }: {
-        selectedOptions: SelectedOptionsType[]
-      }) => {
-        const day = selectedOptions[0]
-        const month = selectedOptions[1]
-        const year = selectedOptions[2]
-        //      d.form.baptism_date = selectedOptions[0].value as string
-        d.form.baptism_date = `${year.value}-${month.value}-${day.value}`
-
-        baptismDateFieldValue.value = `${day.text} ${month.text} ${year.text}`
-        baptizedDatePicker.value = [day.value, month.value, year.value]
-        d.visibility.baptismDatePicker = false
-      },
-      baptizedBySelect: (e: any) => {
-        console.log("Selected Baptized By", e)
-      },
-    },
-
-    emits: {
-      updatedCommunicationPlatformPicker: (e: any, editingValue: any) => {
-        communicationForm.value = e
-        if (!d.form.contact_communication_platforms) {
-          d.form.contact_communication_platforms = []
-        }
-        const index = d.form.contact_communication_platforms.findIndex(
-          (p) => p.value === editingValue.originalValue
+      prayerPrompt: async () => {
+        d.prayerPrompts = await consume.prayerPrompt.browse(
+          {
+            all: true,
+          },
+          false
         )
-        if (index !== -1) {
-          d.form.contact_communication_platforms[index].value =
-            editingValue.value
-        }
-      },
-      deletedCommunicationPlatformPicker: (editingValue: any) => {
-        if (!d.form.contact_communication_platforms) {
-          d.form.contact_communication_platforms = []
-        }
-        const index = d.form.contact_communication_platforms.findIndex(
-          (p) => p.value === editingValue.originalValue
-        )
-        if (index !== -1) {
-          d.form.contact_communication_platforms.splice(index, 1)
-        }
-      },
-      updateUserProfile: (value: number) => {
-        d.form.user_profile_id = value
-      },
-      clearUserProfile: () => {
-        d.form.user_profile_id = null
       },
     },
-  },
 
-  consume: {
-    churchPlanters: async () => {
-      d.churchPlanters = await consume.users.browse({
-        all: true,
-        whereIn: {
-          key: "user_role_id",
-          value: [4],
+    helper: {
+      formatter: {
+        baptismDateFormat: (type: any, options: any) => {
+          if (type === "month") {
+            switch (options.text) {
+              case "01":
+                options.text = "January"
+                break
+              case "02":
+                options.text = "February"
+                break
+              case "03":
+                options.text = "March"
+                break
+              case "04":
+                options.text = "April"
+                break
+              case "05":
+                options.text = "May"
+                break
+              case "06":
+                options.text = "June"
+                break
+              case "07":
+                options.text = "July"
+                break
+              case "08":
+                options.text = "August"
+                break
+              case "09":
+                options.text = "September"
+                break
+              case "10":
+                options.text = "October"
+                break
+              case "11":
+                options.text = "November"
+                break
+              case "12":
+                options.text = "December"
+                break
+            }
+          }
+
+          return options
         },
-      })
+      },
     },
+  }
 
-    prayerPrompt: async () => {
-      d.prayerPrompts = await consume.prayerPrompt.browse(
-        {
-          all: true,
-        },
-        false
-      )
-    },
-  },
+  onMounted(async () => {
+    await s.communicationPlatform.loadFromSecureStorage()
+    await s.contact.loadFromSecureStorage()
+    await s.faithMilestone.loadFromSecureStorage()
+    await s.peopleGroup.loadFromSecureStorage()
+    await s.settings.loadFromSecureStorage()
+    await m.consume.churchPlanters()
 
-  helper: {
-    formatter: {
-      baptismDateFormat: (type: any, options: any) => {
-        if (type === "month") {
-          switch (options.text) {
-            case "01":
-              options.text = "January"
-              break
-            case "02":
-              options.text = "February"
-              break
-            case "03":
-              options.text = "March"
-              break
-            case "04":
-              options.text = "April"
-              break
-            case "05":
-              options.text = "May"
-              break
-            case "06":
-              options.text = "June"
-              break
-            case "07":
-              options.text = "July"
-              break
-            case "08":
-              options.text = "August"
-              break
-            case "09":
-              options.text = "September"
-              break
-            case "10":
-              options.text = "October"
-              break
-            case "11":
-              options.text = "November"
-              break
-            case "12":
-              options.text = "December"
-              break
+    if (contactID) {
+      const bc = {
+        where: JSON.stringify([
+          {
+            key: "id",
+            value: contactID,
+          },
+        ]),
+        with: `["faithMilestones", "status", "position", "assignedTo", "coachedBy", "peopleGroup", "baptizedBy", "contactCommunicationPlatforms"]`,
+      } as BrowseCondition
+
+      const res = await consume.contacts.browse(bc)
+      console.log("Res Data", res.data)
+      if (res.data && res.data.length > 0) {
+        d.form = res.data[0]
+        if (!d.form.baptized_by && d.form.baptized_by_name) {
+          d.visibility.baptizedByRadio = "name"
+        }
+        if (d.form.position_id) {
+          helpers.setFromOptions({
+            options: s.settings.options.faith,
+            selectedValue: d.form.position_id,
+            textField: faithStatusFieldValue,
+            idField: faithStatusID,
+          })
+        }
+        if (d.form.age) {
+          ageGroupFieldValue.value = d.form.age
+        }
+        if (d.form.faith_milestones && d.form.faith_milestones.length > 0) {
+          const newVal = d.form.faith_milestones
+            .map((item: any) => item.name)
+            .join(", ")
+          d.form.faith_milestones = d.form.faith_milestones.map(
+            (item: any) => item.id
+          )
+          faithMilestoneFieldValue.value = newVal
+          faithMilestoneID.value = d.form.faith_milestones
+        }
+        if (d.form.people_group && d.form.people_group.length > 0) {
+          const newVal = d.form.people_group
+            .map((item: any) => item.name)
+            .join(", ")
+          d.form.people_group = d.form.people_group.map((item: any) => item.id)
+          peopleGroupFieldValue.value = newVal
+          peopleGroupID.value = d.form.people_group
+        }
+        if (res.data && res.data[0].baptized_by) {
+          const baptizedBy = res.data[0].baptized_by
+          baptizedByFieldValue.value = baptizedBy.name
+          baptizedByID.value = baptizedBy.id
+          d.form.baptized_by = baptizedBy.id
+          if (d.form.baptized_by) {
+            helpers.setFromOptions({
+              options: churchPlanterList.value,
+              selectedValue: d.form.baptized_by,
+              textField: baptizedByFieldValue,
+              idField: baptizedByID,
+            })
           }
         }
+        if (d.form && d.form.baptism_date) {
+          const date = new Date(d.form.baptism_date)
+          const displayDate = new Intl.DateTimeFormat("en-GB", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+          }).format(date)
 
-        return options
-      },
-    },
-  },
-}
+          const dbDate = date.toISOString().split("T")[0]
+          baptismDateFieldValue.value = displayDate
+          d.form.baptism_date = dbDate
+          baptizedDatePicker.value = [
+            date.getDate(),
+            date.getMonth() + 1,
+            date.getFullYear(),
+          ]
+        }
+        if (
+          d.form.contact_communication_platforms &&
+          d.form.contact_communication_platforms?.length > 0
+        ) {
+          console.log(
+            "d.form.contact_communication_platforms",
+            d.form.contact_communication_platforms
+          )
 
-onMounted(async () => {
-  await s.communicationPlatform.loadFromSecureStorage()
-  await s.contact.loadFromSecureStorage()
-  await s.faithMilestone.loadFromSecureStorage()
-  await s.peopleGroup.loadFromSecureStorage()
-  await s.settings.loadFromSecureStorage()
-  await m.consume.churchPlanters()
-
-  if (contactID) {
-    const bc = {
-      where: JSON.stringify([
-        {
-          key: "id",
-          value: contactID,
-        },
-      ]),
-      with: `["faithMilestones", "status", "position", "assignedTo", "coachedBy", "peopleGroup", "baptizedBy", "contactCommunicationPlatforms"]`,
-    } as BrowseCondition
-
-    const res = await consume.contacts.browse(bc)
-    console.log("Res Data", res.data)
-    if (res.data && res.data.length > 0) {
-      d.form = res.data[0]
-      if (!d.form.baptized_by && d.form.baptized_by_name) {
-        d.visibility.baptizedByRadio = "name"
-      }
-      if (d.form.position_id) {
-        helpers.setFromOptions({
-          options: s.settings.options.faith,
-          selectedValue: d.form.position_id,
-          textField: faithStatusFieldValue,
-          idField: faithStatusID,
-        })
-      }
-      if (d.form.age) {
-        ageGroupFieldValue.value = d.form.age
-      }
-      if (d.form.faith_milestones && d.form.faith_milestones.length > 0) {
-        const newVal = d.form.faith_milestones
-          .map((item: any) => item.name)
-          .join(", ")
-        d.form.faith_milestones = d.form.faith_milestones.map(
-          (item: any) => item.id
-        )
-        faithMilestoneFieldValue.value = newVal
-        faithMilestoneID.value = d.form.faith_milestones
-      }
-      if (d.form.people_group && d.form.people_group.length > 0) {
-        const newVal = d.form.people_group
-          .map((item: any) => item.name)
-          .join(", ")
-        d.form.people_group = d.form.people_group.map((item: any) => item.id)
-        peopleGroupFieldValue.value = newVal
-        peopleGroupID.value = d.form.people_group
-      }
-      if (res.data && res.data[0].baptized_by) {
-        const baptizedBy = res.data[0].baptized_by
-        baptizedByFieldValue.value = baptizedBy.name
-        baptizedByID.value = baptizedBy.id
-        d.form.baptized_by = baptizedBy.id
-        if (d.form.baptized_by) {
-          helpers.setFromOptions({
-            options: churchPlanterList.value,
-            selectedValue: d.form.baptized_by,
-            textField: baptizedByFieldValue,
-            idField: baptizedByID,
-          })
+          communicationForm.value = d.form.contact_communication_platforms.map(
+            (item: any) => item.value
+          )
+          d.form.contact_communication_platforms =
+            d.form.contact_communication_platforms.map((item) => ({
+              communication_platform_id: item.communication_platform_id,
+              value: item.value,
+            }))
         }
       }
-      if (d.form && d.form.baptism_date) {
-        const date = new Date(d.form.baptism_date)
-        const displayDate = new Intl.DateTimeFormat("en-GB", {
-          day: "2-digit",
-          month: "long",
-          year: "numeric",
-        }).format(date)
+    }
+  })
 
-        const dbDate = date.toISOString().split("T")[0]
-        baptismDateFieldValue.value = displayDate
-        d.form.baptism_date = dbDate
-        baptizedDatePicker.value = [
-          date.getDate(),
-          date.getMonth() + 1,
-          date.getFullYear(),
-        ]
-      }
-      if (
-        d.form.contact_communication_platforms &&
-        d.form.contact_communication_platforms?.length > 0
-      ) {
-        console.log(
-          "d.form.contact_communication_platforms",
-          d.form.contact_communication_platforms
-        )
-        communicationForm.value = d.form.contact_communication_platforms.map(
-          (item: any) => item.value
-        )
-        d.form.contact_communication_platforms =
-          d.form.contact_communication_platforms.map((item) => ({
-            communication_platform_id: item.communication_platform_id,
-            value: item.value,
-          }))
-      }
+  const churchPlanterList = computed(() => {
+    return d.churchPlanters.map((cp: any) => ({
+      text: cp.name ?? "",
+      value: cp.id,
+    }))
+  })
+
+  const prayerPromptList = computed(() => {
+    return d.prayerPrompts.map((pg: any) => ({
+      //    text: pg.prompt_text,
+      text:
+        pg.prompt_text.length > 50
+          ? pg.prompt_text.slice(0, 50) + "..."
+          : pg.prompt_text,
+      value: pg.id,
+    }))
+  })
+
+  const defaultOption = s.settings.options.faith.find((o) => o.value === 8)
+  if (defaultOption) {
+    faithStatusFieldValue.value = defaultOption.text
+    d.form.position_id = 8
+  }
+
+  m.consume.prayerPrompt()
+
+  const onSubmit = async () => {
+    d.form.assigned_to = authUser?.id
+    let response
+    if (contactID) {
+      const editChurchConsume = await useConsumeApi(
+        RoutePaths.CONTACTS,
+        contactID
+      )
+      response = await editChurchConsume.save(d.form)
+    } else {
+      response = await consume.contacts.save(d.form)
+    }
+    if (response) {
+      router.back()
     }
   }
-})
-
-const churchPlanterList = computed(() => {
-  return d.churchPlanters.map((cp: any) => ({
-    text: cp.name ?? "",
-    value: cp.id,
-  }))
-})
-
-const prayerPromptList = computed(() => {
-  return d.prayerPrompts.map((pg: any) => ({
-    //    text: pg.prompt_text,
-    text:
-      pg.prompt_text.length > 50
-        ? pg.prompt_text.slice(0, 50) + "..."
-        : pg.prompt_text,
-    value: pg.id,
-  }))
-})
-
-const defaultOption = s.settings.options.faith.find((o) => o.value === 8)
-if (defaultOption) {
-  faithStatusFieldValue.value = defaultOption.text
-  d.form.position_id = 8
-}
-
-m.consume.prayerPrompt()
-
-const onSubmit = async () => {
-  d.form.assigned_to = authUser?.id
-  let response
-  if (contactID) {
-    const editChurchConsume = await useConsumeApi(
-      RoutePaths.CONTACTS,
-      contactID
-    )
-    response = await editChurchConsume.save(d.form)
-  } else {
-    response = await consume.contacts.save(d.form)
-  }
-  if (response) {
-    router.back()
-  }
-}
 </script>
 
 <style scoped>
-::v-deep(.van-ellipsis) {
-  white-space: pre-line !important;
-  text-align: center;
-  line-height: 1.4;
-}
+  ::v-deep(.van-ellipsis) {
+    white-space: pre-line !important;
+    text-align: center;
+    line-height: 1.4;
+  }
 </style>
