@@ -29,7 +29,7 @@
         :placeholder="helpers.translate('biography')"
       />
 
-      <VanCell
+      <!-- <VanCell
         :title="helpers.translate('contact_profile')"
         :is-link="!!form.contact_id"
         :value="
@@ -38,7 +38,7 @@
             : helpers.translate('no_contact_profile')
         "
         @click="goToContactProfile"
-      />
+      /> -->
 
       <VanField
         v-model="userPreferredLanguage"
@@ -173,7 +173,6 @@ onMounted(async () => {
 
 const authUserRoleName = computed(() => {
   // return "Disciple Maker"
-
   return s.roles.value.find((role: any) => role.id === form.value.user_role_id)
     ?.label
 })

@@ -111,10 +111,10 @@ const tasks: Task[] = [
     } as StoreOptions,
     {
       ...query,
-      whereNotIn: {
-        key: "id",
-        value: [1, 2],
-      },
+      // whereNotIn: {
+      //   key: "id",
+      //   value: [1, 2],
+      // },
     },
   ],
 
@@ -186,6 +186,7 @@ const s = reactive({
   languageStore: useLanguageStore(),
   communicationPlatformStore: useCommunicationPlatformStore(),
   authStore: useAuthStore(),
+  userStore: useUserStore(),
 })
 
 onMounted(async () => {
@@ -298,6 +299,11 @@ const downloadSequence = async () => {
       s.communicationPlatformStore.setCommunicationPlatforms(
         communicationPlatformValues
       )
+    }
+
+    if (moduleName === "User Roles") {
+      const userRoleValues = await getSecureData<any[]>("userRoles", [])
+      s.userStore.setUserRoles(userRoleValues)
     }
 
     await delay(200)

@@ -12,11 +12,11 @@
       <!-- e.o NAME -->
 
       <!-- e.o NICKNAME -->
-      <VanField
+      <!-- <VanField
         v-model="d.form.nickname"
         :label="h.translate('nickname')"
         :placeholder="h.translate('enter_nickname')"
-      />
+      /> -->
       <!-- e.o NICKNAME -->
 
       <!-- e.o Note-->
@@ -28,11 +28,11 @@
       <!-- e.o NICKNAME -->
 
       <!-- USER PROFILE -->
-      <FormPartialsUserProfile
+      <!-- <FormPartialsUserProfile
         :user-profile-id="d.form.user_profile_id"
         @update="m.handle.emits.updateUserProfile"
         @clear="m.handle.emits.clearUserProfile"
-      />
+      /> -->
       <!-- e.o USER PROFILE -->
 
       <!-- GENDER -->

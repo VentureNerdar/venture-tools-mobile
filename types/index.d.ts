@@ -129,6 +129,7 @@ export type AuthUser = {
   phone_number: string
 
   user_role_id: number
+  movement_id: number | null
   preferred_language_id: number | null
   is_active: boolean
   first_time_login: boolean

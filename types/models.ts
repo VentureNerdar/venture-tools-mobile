@@ -9,6 +9,7 @@ export interface UserFormModel {
   is_active: boolean
   first_time_login: boolean
   phone_number: string | null
+  movement_id: number | null
   biography: string | null
   preferred_language_id: number | null
   id?: number

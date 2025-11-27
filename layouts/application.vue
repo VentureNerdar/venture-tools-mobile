@@ -8,11 +8,11 @@
       @click-right="hasCreateButton ? m.handle.click.btnAddNew() : undefined"
       style="z-index: 999"
     >
-      <template #right>
+      <!-- <template #right>
         <span v-if="hasCreateButton">
           <PlusRound style="width: 24px; height: 24px" />
         </span>
-      </template>
+      </template> -->
     </VanNavBar>
 
     <div style="margin-top: 46px; margin-bottom: 48px">

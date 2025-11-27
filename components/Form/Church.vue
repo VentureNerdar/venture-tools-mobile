@@ -14,7 +14,7 @@
         <!-- e.o IS ACTIVE -->
 
         <!-- COMMUNITY -->
-        <VanField
+        <!-- <VanField
           v-model="communityFieldValue"
           readonly
           :label="h.translate('community')"
@@ -40,13 +40,13 @@
             @cancel="d.visibility.communityPicker = false"
             @confirm="m.handle.click.confirmCommunityPicker"
           />
-        </VanPopup>
+        </VanPopup> -->
         <!-- e.o COMMUNITY -->
 
         <!-- CHURCH PLANTERS -->
         <VanField
           :label="h.translate('church_planters')"
-          :model-value="auth.authUser.name"
+          :model-value="auth.authUser?.name"
           readonly
         />
         <!-- e.o CHURCH PLANTERS -->
@@ -140,11 +140,11 @@
         <!-- e.o PARENT CHURCH -->
 
         <!-- CHURCH WEBSITE -->
-        <VanField
+        <!-- <VanField
           v-model="d.form.website"
           :label="h.translate('church_website')"
           :placeholder="h.translate('enter_church_website')"
-        />
+        /> -->
         <!-- e.o CHURCH WEBSITE -->
 
         <!-- FOUNDED AT -->
@@ -381,7 +381,7 @@ const d = reactive({
     description: "",
     founded_at: null,
     phone_number: "",
-    website: "",
+    // website: "",
     location_longitude: "",
     location_latitude: "",
     google_location_data: "",
@@ -420,13 +420,13 @@ const consume = {
 
 const m = {
   consume: {
-    defaultCommunitiesForCommunityOption: async () => {
-      const communities = await consume.communities.list({
-        labelOption: "name",
-        limit: 20,
-      })
-      d.options.communities = helpers.formatOptions(communities)
-    },
+    // defaultCommunitiesForCommunityOption: async () => {
+    //   const communities = await consume.communities.list({
+    //     labelOption: "name",
+    //     limit: 20,
+    //   })
+    //   d.options.communities = helpers.formatOptions(communities)
+    // },
     defaultChurchesForChurchOption: async () => {
       const churches = await consume.churches.list({
         labelOption: "name",
@@ -447,6 +447,11 @@ const m = {
         limit: 20,
         where: JSON.stringify([{ key: "user_role_id", value: 4 }]),
       } as BrowseConditionAll
+      // if(auth.authUser && auth.authUser.movement_id) {
+      //   bc.whereIn = {
+      //     key:
+      //   }
+      // }
       churchPlanterList.value = await consume.churchPlanter.browse(bc, false)
     },
     defaultPrayerPrompts: async () => {
@@ -646,7 +651,7 @@ const onSubmit = async () => {
   }
 }
 
-m.consume.defaultCommunitiesForCommunityOption()
+// m.consume.defaultCommunitiesForCommunityOption()
 m.consume.defaultChurchesForChurchOption()
 m.consume.defaultDenominationsForDenominationOption()
 m.consume.defaultChurchPlanters()
